@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>医生端界面</title>
+    <link href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-M/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        * { font-family: 'Noto Sans SC', Tahoma, Arial, Roboto, "Droid Sans", "Helvetica Neue", "Droid Sans Fallback", "Heiti SC", "Hiragino Sans GB", Simsun, sans-serif; }
+        
+        .phone-frame {
+            width: 375px;
+            height: 812px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 40px;
+            padding: 8px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, #e3f2fd 0%, #f8f9fa 100%);
+            border-radius: 32px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .status-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 44px;
+            background: transparent;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            z-index: 100;
+        }
+        
+        .main-content {
+            padding: 44px 20px 100px 20px;
+            height: 100vh;
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
+        
+        .hero-section {
+            text-align: center;
+            margin: 20px 0 30px 0;
+        }
+        
+        .hero-number {
+            font-size: 72px;
+            font-weight: 700;
+            color: #1565c0;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+        
+        .hero-title {
+            font-size: 16px;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .hero-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #fff 0%, #f5f5f5 100%);
+            border-radius: 20px;
+            margin: 0 auto 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: rgba(255,255,255,0.9);
+            border-radius: 16px;
+            padding: 16px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+        
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .progress-bar {
+            height: 4px;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .progress-blue { background: linear-gradient(90deg, #2196f3 0%, #1976d2 100%); }
+        .progress-red { background: linear-gradient(90deg, #f44336 0%, #d32f2f 100%); }
+        
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .detail-card {
+            background: rgba(255,255,255,0.8);
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+        }
+        
+        .detail-number {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        
+        .detail-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 2px;
+        }
+        
+        .detail-sublabel {
+            font-size: 11px;
+            color: #999;
+        }
+        
+        .chart-section {
+            background: rgba(255,255,255,0.9);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .chart-tabs {
+            display: flex;
+            background: #f5f5f5;
+            border-radius: 8px;
+            padding: 4px;
+            margin-bottom: 16px;
+        }
+        
+        .chart-tab {
+            flex: 1;
+            text-align: center;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .chart-tab.active {
+            background: #fff;
+            color: #1976d2;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .pie-chart {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            border-top: 1px solid rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item.active {
+            color: #1976d2;
+        }
+        
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 4px;
+        }
+        
+        .nav-label {
+            font-size: 12px;
+        }
+        
+        .qr-code {
+            width: 40px;
+            height: 40px;
+            background: #1976d2;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    
+     <div class="phone-screen">
+                    <!-- 状态栏 -->
+                    <div class="status-bar">
+                        <span>下午3:25 🟢</span>
+                        <div class="flex items-center space-x-1">
+                            <span>📶</span>
+                            <span>📶</span>
+                            <span class="bg-green-500 text-white px-2 py-1 rounded text-xs">5G</span>
+                            <span>⚫⚫⚫</span>
+                            <span>⭕</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 主要内容 -->
+                    <div class="main-content">
+                        <!-- 英雄区域 -->
+                        <div class="hero-section">
+                            <div class="hero-icon pulse">
+                                <div class="w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl relative">
+                                    <div class="absolute inset-2 bg-white rounded-lg opacity-20"></div>
+                                    <div class="absolute top-2 right-2 w-3 h-3 bg-blue-500 rounded-full"></div>
+                                    <div class="absolute bottom-2 left-2 w-4 h-2 bg-purple-500 rounded"></div>
+                                </div>
+                            </div>
+                            <div class="hero-number">0</div>
+                            <div class="hero-title">有效健康管理数</div>
+                        </div>
+                        
+                        <!-- 统计卡片 -->
+                        <div class="stats-grid">
+                            <div class="stat-card" onclick="animateCard(this)">
+                                <div class="stat-number">1<span class="text-lg">人</span></div>
+                                <div class="stat-label">健康管理人群</div>
+                                <div class="progress-bar">
+                                    <div class="progress-blue w-3/4 h-full"></div>
+                                </div>
+                            </div>
+                            <div class="stat-card" onclick="animateCard(this)">
+                                <div class="stat-number">0<span class="text-lg">人</span></div>
+                                <div class="stat-label">失访人群</div>
+                                <div class="progress-bar">
+                                    <div class="progress-red w-full h-full"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 详细统计 -->
+                        <div class="detail-grid">
+                            <div class="detail-card" onclick="animateCard(this)">
+                                <div class="detail-number">0<span class="text-sm">人</span></div>
+                                <div class="detail-label">服药</div>
+                                <div class="detail-sublabel">中断人群</div>
+                            </div>
+                            <div class="detail-card" onclick="animateCard(this)">
+                                <div class="detail-number">1<span class="text-sm">人</span></div>
+                                <div class="detail-label">体检报告</div>
+                                <div class="detail-sublabel">未上传人群</div>
+                            </div>
+                            <div class="detail-card" onclick="animateCard(this)">
+                                <div class="detail-number">1<span class="text-sm">人</span></div>
+                                <div class="detail-label">健康问卷</div>
+                                <div class="detail-sublabel">未提交人群</div>
+                            </div>
+                        </div>
+                        
+                        <!-- 图表区域 -->
+                        <div class="chart-section">
+                            <div class="chart-tabs">
+                                <div class="chart-tab active" onclick="switchTab(this, 'gender')">人群性别</div>
+                                <div class="chart-tab" onclick="switchTab(this, 'age')">人群年龄</div>
+                            </div>
+                            
+                            <div id="genderChart" class="chart-content">
+                                <div class="pie-chart">
+                                    <svg width="200" height="200" viewBox="0 0 200 200">
+                                        <circle cx="100" cy="100" r="80" fill="#4caf50" stroke="#fff" stroke-width="2"/>
+                                        <text x="100" y="105" text-anchor="middle" fill="white" font-size="18" font-weight="600">100%</text>
+                                    </svg>
+                                </div>
+                            </div>
+                            
+                            <div id="ageChart" class="chart-content hidden">
+                                <div class="pie-chart">
+                                    <svg width="200" height="200" viewBox="0 0 200 200">
+                                        <circle cx="100" cy="100" r="80" fill="#2196f3" stroke="#fff" stroke-width="2"/>
+                                        <text x="100" y="105" text-anchor="middle" fill="white" font-size="18" font-weight="600">100%</text>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 底部导航 -->
+                    <div class="bottom-nav">
+                        <div class="nav-item active" onclick="switchNav(this)">
+                            <div class="nav-icon">🏠</div>
+                            <div class="nav-label">首页</div>
+                        </div>
+                        <div class="nav-item" onclick="switchNav(this)">
+                            <div class="qr-code">
+                                <i class="fas fa-qrcode"></i>
+                            </div>
+                            <div class="nav-label">我的医生码</div>
+                        </div>
+                        <div class="nav-item" onclick="switchNav(this)">
+                            <div class="nav-icon">👤</div>
+                            <div class="nav-label">我的</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+    <script>
+        // 卡片点击动画
+        function animateCard(element) {
+            element.style.transform = 'scale(0.95)';
+            element.style.transition = 'transform 0.1s ease';
+            
+            setTimeout(() => {
+                element.style.transform = 'scale(1)';
+                element.style.transition = 'transform 0.3s ease';
+            }, 100);
+            
+            // 添加点击反馈
+            const ripple = document.createElement('div');
+            ripple.style.cssText = `
+                position: absolute;
+                border-radius: 50%;
+                background: rgba(25, 118, 210, 0.3);
+                transform: scale(0);
+                animation: ripple 0.6s linear;
+                pointer-events: none;
+            `;
+            
+            const rect = element.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            ripple.style.width = ripple.style.height = size + 'px';
+            ripple.style.left = (rect.width - size) / 2 + 'px';
+            ripple.style.top = (rect.height - size) / 2 + 'px';
+            
+            element.style.position = 'relative';
+            element.appendChild(ripple);
+            
+            setTimeout(() => ripple.remove(), 600);
+        }
+        
+        // 切换图表标签
+        function switchTab(element, type) {
+            // 移除所有活动状态
+            document.querySelectorAll('.chart-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // 添加当前活动状态
+            element.classList.add('active');
+            
+            // 切换图表内容
+            document.querySelectorAll('.chart-content').forEach(chart => {
+                chart.classList.add('hidden');
+            });
+            
+            if (type === 'gender') {
+                document.getElementById('genderChart').classList.remove('hidden');
+            } else {
+                document.getElementById('ageChart').classList.remove('hidden');
+            }
+            
+            // 添加切换动画
+            element.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                element.style.transform = 'scale(1)';
+            }, 100);
+        }
+        
+        // 切换底部导航
+        function switchNav(element) {
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            element.classList.add('active');
+            
+            // 添加点击动画
+            element.style.transform = 'scale(0.9)';
+            setTimeout(() => {
+                element.style.transform = 'scale(1)';
+            }, 150);
+        }
+        
+        // 添加 CSS 动画
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // 页面加载动画
+        window.addEventListener('load', () => {
+            const cards = document.querySelectorAll('.stat-card, .detail-card, .chart-section');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(20px)';
+                    card.style.transition = 'all 0.6s ease';
+                    
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, 50);
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>

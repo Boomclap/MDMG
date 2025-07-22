@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>患者健康管理App - 交互原型</title>
+    <link href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet" onerror="this.onerror=null;this.href='https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css'">
+    <link href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-M/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" onerror="this.onerror=null;this.href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css'">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/mermaid/8.14.0/mermaid.min.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/mermaid@8.14.0/dist/mermaid.min.js'"></script>
+    
+    <style>
+        * { font-family: 'Noto Sans SC', Tahoma, Arial, Roboto, "Droid Sans", "Helvetica Neue", "Droid Sans Fallback", "Heiti SC", "Hiragino Sans GB", Simsun, sans-serif; }
+        
+        .phone-frame {
+            width: 375px;
+            height: 812px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 40px;
+            padding: 8px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, #e8f4fd 0%, #f0f8ff 100%);
+            border-radius: 32px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .status-bar {
+            height: 44px;
+            background: transparent;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .main-content {
+            padding: 0 20px 100px 20px;
+            height: calc(100% - 44px);
+            overflow-y: auto;
+        }
+        
+        .hero-section {
+            margin: 20px 0 30px 0;
+            position: relative;
+        }
+        
+        .medication-card {
+            background: rgba(255,255,255,0.9);
+            border-radius: 20px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .medication-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .hero-icon {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px auto;
+            position: relative;
+        }
+        
+        .action-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+        
+        .action-card {
+            background: rgba(255,255,255,0.9);
+            border-radius: 16px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .action-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+        
+        .action-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .action-subtitle {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 12px;
+        }
+        
+        .progress-bar {
+            height: 6px;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .progress-red { background: linear-gradient(90deg, #ff6b6b 0%, #ee5a52 100%); }
+        .progress-blue { background: linear-gradient(90deg, #4dabf7 0%, #339af0 100%); }
+        
+        .notification-section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+        }
+        
+        .notification-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+        }
+        
+        .notification-item {
+            background: rgba(255,255,255,0.8);
+            border-radius: 16px;
+            padding: 16px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .notification-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        }
+        
+        .notification-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            margin: 0 auto 12px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+        
+        .notification-label {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.3;
+        }
+        
+        .badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 20px;
+            height: 20px;
+            background: #ff4757;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            border-top: 1px solid rgba(0,0,0,0.1);
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item.active {
+            color: #1976d2;
+        }
+        
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 4px;
+        }
+        
+        .nav-label {
+            font-size: 12px;
+        }
+        
+        .ai-doctor-icon {
+            width: 48px;
+            height: 48px;
+            background: #1976d2;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+        
+        .scan-icon {
+            width: 40px;
+            height: 40px;
+            background: #1976d2;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .data-sync {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4caf50;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            z-index: 1000;
+            animation: syncPulse 2s infinite;
+        }
+        
+        @keyframes syncPulse {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    
+    <!-- 数据同步指示器 -->
+    <div class="data-sync">
+        <i class="fas fa-sync-alt"></i> 与医生端同步中
+    </div>
+    
+    <!-- 设计说明区域 -->
+    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+        
+        <!-- 左侧：设计说明 -->
+        <div class="bg-white rounded-2xl p-8 shadow-xl">
+            <h1 class="text-3xl font-bold text-gray-800 mb-6">患者健康管理App</h1>
+            
+            <div class="space-y-6">
+                <div>
+                    <h3 class="text-xl font-semibold text-gray-700 mb-3">🎯 目标用户</h3>
+                    <p class="text-gray-600">慢性病患者、需要长期健康管理的用户、关注健康的普通用户</p>
+                </div>
+                
+                <div>
+                    <h3 class="text-xl font-semibold text-gray-700 mb-3">💡 核心痛点</h3>
+                    <ul class="text-gray-600 space-y-2">
+                        <li>• 用药管理困难，容易忘记服药时间</li>
+                        <li>• 健康数据记录繁琐，缺乏动力</li>
+                        <li>• 与医生沟通不便，缺乏及时指导</li>
+                        <li>• 预约挂号流程复杂，体验差</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-xl font-semibold text-gray-700 mb-3">✨ 设计解决方案</h3>
+                    <ul class="text-gray-600 space-y-2">
+                        <li>• <strong>智能提醒</strong>：用药、体检、问卷智能推送</li>
+                        <li>• <strong>简化操作</strong>：一键上传、快速预约</li>
+                        <li>• <strong>AI助手</strong>：24小时健康咨询服务</li>
+                        <li>• <strong>数据同步</strong>：与医生端实时数据交互</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-xl font-semibold text-gray-700 mb-3">🔄 数据交互</h3>
+                    <ul class="text-gray-600 space-y-2">
+                        <li>• 患者操作实时更新医生端统计</li>
+                        <li>• 服药记录影响"服药中断人群"数据</li>
+                        <li>• 体检上传更新"未上传人群"统计</li>
+                        <li>• 问卷提交影响"未提交人群"数据</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- 用户流程图 -->
+            <div class="mt-8">
+                <h3 class="text-xl font-semibold text-gray-700 mb-4">📱 核心用户流程</h3>
+                <div class="mermaid">
+                    graph TD
+                        A[打开患者端] --> B[查看用药管理]
+                        B --> C[记录服药情况]
+                        C --> D[上传体检报告]
+                        D --> E[填写健康问卷]
+                        E --> F[预约挂号]
+                        B --> G[AI医生咨询]
+                        C --> H[数据同步到医生端]
+                        D --> H
+                        E --> H
+                </div>
+            </div>
+        </div>
+        
+        <!-- 中间：患者端手机原型 -->
+        <div class="flex justify-center">
+            <div class="phone-frame fade-in">
+                <div class="phone-screen">
+                    <!-- 状态栏 -->
+                    <div class="status-bar">
+                        <span>15:35</span>
+                        <div class="flex items-center space-x-1">
+                            <span>📶</span>
+                            <span>📶</span>
+                            <span>📶</span>
+                            <span>📶</span>
+                            <span>📶</span>
+                            <span>🔋</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 主要内容 -->
+                    <div class="main-content">
+                        <!-- 用药管理区域 -->
+                        <div class="hero-section">
+                            <div class="medication-card">
+                                <div class="medication-title">
+                                    用药管理
+                                    <i class="fas fa-chevron-right text-gray-400"></i>
+                                </div>
+                                <div class="hero-icon">
+                                    <div class="w-full h-full relative">
+                                        <!-- 圆形进度环 -->
+                                        <svg width="120" height="120" viewBox="0 0 120 120" class="transform -rotate-90">
+                                            <circle cx="60" cy="60" r="50" fill="none" stroke="#e3f2fd" stroke-width="8"/>
+                                            <circle cx="60" cy="60" r="50" fill="none" stroke="#2196f3" stroke-width="8" 
+                                                    stroke-dasharray="314" stroke-dashoffset="78" stroke-linecap="round"/>
+                                        </svg>
+                                        <!-- 中心图标 -->
+                                        <div class="absolute inset-0 flex items-center justify-center">
+                                            <div class="w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center">
+                                                <i class="fas fa-pills text-white text-2xl"></i>
+                                            </div>
+                                        </div>
+                                        <!-- 装饰元素 -->
+                                        <div class="absolute top-2 right-8 w-6 h-6 bg-orange-400 rounded-lg transform rotate-12"></div>
+                                        <div class="absolute top-8 right-2 w-4 h-4 bg-yellow-400 rounded-full"></div>
+                                        <div class="absolute bottom-4 left-4 w-8 h-4 bg-purple-400 rounded-full"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 操作卡片 -->
+                        <div class="action-grid">
+                            <div class="action-card" onclick="updateMedicationStatus(this)">
+                                <div class="action-title">服药后不适</div>
+                                <div class="action-subtitle">症状反馈</div>
+                                <div class="progress-bar">
+                                    <div class="progress-red w-full h-full"></div>
+                                </div>
+                            </div>
+                            <div class="action-card" onclick="makeAppointment(this)">
+                                <div class="action-title">挂号</div>
+                                <div class="action-subtitle">预约</div>
+                                <div class="progress-bar">
+                                    <div class="progress-blue w-3/4 h-full"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 消息提醒 -->
+                        <div class="notification-section">
+                            <div class="section-title">消息提醒</div>
+                            <div class="notification-grid">
+                                <div class="notification-item" onclick="handleNotification(this, 'health')">
+                                    <div class="notification-icon" style="background: #4caf50;">
+                                        <i class="fas fa-plus"></i>
+                                    </div>
+                                    <div class="notification-label">健康通知</div>
+                                </div>
+                                <div class="notification-item" onclick="handleNotification(this, 'survey')">
+                                    <div class="notification-icon" style="background: #ff9800;">
+                                        <i class="fas fa-clipboard-list"></i>
+                                    </div>
+                                    <div class="notification-label">问卷通知</div>
+                                    <div class="badge">1</div>
+                                </div>
+                                <div class="notification-item" onclick="handleNotification(this, 'report')">
+                                    <div class="notification-icon" style="background: #9c27b0;">
+                                        <i class="fas fa-chart-line"></i>
+                                    </div>
+                                    <div class="notification-label">体检报告<br>上传通知</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 扫码区域 -->
+                        <div class="flex justify-end mb-4">
+                            <div class="scan-icon" onclick="openScanner()">
+                                <i class="fas fa-expand"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 底部导航 -->
+                    <div class="bottom-nav">
+                        <div class="nav-item active" onclick="switchNav(this)">
+                            <div class="nav-icon">🏠</div>
+                            <div class="nav-label">首页</div>
+                        </div>
+                        <div class="nav-item" onclick="switchNav(this)">
+                            <div class="ai-doctor-icon">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div class="nav-label">AI医生</div>
+                        </div>
+                        <div class="nav-item" onclick="switchNav(this)">
+                            <div class="nav-icon">👤</div>
+                            <div class="nav-label">我的</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 右侧：医生端预览 -->
+        <div class="bg-white rounded-2xl p-6 shadow-xl">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">医生端实时数据</h2>
+            <div class="space-y-4">
+                <div class="bg-blue-50 p-4 rounded-lg">
+                    <h4 class="font-semibold text-blue-800 mb-2">有效健康管理数</h4>
+                    <div class="text-3xl font-bold text-blue-600" id="managedCount">1</div>
+                </div>
+                
+                <div class="bg-red-50 p-4 rounded-lg">
+                    <h4 class="font-semibold text-red-800 mb-2">服药中断人群</h4>
+                    <div class="text-2xl font-bold text-red-600" id="medicationCount">0人</div>
+                </div>
+                
+                <div class="bg-purple-50 p-4 rounded-lg">
+                    <h4 class="font-semibold text-purple-800 mb-2">体检报告未上传</h4>
+                    <div class="text-2xl font-bold text-purple-600" id="reportCount">1人</div>
+                </div>
+                
+                <div class="bg-green-50 p-4 rounded-lg">
+                    <h4 class="font-semibold text-green-800 mb-2">健康问卷未提交</h4>
+                    <div class="text-2xl font-bold text-green-600" id="surveyCount">1人</div>
+                </div>
+            </div>
+            
+            <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+                <h4 class="font-semibold text-gray-700 mb-2">最近活动</h4>
+                <div id="activityLog" class="text-sm text-gray-600 space-y-1">
+                    <div>• 患者端已连接</div>
+                    <div>• 等待患者操作...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 初始化 Mermaid
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#1976d2',
+                primaryTextColor: '#333',
+                primaryBorderColor: '#1976d2',
+                lineColor: '#666'
+            }
+        });
+        
+        // 数据状态
+        let appData = {
+            medicationInterrupted: 0,
+            reportUploaded: false,
+            surveySubmitted: false,
+            managedPatients: 1
+        };
+        
+        // 更新医生端数据
+        function updateDoctorData() {
+            document.getElementById('medicationCount').textContent = appData.medicationInterrupted + '人';
+            document.getElementById('reportCount').textContent = (appData.reportUploaded ? 0 : 1) + '人';
+            document.getElementById('surveyCount').textContent = (appData.surveySubmitted ? 0 : 1) + '人';
+            document.getElementById('managedCount').textContent = appData.managedPatients;
+        }
+        
+        // 添加活动日志
+        function addActivityLog(message) {
+            const log = document.getElementById('activityLog');
+            const time = new Date().toLocaleTimeString();
+            const newEntry = document.createElement('div');
+            newEntry.textContent = `• ${time} - ${message}`;
+            log.insertBefore(newEntry, log.firstChild);
+            
+            // 保持最多5条记录
+            while (log.children.length > 5) {
+                log.removeChild(log.lastChild);
+            }
+        }
+        
+        // 服药状态更新
+        function updateMedicationStatus(element) {
+            animateCard(element);
+            appData.medicationInterrupted = appData.medicationInterrupted === 0 ? 1 : 0;
+            updateDoctorData();
+            addActivityLog(appData.medicationInterrupted ? '患者报告服药不适' : '患者服药状态正常');
+        }
+        
+        // 预约挂号
+        function makeAppointment(element) {
+            animateCard(element);
+            addActivityLog('患者发起预约挂号');
+        }
+        
+        // 处理通知
+        function handleNotification(element, type) {
+            animateCard(element);
+            
+            switch(type) {
+                case 'health':
+                    addActivityLog('患者查看健康通知');
+                    break;
+                case 'survey':
+                    appData.surveySubmitted = true;
+                    updateDoctorData();
+                    addActivityLog('患者提交健康问卷');
+                    // 移除徽章
+                    const badge = element.querySelector('.badge');
+                    if (badge) badge.remove();
+                    break;
+                case 'report':
+                    appData.reportUploaded = true;
+                    updateDoctorData();
+                    addActivityLog('患者上传体检报告');
+                    break;
+            }
+        }
+        
+        // 扫码功能
+        function openScanner() {
+            addActivityLog('患者使用扫码功能');
+        }
+        
+        // 卡片点击动画
+        function animateCard(element) {
+            element.style.transform = 'scale(0.95)';
+            element.style.transition = 'transform 0.1s ease';
+            
+            setTimeout(() => {
+                element.style.transform = 'scale(1)';
+                element.style.transition = 'transform 0.3s ease';
+            }, 100);
+        }
+        
+        // 切换底部导航
+        function switchNav(element) {
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            element.classList.add('active');
+            
+            const label = element.querySelector('.nav-label').textContent;
+            addActivityLog(`患者切换到${label}页面`);
+            
+            // 添加点击动画
+            element.style.transform = 'scale(0.9)';
+            setTimeout(() => {
+                element.style.transform = 'scale(1)';
+            }, 150);
+        }
+        
+        // 页面加载动画
+        window.addEventListener('load', () => {
+            const cards = document.querySelectorAll('.action-card, .notification-item');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(20px)';
+                    card.style.transition = 'all 0.6s ease';
+                    
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, 50);
+                }, index * 100);
+            });
+            
+            // 初始化医生端数据
+            updateDoctorData();
+            addActivityLog('患者端应用启动');
+        });
+    </script>
+</body>
+</html>
