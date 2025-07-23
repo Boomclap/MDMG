@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>医生端主界面</title>
+
+    <!-- CSS 框架 -->
+    <link href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet"
+        onerror="this.onerror=null;this.href='https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css'">
+
+    <!-- 图标库 -->
+    <link href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-M/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"
+        onerror="this.onerror=null;this.href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css'">
+
+    <!-- 字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        * {
+            font-family: 'Noto Sans SC', Tahoma, Arial, Roboto, "Droid Sans", "Helvetica Neue", "Droid Sans Fallback", "Heiti SC", "Hiragino Sans GB", Simsun, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(180deg, #e3f2fd 0%, #f8f9fa 100%);
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .status-bar {
+            height: 44px;
+            background: transparent;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .top-nav {
+            height: 60px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .back-button {
+            color: #1976d2;
+            cursor: pointer;
+            font-size: 16px;
+            display: none;
+        }
+
+        .content-container {
+            height: calc(100vh - 44px - 66px);
+            overflow: hidden;
+        }
+
+        .page-content {
+            width: 100%;
+            height: 100%;
+            display: none;
+        }
+
+        .page-content.active {
+            display: block;
+        }
+
+        .bottom-nav {
+            height: 80px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 8px;
+            border-radius: 12px;
+            position: relative;
+        }
+
+        .nav-item.active {
+            color: #1976d2;
+            background: rgba(25, 118, 210, 0.1);
+        }
+
+        .nav-item:not(.active) {
+            color: #666;
+        }
+
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+
+        .nav-label {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .message-badge {
+            position: absolute;
+            top: -5px;
+            right: 8px;
+            background: #ff4444;
+            color: white;
+            border-radius: 10px;
+            padding: 2px 6px;
+            font-size: 10px;
+            min-width: 16px;
+            text-align: center;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 状态栏 -->
+    <div class="status-bar">
+        <span>下午3:25 🟢</span>
+        <div class="flex items-center space-x-1">
+            <span>📶</span>
+            <span>📶</span>
+            <span class="bg-green-500 text-white px-2 py-1 rounded text-xs">5G</span>
+            <span>⚫⚫⚫</span>
+            <span>⭕</span>
+        </div>
+    </div>
+
+
+    <!-- 内容容器 -->
+    <div class="content-container">
+        <!-- 首页内容 -->
+        <div class="page-content active" id="homePage">
+            <iframe src="doctor-home-content.html" width="100%" height="100%" frameborder="0"></iframe>
+        </div>
+
+        <!-- 消息页面内容 -->
+        <div class="page-content" id="messagesPage">
+            <iframe src="doctor-messages-content.html" width="100%" height="100%" frameborder="0"></iframe>
+        </div>
+
+        <!-- 我的页面内容 -->
+        <div class="page-content" id="profilePage">
+            <iframe src="doctor-profile-content.html" width="100%" height="100%" frameborder="0"></iframe>
+        </div>
+    </div>
+
+    <!-- 底部导航 -->
+    <div class="bottom-nav">
+        <div class="nav-item active" data-page="home" onclick="switchPage('home')">
+            <div class="nav-icon">🏠</div>
+            <div class="nav-label">首页</div>
+        </div>
+        <div class="nav-item" data-page="messages" onclick="switchPage('messages')">
+            <div class="nav-icon">
+                <i class="fas fa-envelope"></i>
+                <span class="message-badge" id="messageBadge">5</span>
+            </div>
+            <div class="nav-label">消息</div>
+        </div>
+        <div class="nav-item" data-page="profile" onclick="switchPage('profile')">
+            <div class="nav-icon">👤</div>
+            <div class="nav-label">我的</div>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 'home';
+        let pageHistory = ['home'];
+
+        // 页面配置
+        const pageConfig = {
+            home: {
+                title: '医生工作台',
+                showBack: false,
+                showRightActions: true
+            },
+            messages: {
+                title: '消息中心',
+                showBack: true,
+                showRightActions: true
+            },
+            profile: {
+                title: '我的',
+                showBack: true,
+                showRightActions: false
+            }
+        };
+
+        // 切换页面
+        function switchPage(page) {
+            if (page === currentPage) return;
+
+            // 更新导航状态
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector(`[data-page="${page}"]`).classList.add('active');
+
+            // 隐藏当前页面
+            document.querySelectorAll('.page-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // 显示目标页面
+            document.getElementById(`${page}Page`).classList.add('active');
+
+            // 更新页面历史
+            if (currentPage !== page) {
+                pageHistory.push(page);
+            }
+            currentPage = page;
+
+            // 更新顶部导航
+            updateTopNav(page);
+
+            // 添加点击动画
+            const navItem = document.querySelector(`[data-page="${page}"]`);
+            navItem.style.transform = 'scale(0.9)';
+            setTimeout(() => {
+                navItem.style.transform = 'scale(1)';
+            }, 150);
+        }
+
+        // 更新顶部导航
+        function updateTopNav(page) {
+            const config = pageConfig[page];
+            const backButton = document.getElementById('backButton');
+            const pageTitle = document.getElementById('pageTitle');
+            const rightActions = document.getElementById('rightActions');
+
+            pageTitle.textContent = config.title;
+            backButton.style.display = config.showBack ? 'block' : 'none';
+            rightActions.style.display = config.showRightActions ? 'flex' : 'none';
+        }
+
+        // 返回上一页
+        function goBack() {
+            if (pageHistory.length > 1) {
+                pageHistory.pop(); // 移除当前页
+                const previousPage = pageHistory[pageHistory.length - 1];
+                switchPage(previousPage);
+                pageHistory.pop(); // 移除重复添加的页面
+            }
+        }
+
+        // 监听来自iframe的消息
+        window.addEventListener('message', function (event) {
+            if (event.data.type === 'updateMessageBadge') {
+                const badge = document.getElementById('messageBadge');
+                if (event.data.count > 0) {
+                    badge.textContent = event.data.count;
+                    badge.style.display = 'block';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+        });
+
+        // 初始化页面
+        window.addEventListener('load', function () {
+            updateTopNav('home');
+        });
+    </script>
+</body>
+
+</html>

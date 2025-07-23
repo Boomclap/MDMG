@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>医生首页内容</title>
+    <style>
+        * { 
+            font-family: 'Noto Sans SC', Tahoma, Arial, Roboto, "Droid Sans", "Helvetica Neue", "Droid Sans Fallback", "Heiti SC", "Hiragino Sans GB", Simsun, sans-serif; 
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background: transparent;
+            overflow-y: auto;
+            height: 100vh;
+            box-sizing: border-box;
+        }
+        
+        .main-content {
+            padding: 0 20px 20px 20px;
+            height: 100%;
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
+        
+        .hero-section {
+            text-align: center;
+            margin: 20px 0 30px 0;
+        }
+        
+        .hero-number {
+            font-size: 72px;
+            font-weight: 700;
+            color: #1565c0;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+        
+        .hero-title {
+            font-size: 16px;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .hero-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #fff 0%, #f5f5f5 100%);
+            border-radius: 20px;
+            margin: 0 auto 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: rgba(255,255,255,0.9);
+            border-radius: 16px;
+            padding: 16px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+        
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .progress-bar {
+            height: 4px;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .progress-blue { background: linear-gradient(90deg, #2196f3 0%, #1976d2 100%); }
+        .progress-red { background: linear-gradient(90deg, #f44336 0%, #d32f2f 100%); }
+        
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .detail-card {
+            background: rgba(255,255,255,0.8);
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+        }
+        
+        .detail-number {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        
+        .detail-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 2px;
+        }
+        
+        .detail-sublabel {
+            font-size: 11px;
+            color: #999;
+        }
+        
+        .chart-section {
+            background: rgba(255,255,255,0.9);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .chart-tabs {
+            display: flex;
+            background: #f5f5f5;
+            border-radius: 8px;
+            padding: 4px;
+            margin-bottom: 16px;
+        }
+        
+        .chart-tab {
+            flex: 1;
+            text-align: center;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .chart-tab.active {
+            background: #fff;
+            color: #1976d2;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .pie-chart {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* 消息提醒浮动按钮 */
+        .message-float-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #1976d2, #1565c0);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(25, 118, 210, 0.3);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+        
+        .message-float-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(25, 118, 210, 0.4);
+        }
+        
+        .message-float-btn .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff4444;
+            color: white;
+            border-radius: 10px;
+            padding: 2px 6px;
+            font-size: 12px;
+            min-width: 18px;
+            text-align: center;
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <!-- 消息提醒浮动按钮 -->
+    <div class="message-float-btn" onclick="goToMessages()">
+        <i class="fas fa-envelope"></i>
+        <div class="badge" id="messageBadge">5</div>
+    </div>
+    
+    <!-- 主要内容 -->
+    <div class="main-content">
+        <!-- 英雄区域 -->
+        <div class="hero-section">
+            <div class="hero-icon pulse">
+                <div class="w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl relative">
+                    <div class="absolute inset-2 bg-white rounded-lg opacity-20"></div>
+                    <div class="absolute top-2 right-2 w-3 h-3 bg-blue-500 rounded-full"></div>
+                    <div class="absolute bottom-2 left-2 w-4 h-2 bg-purple-500 rounded"></div>
+                </div>
+            </div>
+            <div class="hero-number">0</div>
+            <div class="hero-title">有效健康管理数</div>
+        </div>
+        
+        <!-- 统计卡片 -->
+        <div class="stats-grid">
+            <div class="stat-card" onclick="animateCard(this)">
+                <div class="stat-number">1<span class="text-lg">人</span></div>
+                <div class="stat-label">健康管理人群</div>
+                <div class="progress-bar">
+                    <div class="progress-blue w-3/4 h-full"></div>
+                </div>
+            </div>
+            <div class="stat-card" onclick="animateCard(this)">
+                <div class="stat-number">0<span class="text-lg">人</span></div>
+                <div class="stat-label">失访人群</div>
+                <div class="progress-bar">
+                    <div class="progress-red w-full h-full"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 详细统计 -->
+        <div class="detail-grid">
+            <div class="detail-card" onclick="animateCard(this)">
+                <div class="detail-number">0<span class="text-sm">人</span></div>
+                <div class="detail-label">服药</div>
+                <div class="detail-sublabel">中断人群</div>
+            </div>
+            <div class="detail-card" onclick="animateCard(this)">
+                <div class="detail-number">1<span class="text-sm">人</span></div>
+                <div class="detail-label">体检报告</div>
+                <div class="detail-sublabel">未上传人群</div>
+            </div>
+            <div class="detail-card" onclick="animateCard(this)">
+                <div class="detail-number">1<span class="text-sm">人</span></div>
+                <div class="detail-label">健康问卷</div>
+                <div class="detail-sublabel">未提交人群</div>
+            </div>
+        </div>
+        
+        <!-- 图表区域 -->
+        <div class="chart-section">
+            <div class="chart-tabs">
+                <div class="chart-tab active" onclick="switchTab(this, 'gender')">人群性别</div>
+                <div class="chart-tab" onclick="switchTab(this, 'age')">人群年龄</div>
+            </div>
+            
+            <div id="genderChart" class="chart-content">
+                <div class="pie-chart">
+                    <svg width="200" height="200" viewBox="0 0 200 200">
+                        <circle cx="100" cy="100" r="80" fill="#4caf50" stroke="#fff" stroke-width="2"/>
+                        <text x="100" y="105" text-anchor="middle" fill="white" font-size="18" font-weight="600">100%</text>
+                    </svg>
+                </div>
+            </div>
+            
+            <div id="ageChart" class="chart-content hidden">
+                <div class="pie-chart">
+                    <svg width="200" height="200" viewBox="0 0 200 200">
+                        <circle cx="100" cy="100" r="80" fill="#2196f3" stroke="#fff" stroke-width="2"/>
+                        <text x="100" y="105" text-anchor="middle" fill="white" font-size="18" font-weight="600">100%</text>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 卡片点击动画
+        function animateCard(element) {
+            element.style.transform = 'scale(0.95)';
+            element.style.transition = 'transform 0.1s ease';
+            
+            setTimeout(() => {
+                element.style.transform = 'scale(1)';
+                element.style.transition = 'transform 0.3s ease';
+            }, 100);
+            
+            // 添加点击反馈
+            const ripple = document.createElement('div');
+            ripple.style.cssText = `
+                position: absolute;
+                border-radius: 50%;
+                background: rgba(25, 118, 210, 0.3);
+                transform: scale(0);
+                animation: ripple 0.6s linear;
+                pointer-events: none;
+            `;
+            
+            const rect = element.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            ripple.style.width = ripple.style.height = size + 'px';
+            ripple.style.left = (rect.width - size) / 2 + 'px';
+            ripple.style.top = (rect.height - size) / 2 + 'px';
+            
+            element.style.position = 'relative';
+            element.appendChild(ripple);
+            
+            setTimeout(() => ripple.remove(), 600);
+        }
+        
+        // 切换图表标签
+        function switchTab(element, type) {
+            // 移除所有活动状态
+            document.querySelectorAll('.chart-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // 添加当前活动状态
+            element.classList.add('active');
+            
+            // 切换图表内容
+            document.querySelectorAll('.chart-content').forEach(chart => {
+                chart.classList.add('hidden');
+            });
+            
+            if (type === 'gender') {
+                document.getElementById('genderChart').classList.remove('hidden');
+            } else {
+                document.getElementById('ageChart').classList.remove('hidden');
+            }
+            
+            // 添加切换动画
+            element.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                element.style.transform = 'scale(1)';
+            }, 100);
+        }
+        
+        // 跳转到消息页面
+        function goToMessages() {
+            if (window.parent && window.parent.switchPage) {
+                window.parent.switchPage('messages');
+            }
+        }
+        
+        // 添加 CSS 动画
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+            .hidden {
+                display: none;
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // 页面加载动画
+        window.addEventListener('load', () => {
+            const cards = document.querySelectorAll('.stat-card, .detail-card, .chart-section');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(20px)';
+                    card.style.transition = 'all 0.6s ease';
+                    
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, 50);
+                }, index * 100);
+            });
+        });
+        
+        // 监听来自父窗口的消息更新
+        window.addEventListener('message', function(event) {
+            if (event.data.type === 'updateMessageCount') {
+                const badge = document.getElementById('messageBadge');
+                if (event.data.count > 0) {
+                    badge.textContent = event.data.count;
+                    badge.style.display = 'block';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>消息列表内容</title>
+    <style>
+        * { 
+            font-family: 'Noto Sans SC', Tahoma, Arial, Roboto, "Droid Sans", "Helvetica Neue", "Droid Sans Fallback", "Heiti SC", "Hiragino Sans GB", Simsun, sans-serif; 
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background: transparent;
+            overflow-y: auto;
+            height: 100vh;
+        }
+        
+        .filter-tabs {
+            height: 50px;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            gap: 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .filter-tab {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .filter-tab.active {
+            background: #1976d2;
+            color: white;
+        }
+        
+        .filter-tab:not(.active) {
+            color: #666;
+            background: rgba(0, 0, 0, 0.05);
+        }
+        
+        .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff4444;
+            color: white;
+            border-radius: 10px;
+            padding: 2px 6px;
+            font-size: 12px;
+            min-width: 18px;
+            text-align: center;
+        }
+        
+        .messages-container {
+            padding: 16px 20px;
+            height: calc(100vh - 50px);
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
+        
+        .message-item {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .message-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        }
+        
+        .message-item.pending::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: #1976d2;
+            animation: pulse 2s infinite;
+        }
+        
+        .message-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .patient-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            margin-right: 12px;
+        }
+        
+        .patient-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .message-content {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .message-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .message-time {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-pending {
+            background: rgba(25, 118, 210, 0.1);
+            color: #1976d2;
+        }
+        
+        .status-completed {
+            background: rgba(76, 175, 80, 0.1);
+            color: #4caf50;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 筛选标签 -->
+    <div class="filter-tabs">
+        <div class="filter-tab active" onclick="switchFilter(this, 'all')">
+            全部
+            <span class="badge">12</span>
+        </div>
+        <div class="filter-tab" onclick="switchFilter(this, 'pending')">
+            待处理
+            <span class="badge">5</span>
+        </div>
+        <div class="filter-tab" onclick="switchFilter(this, 'completed')">
+            已指导
+            <span class="badge">7</span>
+        </div>
+    </div>
+    
+    <!-- 消息列表 -->
+    <div class="messages-container">
+        <!-- 待处理消息 -->
+        <div class="message-item pending" data-status="pending" onclick="openQuestionnaire(this, 'zhang-san')">
+            <div class="message-header">
+                <div class="patient-avatar">张</div>
+                <div class="patient-name">张三</div>
+            </div>
+            <div class="message-content">提交了糖尿病健康问卷</div>
+            <div class="message-footer">
+                <div class="message-time">2分钟前</div>
+                <div class="status-badge status-pending">待处理</div>
+            </div>
+        </div>
+        
+        <div class="message-item pending" data-status="pending" onclick="openQuestionnaire(this, 'li-si')">
+            <div class="message-header">
+                <div class="patient-avatar">李</div>
+                <div class="patient-name">李四</div>
+            </div>
+            <div class="message-content">提交了高血压健康问卷</div>
+            <div class="message-footer">
+                <div class="message-time">15分钟前</div>
+                <div class="status-badge status-pending">待处理</div>
+            </div>
+        </div>
+        
+        <!-- 已处理消息 -->
+        <div class="message-item" data-status="completed" onclick="openQuestionnaire(this, 'zhao-liu')">
+            <div class="message-header">
+                <div class="patient-avatar">赵</div>
+                <div class="patient-name">赵六</div>
+            </div>
+            <div class="message-content">提交了糖尿病健康问卷</div>
+            <div class="message-footer">
+                <div class="message-time">昨天 16:30</div>
+                <div class="status-badge status-completed">已指导</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 切换筛选标签
+        function switchFilter(element, type) {
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            element.classList.add('active');
+            
+            const messages = document.querySelectorAll('.message-item');
+            messages.forEach(message => {
+                const status = message.dataset.status;
+                if (type === 'all' || status === type) {
+                    message.style.display = 'block';
+                } else {
+                    message.style.display = 'none';
+                }
+            });
+        }
+        
+        // 打开问卷详情
+        function openQuestionnaire(element, patientId) {
+            window.location.href = `doctor-questionnaire-detail.html?patientId=${patientId}`;
+        }
+    </script>
+</body>
+</html>

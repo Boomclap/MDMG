@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>健康指导编辑器</title>
+    <link href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet" onerror="this.onerror=null;this.href='https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css'">
+    <link href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-M/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" onerror="this.onerror=null;this.href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css'">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * { 
+            font-family: 'Noto Sans SC', Tahoma, Arial, Roboto, "Droid Sans", "Helvetica Neue", "Droid Sans Fallback", "Heiti SC", "Hiragino Sans GB", Simsun, sans-serif; 
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(180deg, #e3f2fd 0%, #f8f9fa 100%);
+            height: 100vh;
+            overflow-y: auto;
+        }
+        
+        .status-bar {
+            height: 44px;
+            background: transparent;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .top-nav {
+            height: 56px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .main-content {
+            padding: 16px;
+            padding-bottom: 100px;
+        }
+        
+        .section-card {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-right: 8px;
+            color: #1976d2;
+        }
+        
+        .patient-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .patient-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 18px;
+            margin-right: 12px;
+        }
+        
+        .patient-details {
+            flex: 1;
+        }
+        
+        .patient-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        
+        .patient-meta {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .template-scroll {
+            display: flex;
+            overflow-x: auto;
+            gap: 12px;
+            padding: 4px 0;
+            margin-bottom: 12px;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .template-item {
+            flex: 0 0 auto;
+            padding: 12px 16px;
+            background: rgba(25, 118, 210, 0.05);
+            border: 1px solid rgba(25, 118, 210, 0.1);
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #1976d2;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .template-item:hover, .template-item.active {
+            background: rgba(25, 118, 210, 0.1);
+            border-color: rgba(25, 118, 210, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .editor-container {
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .editor-toolbar {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            background: #f5f5f5;
+            border-bottom: 1px solid #e0e0e0;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .toolbar-button {
+            padding: 6px 8px;
+            background: transparent;
+            border: none;
+            border-radius: 4px;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-right: 4px;
+        }
+        
+        .toolbar-button:hover {
+            background: rgba(0, 0, 0, 0.05);
+            color: #333;
+        }
+        
+        .toolbar-divider {
+            width: 1px;
+            height: 24px;
+            background: #e0e0e0;
+            margin: 0 8px;
+        }
+        
+        .editor-content {
+            padding: 16px;
+            min-height: 200px;
+            outline: none;
+            font-size: 15px;
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        .suggestion-list {
+            margin-top: 16px;
+        }
+        
+        .suggestion-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 12px 16px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .suggestion-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #1976d2;
+            border-radius: 4px;
+            margin-right: 12px;
+            position: relative;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        
+        .suggestion-checkbox.checked::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 6px;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+        
+        .suggestion-checkbox.checked {
+            background: #1976d2;
+        }
+        
+        .suggestion-text {
+            font-size: 15px;
+            color: #333;
+            flex: 1;
+        }
+        
+        .bottom-actions {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 16px;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 12px;
+        }
+        
+        .action-button {
+            display: block;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .primary-button {
+            background: #1976d2;
+            color: white;
+            flex: 2;
+        }
+        
+        .primary-button:hover {
+            background: #1565c0;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+        }
+        
+        .secondary-button {
+            background: rgba(25, 118, 210, 0.1);
+            color: #1976d2;
+            flex: 1;
+        }
+        
+        .secondary-button:hover {
+            background: rgba(25, 118, 210, 0.15);
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            width: 90%;
+            max-height: 80vh;
+            background: white;
+            border-radius: 16px;
+            overflow-y: auto;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+        
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+        
+        .modal-header {
+            padding: 16px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .modal-close {
+            font-size: 20px;
+            color: #666;
+            cursor: pointer;
+        }
+        
+        .modal-body {
+            padding: 16px;
+        }
+        
+        .preview-content {
+            font-size: 15px;
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        .preview-content p {
+            margin-bottom: 12px;
+        }
+        
+        .preview-content ul {
+            margin-bottom: 12px;
+            padding-left: 20px;
+        }
+        
+        .preview-content li {
+            margin-bottom: 8px;
+        }
+        
+        .preview-content strong {
+            color: #1976d2;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* 侧边抽屉样式 */
+        .drawer {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 90%;
+            height: 100%;
+            background: white;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+        }
+        
+        .drawer.active {
+            right: 0;
+        }
+        
+        .drawer-header {
+            padding: 16px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 10;
+        }
+        
+        .drawer-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .drawer-close {
+            font-size: 20px;
+            color: #666;
+            cursor: pointer;
+        }
+        
+        .drawer-body {
+            padding: 16px;
+        }
+        
+        .drawer-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .drawer-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .question-item {
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .question-text {
+            font-size: 15px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .answer-text {
+            font-size: 15px;
+            color: #1976d2;
+            background: rgba(25, 118, 210, 0.05);
+            padding: 10px 12px;
+            border-radius: 8px;
+            border-left: 3px solid #1976d2;
+        }
+        
+        .image-gallery {
+            display: flex;
+            overflow-x: auto;
+            gap: 8px;
+            padding: 4px 0;
+            margin-bottom: 12px;
+        }
+        
+        .gallery-item {
+            flex: 0 0 auto;
+            width: 120px;
+            height: 160px;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .gallery-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .image-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            font-size: 12px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- 状态栏 -->
+    <div class="status-bar">
+        <span>下午3:25</span>
+        <div class="flex items-center space-x-1">
+            <span>📶</span>
+            <span>📶</span>
+            <span class="bg-green-500 text-white px-2 py-1 rounded text-xs">5G</span>
+            <span>⚫⚫⚫</span>
+            <span>⭕</span>
+        </div>
+    </div>
+    
+    <!-- 顶部导航 -->
+    <div class="top-nav">
+        <div class="flex items-center">
+            <div class="mr-3 text-blue-600" onclick="goBack()">
+                <i class="fas fa-arrow-left"></i>
+            </div>
+            <div class="font-semibold">健康指导编辑</div>
+        </div>
+        <div class="flex items-center">
+            <div class="mr-4 text-blue-600" onclick="showQuestionnaireDrawer()">
+                <i class="fas fa-clipboard-list"></i>
+            </div>
+            <div class="mr-4 text-blue-600" onclick="showReportDrawer()">
+                <i class="fas fa-file-medical"></i>
+            </div>
+            <i class="fas fa-ellipsis-v text-gray-500"></i>
+        </div>
+    </div>
+    
+    <!-- 主要内容 -->
+    <div class="main-content">
+        <!-- 患者信息 -->
+        <div class="section-card fade-in">
+            <div class="section-title">
+                <i class="fas fa-user-circle"></i>患者信息
+            </div>
+            <div class="patient-info">
+                <div class="patient-avatar">张</div>
+                <div class="patient-details">
+                    <div class="patient-name">张三</div>
+                    <div class="patient-meta">男 | 45岁 | 糖尿病健康问卷</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 模板选择 -->
+        <div class="section-card fade-in" style="animation-delay: 0.1s">
+            <div class="section-title">
+                <i class="fas fa-file-medical-alt"></i>选择模板
+            </div>
+            <div class="template-scroll">
+                <div class="template-item active" onclick="selectTemplate('diabetes-diet')">糖尿病饮食指导</div>
+                <div class="template-item" onclick="selectTemplate('diabetes-exercise')">糖尿病运动指导</div>
+                <div class="template-item" onclick="selectTemplate('hypertension')">高血压用药指导</div>
+                <div class="template-item" onclick="selectTemplate('general-health')">一般健康建议</div>
+                <div class="template-item" onclick="selectTemplate('custom')">自定义模板</div>
+            </div>
+        </div>
+        
+        <!-- 编辑区域 -->
+        <div class="section-card fade-in" style="animation-delay: 0.2s">
+            <div class="section-title">
+                <i class="fas fa-edit"></i>编辑健康指导
+            </div>
+            <div class="editor-container">
+                <div class="editor-toolbar">
+                    <button class="toolbar-button" onclick="formatText('bold')">
+                        <i class="fas fa-bold"></i>
+                    </button>
+                    <button class="toolbar-button" onclick="formatText('italic')">
+                        <i class="fas fa-italic"></i>
+                    </button>
+                    <button class="toolbar-button" onclick="formatText('underline')">
+                        <i class="fas fa-underline"></i>
+                    </button>
+                    <div class="toolbar-divider"></div>
+                    <button class="toolbar-button" onclick="formatList('bullet')">
+                        <i class="fas fa-list-ul"></i>
+                    </button>
+                    <button class="toolbar-button" onclick="formatList('number')">
+                        <i class="fas fa-list-ol"></i>
+                    </button>
+                    <div class="toolbar-divider"></div>
+                    <button class="toolbar-button" onclick="clearFormatting()">
+                        <i class="fas fa-remove-format"></i>
+                    </button>
+                </div>
+                <div class="editor-content" id="editor" contenteditable="true">
+                    <p>尊敬的张先生：</p>
+                    
+                    <p>根据您提交的糖尿病健康问卷和体检报告，我为您提供以下健康建议：</p>
+                    
+                    <ul>
+                        <li><strong>饮食控制：</strong>建议减少碳水化合物摄入，增加蔬菜和优质蛋白质的比例。每餐主食控制在1-2两，避免精制糖和高糖水果。</li>
+                        
+                        <li><strong>运动建议：</strong>每天进行30分钟中等强度的有氧运动，如快走、慢跑或游泳。运动前后测量血糖，避免低血糖风险。</li>
+                        
+                        <li><strong>血糖监测：</strong>您的空腹血糖为7.2 mmol/L，略高于正常范围（3.9-6.1 mmol/L）。建议每周监测3-4次空腹和餐后2小时血糖，并记录结果。</li>
+                    </ul>
+                    
+                    <p>请继续保持良好的自我管理，三个月后复诊，必要时可提前预约。如有任何不适，请及时联系我。</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 健康建议 -->
+        <div class="section-card fade-in" style="animation-delay: 0.3s">
+            <div class="section-title">
+                <i class="fas fa-clipboard-check"></i>健康建议
+            </div>
+            <div class="suggestion-list">
+                <div class="suggestion-item" onclick="toggleSuggestion(this)">
+                    <div class="suggestion-checkbox checked"></div>
+                    <div class="suggestion-text">控制饮食，减少碳水化合物摄入</div>
+                </div>
+                <div class="suggestion-item" onclick="toggleSuggestion(this)">
+                    <div class="suggestion-checkbox checked"></div>
+                    <div class="suggestion-text">每天进行30分钟中等强度的有氧运动</div>
+                </div>
+                <div class="suggestion-item" onclick="toggleSuggestion(this)">
+                    <div class="suggestion-checkbox checked"></div>
+                    <div class="suggestion-text">定期监测血糖</div>
+                </div>
+                <div class="suggestion-item" onclick="toggleSuggestion(this)">
+                    <div class="suggestion-checkbox"></div>
+                    <div class="suggestion-text">避免吸烟和饮酒</div>
+                </div>
+                <div class="suggestion-item" onclick="toggleSuggestion(this)">
+                    <div class="suggestion-checkbox"></div>
+                    <div class="suggestion-text">保持良好的睡眠习惯</div>
+                </div>
+                <div class="suggestion-item" onclick="toggleSuggestion(this)">
+                    <div class="suggestion-checkbox"></div>
+                    <div class="suggestion-text">定期复诊</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 底部操作区 -->
+    <div class="bottom-actions fade-in" style="animation-delay: 0.4s">
+        <button class="secondary-button action-button" onclick="previewGuidance()">
+            <i class="fas fa-eye mr-2"></i>预览
+        </button>
+        <button class="primary-button action-button" onclick="sendGuidance()">
+            <i class="fas fa-paper-plane mr-2"></i>发送
+        </button>
+    </div>
+    
+    <!-- 预览模态框 -->
+    <div id="previewModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">健康指导预览</div>
+                <div class="modal-close" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="preview-content" id="previewContent"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 返回上一页
+        function goBack() {
+            window.history.back();
+        }
+        
+        // 选择模板
+        function selectTemplate(templateId) {
+            // 更新模板选择状态
+            document.querySelectorAll('.template-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // 根据模板ID加载不同的模板内容
+            let templateContent = '';
+            
+            switch(templateId) {
+                case 'diabetes-diet':
+                    templateContent = `<p>尊敬的张先生：</p>
+                    
+<p>根据您提交的糖尿病健康问卷和体检报告，我为您提供以下健康建议：</p>
+
+<ul>
+    <li><strong>饮食控制：</strong>建议减少碳水化合物摄入，增加蔬菜和优质蛋白质的比例。每餐主食控制在1-2两，避免精制糖和高糖水果。</li>
+    
+    <li><strong>运动建议：</strong>每天进行30分钟中等强度的有氧运动，如快走、慢跑或游泳。运动前后测量血糖，避免低血糖风险。</li>
+    
+    <li><strong>血糖监测：</strong>您的空腹血糖为7.2 mmol/L，略高于正常范围（3.9-6.1 mmol/L）。建议每周监测3-4次空腹和餐后2小时血糖，并记录结果。</li>
+</ul>
+
+<p>请继续保持良好的自我管理，三个月后复诊，必要时可提前预约。如有任何不适，请及时联系我。</p>`;
+                    break;
+                    
+                case 'diabetes-exercise':
+                    templateContent = `<p>尊敬的张先生：</p>
+                    
+<p>根据您提交的糖尿病健康问卷和体检报告，我为您提供以下运动指导建议：</p>
+
+<ul>
+    <li><strong>运动频率：</strong>每周进行5-7天的有规律运动，每次30-60分钟。</li>
+    
+    <li><strong>运动类型：</strong>以有氧运动为主，如快走、慢跑、游泳或骑自行车。每周可适当加入2-3次力量训练。</li>
+    
+    <li><strong>运动强度：</strong>中等强度，运动时能够正常交谈但略感吃力。心率控制在最大心率的60%-70%（约为100-120次/分）。</li>
+    
+    <li><strong>注意事项：</strong>运动前后测量血糖，血糖低于5.6mmol/L时应适当补充碳水化合物；高于16.7mmol/L时应暂缓运动。</li>
+</ul>
+
+<p>请根据自身情况调整运动计划，如有不适请立即停止并咨询医生。</p>`;
+                    break;
+                    
+                case 'hypertension':
+                    templateContent = `<p>尊敬的张先生：</p>
+                    
+<p>根据您的健康问卷和体检报告，我为您提供以下高血压管理建议：</p>
+
+<ul>
+    <li><strong>用药指导：</strong>请按时服用处方药物，不要自行停药或调整剂量。最好在固定时间服药，可设置手机提醒。</li>
+    
+    <li><strong>血压监测：</strong>建议每天早晚各测量一次血压，记录数值。测量前应休息5分钟，避免饮茶、咖啡或剧烈运动。</li>
+    
+    <li><strong>饮食建议：</strong>低盐饮食（每日盐摄入量<5g），增加钾的摄入（如香蕉、土豆），限制酒精摄入，控制体重。</li>
+    
+    <li><strong>生活方式：</strong>规律作息，适当运动，避免精神紧张，戒烟限酒。</li>
+</ul>
+
+<p>如血压波动明显或出现头痛、头晕等不适症状，请及时就医。</p>`;
+                    break;
+                    
+                case 'general-health':
+                    templateContent = `<p>尊敬的张先生：</p>
+                    
+<p>感谢您提交健康问卷。以下是一些一般性的健康建议：</p>
+
+<ul>
+    <li><strong>均衡饮食：</strong>每天摄入足够的蔬菜水果（5份以上），适量优质蛋白质，控制精制碳水化合物和饱和脂肪的摄入。</li>
+    
+    <li><strong>规律运动：</strong>每周至少进行150分钟中等强度有氧运动，如快走、游泳等。</li>
+    
+    <li><strong>充足睡眠：</strong>保证每晚7-8小时的高质量睡眠，维持规律的作息时间。</li>
+    
+    <li><strong>压力管理：</strong>学习放松技巧，如深呼吸、冥想或瑜伽，有效缓解日常压力。</li>
+    
+    <li><strong>定期体检：</strong>建议每年进行一次全面体检，及时发现健康隐患。</li>
+</ul>
+
+<p>祝您健康愉快！如有任何健康问题，请随时咨询。</p>`;
+                    break;
+                    
+                case 'custom':
+                    templateContent = `<p>尊敬的张先生：</p>
+                    
+<p>根据您的健康情况，我为您提供以下建议：</p>
+
+<ul>
+    <li><strong>建议1：</strong>请在此处添加个性化建议。</li>
+    
+    <li><strong>建议2：</strong>请在此处添加个性化建议。</li>
+    
+    <li><strong>建议3：</strong>请在此处添加个性化建议。</li>
+</ul>
+
+<p>如有任何问题，请随时联系我。</p>`;
+                    break;
+            }
+            
+            // 更新编辑器内容
+            document.getElementById('editor').innerHTML = templateContent;
+            
+            // 更新建议选择
+            updateSuggestions(templateId);
+        }
+        
+        // 更新建议选择
+        function updateSuggestions(templateId) {
+            // 重置所有建议
+            document.querySelectorAll('.suggestion-checkbox').forEach(checkbox => {
+                checkbox.classList.remove('checked');
+            });
+            
+            // 根据模板选择默认建议
+            const suggestions = document.querySelectorAll('.suggestion-item');
+            
+            if (templateId === 'diabetes-diet' || templateId === 'diabetes-exercise') {
+                // 选中前三个建议
+                for (let i = 0; i < 3; i++) {
+                    suggestions[i].querySelector('.suggestion-checkbox').classList.add('checked');
+                }
+            } else if (templateId === 'hypertension') {
+                // 选中第一、二、四个建议
+                suggestions[0].querySelector('.suggestion-checkbox').classList.add('checked');
+                suggestions[1].querySelector('.suggestion-checkbox').classList.add('checked');
+                suggestions[3].querySelector('.suggestion-checkbox').classList.add('checked');
+            } else if (templateId === 'general-health') {
+                // 选中第四、五个建议
+                suggestions[3].querySelector('.suggestion-checkbox').classList.add('checked');
+                suggestions[4].querySelector('.suggestion-checkbox').classList.add('checked');
+            }
+        }
+        
+        // 切换建议选择状态
+        function toggleSuggestion(element) {
+            const checkbox = element.querySelector('.suggestion-checkbox');
+            checkbox.classList.toggle('checked');
+            
+            // 更新编辑器内容
+            updateEditorWithSuggestions();
+        }
+        
+        // 根据选中的建议更新编辑器内容
+        function updateEditorWithSuggestions() {
+            // 获取所有选中的建议
+            const selectedSuggestions = [];
+            document.querySelectorAll('.suggestion-item').forEach(item => {
+                const checkbox = item.querySelector('.suggestion-checkbox');
+                const text = item.querySelector('.suggestion-text').textContent;
+                
+                if (checkbox.classList.contains('checked')) {
+                    selectedSuggestions.push(text);
+                }
+            });
+            
+            // 获取当前编辑器内容
+            let editorContent = document.getElementById('editor').innerHTML;
+            
+            // 查找是否已有建议列表
+            const listStart = editorContent.indexOf('<ul>');
+            const listEnd = editorContent.indexOf('</ul>');
+            
+            if (listStart !== -1 && listEnd !== -1) {
+                // 替换现有建议列表
+                const beforeList = editorContent.substring(0, listStart);
+                const afterList = editorContent.substring(listEnd + 5);
+                
+                let newList = '<ul>\n';
+                selectedSuggestions.forEach(suggestion => {
+                    // 提取建议的主题（如果有冒号）
+                    const colonIndex = suggestion.indexOf('：');
+                    if (colonIndex !== -1) {
+                        const topic = suggestion.substring(0, colonIndex);
+                        const content = suggestion.substring(colonIndex + 1);
+                        newList += `    <li><strong>${topic}：</strong>${content}</li>\n`;
+                    } else {
+                        newList += `    <li>${suggestion}</li>\n`;
+                    }
+                });
+                newList += '</ul>';
+                
+                editorContent = beforeList + newList + afterList;
+                document.getElementById('editor').innerHTML = editorContent;
+            }
+        }
+        
+        // 文本格式化
+        function formatText(command) {
+            document.execCommand(command, false, null);
+            document.getElementById('editor').focus();
+        }
+        
+        // 列表格式化
+        function formatList(type) {
+            if (type === 'bullet') {
+                document.execCommand('insertUnorderedList', false, null);
+            } else if (type === 'number') {
+                document.execCommand('insertOrderedList', false, null);
+            }
+            document.getElementById('editor').focus();
+        }
+        
+        // 清除格式
+        function clearFormatting() {
+            document.execCommand('removeFormat', false, null);
+            document.getElementById('editor').focus();
+        }
+        
+        // 预览健康指导
+        function previewGuidance() {
+            const content = document.getElementById('editor').innerHTML;
+            document.getElementById('previewContent').innerHTML = content;
+            document.getElementById('previewModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // 关闭模态框
+        function closeModal() {
+            document.getElementById('previewModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+        
+        // 发送健康指导
+        function sendGuidance() {
+            // 获取编辑器内容
+            const content = document.getElementById('editor').innerHTML;
+            
+            // 获取选中的建议
+            const selectedSuggestions = [];
+            document.querySelectorAll('.suggestion-item').forEach(item => {
+                const checkbox = item.querySelector('.suggestion-checkbox');
+                const text = item.querySelector('.suggestion-text').textContent;
+                
+                if (checkbox.classList.contains('checked')) {
+                    selectedSuggestions.push(text);
+                }
+            });
+            
+            // 创建健康指导数据
+            const guidanceData = {
+                id: 'guidance-' + Date.now(),
+                doctorId: 'doctor-001',
+                doctorName: '李医生',
+                doctorTitle: '内分泌科主任医师',
+                patientId: 'patient-001',
+                questionnaireId: 'questionnaire-001',
+                content: content,
+                suggestions: selectedSuggestions,
+                createdAt: Date.now(),
+                status: 'sent'
+            };
+            
+            // 发送消息到父窗口
+            if (window.parent) {
+                window.parent.postMessage({
+                    type: 'doctorAction',
+                    data: { 
+                        action: 'sendGuidance',
+                        guidanceId: guidanceData.id,
+                        doctorName: guidanceData.doctorName,
+                        doctorTitle: guidanceData.doctorTitle,
+                        content: '根据您的糖尿病健康问卷和体检报告，我为您提供了一些健康建议，请查看详情...'
+                    }
+                }, '*');
+            }
+            
+            // 显示发送成功的提示
+            const toast = document.createElement('div');
+            toast.className = 'fixed top-20 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+            toast.textContent = '健康指导已发送';
+            document.body.appendChild(toast);
+            
+            // 3秒后返回问卷详情页
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.5s ease';
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                    window.location.href = 'doctor-questionnaire-detail.html';
+                }, 500);
+            }, 2000);
+        }
+        
+        // 页面加载动画
+        window.addEventListener('load', () => {
+            const elements = document.querySelectorAll('.fade-in');
+            elements.forEach((element, index) => {
+                setTimeout(() => {
+                    element.style.opacity = '1';
+                    element.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+            
+            // 点击模态框背景关闭模态框
+            document.getElementById('previewModal').addEventListener('click', function(event) {
+                if (event.target === this) {
+                    closeModal();
+                }
+            });
+        });
+    </script>
+</body>
+</html>    <!
+-- 问卷详情侧边抽屉 -->
+    <div id="questionnaireDrawer" class="drawer">
+        <div class="drawer-header">
+            <div class="drawer-title">问卷详情</div>
+            <div class="drawer-close" onclick="closeDrawer('questionnaire')">
+                <i class="fas fa-times"></i>
+            </div>
+        </div>
+        <div class="drawer-body">
+            <div class="questionnaire-meta">
+                <div class="meta-item">
+                    问卷类型: <span class="meta-value">糖尿病健康问卷</span>
+                </div>
+                <div class="meta-item">
+                    提交时间: <span class="meta-value">2023-07-15 14:30</span>
+                </div>
+            </div>
+            
+            <div class="question-item">
+                <div class="question-text">1. 您是否有糖尿病家族史？</div>
+                <div class="answer-text">是，父亲有糖尿病</div>
+            </div>
+            
+            <div class="question-item">
+                <div class="question-text">2. 您的空腹血糖值是多少？</div>
+                <div class="answer-text">7.2 mmol/L</div>
+            </div>
+            
+            <div class="question-item">
+                <div class="question-text">3. 您每天的运动时间是多少？</div>
+                <div class="answer-text">30分钟左右，主要是散步</div>
+            </div>
+            
+            <div class="question-item">
+                <div class="question-text">4. 您是否有定期监测血糖的习惯？</div>
+                <div class="answer-text">是，每周监测2-3次</div>
+            </div>
+            
+            <div class="question-item">
+                <div class="question-text">5. 您目前的用药情况如何？</div>
+                <div class="answer-text">口服二甲双胍，每日两次，每次500mg</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 体检报告侧边抽屉 -->
+    <div id="reportDrawer" class="drawer">
+        <div class="drawer-header">
+            <div class="drawer-title">体检报告</div>
+            <div class="drawer-close" onclick="closeDrawer('report')">
+                <i class="fas fa-times"></i>
+            </div>
+        </div>
+        <div class="drawer-body">
+            <div class="report-meta">
+                体检日期: <span class="meta-value">2023-06-20</span> | 
+                医院: <span class="meta-value">XX医院</span>
+            </div>
+            
+            <div class="image-gallery">
+                <div class="gallery-item" onclick="showFullImage(this)">
+                    <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80" class="gallery-image" alt="体检报告第1页">
+                    <div class="image-overlay">第1页</div>
+                </div>
+                <div class="gallery-item" onclick="showFullImage(this)">
+                    <img src="https://images.unsplash.com/photo-1583911860248-4661fe2a2525?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80" class="gallery-image" alt="体检报告第2页">
+                    <div class="image-overlay">第2页</div>
+                </div>
+                <div class="gallery-item" onclick="showFullImage(this)">
+                    <img src="https://images.unsplash.com/photo-1579154204601-01588f351e67?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80" class="gallery-image" alt="体检报告第3页">
+                    <div class="image-overlay">第3页</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 抽屉背景遮罩 -->
+    <div id="drawerOverlay" class="drawer-overlay" onclick="closeAllDrawers()"></div>
+    
+    <!-- 图片全屏查看模态框 -->
+    <div id="imageModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">体检报告</div>
+                <div class="modal-close" onclick="closeModal('image')">
+                    <i class="fas fa-times"></i>
+                </div>
+            </div>
+            <div class="modal-body">
+                <img id="fullImage" src="" class="w-full" alt="体检报告大图">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 显示问卷详情抽屉
+        function showQuestionnaireDrawer() {
+            document.getElementById('questionnaireDrawer').classList.add('active');
+            document.getElementById('drawerOverlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // 显示体检报告抽屉
+        function showReportDrawer() {
+            document.getElementById('reportDrawer').classList.add('active');
+            document.getElementById('drawerOverlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // 关闭抽屉
+        function closeDrawer(type) {
+            if (type === 'questionnaire') {
+                document.getElementById('questionnaireDrawer').classList.remove('active');
+            } else if (type === 'report') {
+                document.getElementById('reportDrawer').classList.remove('active');
+            }
+            
+            document.getElementById('drawerOverlay').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+        
+        // 关闭所有抽屉
+        function closeAllDrawers() {
+            document.getElementById('questionnaireDrawer').classList.remove('active');
+            document.getElementById('reportDrawer').classList.remove('active');
+            document.getElementById('drawerOverlay').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+        
+        // 显示全屏图片
+        function showFullImage(element) {
+            const imgSrc = element.querySelector('img').src;
+            document.getElementById('fullImage').src = imgSrc;
+            document.getElementById('imageModal').classList.add('active');
+        }
+        
+        // 关闭模态框
+        function closeModal(type) {
+            if (type === 'image') {
+                document.getElementById('imageModal').classList.remove('active');
+            } else {
+                document.getElementById('previewModal').classList.remove('active');
+            }
+            document.body.style.overflow = 'auto';
+        }
+    </script>

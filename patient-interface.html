@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>患者端界面</title>
-    <link href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-M/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" onerror="this.onerror=null;this.href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css'">
+    <link href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-M/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"
+        onerror="this.onerror=null;this.href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css'">
     <style>
-        * { font-family: 'Noto Sans SC', Tahoma, Arial, Roboto, "Droid Sans", "Helvetica Neue", "Droid Sans Fallback", "Heiti SC", "Hiragino Sans GB", Simsun, sans-serif; }
-        
-        
+        * {
+            font-family: 'Noto Sans SC', Tahoma, Arial, Roboto, "Droid Sans", "Helvetica Neue", "Droid Sans Fallback", "Heiti SC", "Hiragino Sans GB", Simsun, sans-serif;
+        }
+
+
         body {
             margin: 0;
             padding: 0;
@@ -33,29 +37,29 @@
             color: #333;
             z-index: 100;
         }
-        
+
         .main-content {
             padding: 44px 20px 100px 20px;
             height: 100vh;
             overflow-y: auto;
             box-sizing: border-box;
         }
-        
+
         .hero-section {
             margin: 20px 0 30px 0;
             position: relative;
         }
-        
+
         .medication-card {
-            background: rgba(255,255,255,0.9);
+            background: rgba(255, 255, 255, 0.9);
             border-radius: 20px;
             padding: 20px;
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             position: relative;
             overflow: hidden;
         }
-        
+
         .medication-title {
             font-size: 18px;
             font-weight: 600;
@@ -65,77 +69,82 @@
             align-items: center;
             justify-content: space-between;
         }
-        
+
         .hero-icon {
             width: 120px;
             height: 120px;
             margin: 0 auto 20px auto;
             position: relative;
         }
-        
+
         .action-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 12px;
             margin-bottom: 30px;
         }
-        
+
         .action-card {
-            background: rgba(255,255,255,0.9);
+            background: rgba(255, 255, 255, 0.9);
             border-radius: 16px;
             padding: 20px;
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             transition: all 0.3s ease;
             cursor: pointer;
         }
-        
+
         .action-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
         }
-        
+
         .action-title {
             font-size: 16px;
             font-weight: 600;
             color: #333;
             margin-bottom: 8px;
         }
-        
+
         .action-subtitle {
             font-size: 14px;
             color: #666;
             margin-bottom: 12px;
         }
-        
+
         .progress-bar {
             height: 6px;
             border-radius: 3px;
             overflow: hidden;
         }
-        
-        .progress-red { background: linear-gradient(90deg, #ff6b6b 0%, #ee5a52 100%); }
-        .progress-blue { background: linear-gradient(90deg, #4dabf7 0%, #339af0 100%); }
-        
+
+        .progress-red {
+            background: linear-gradient(90deg, #ff6b6b 0%, #ee5a52 100%);
+        }
+
+        .progress-blue {
+            background: linear-gradient(90deg, #4dabf7 0%, #339af0 100%);
+        }
+
         .notification-section {
             margin-bottom: 30px;
         }
-        
+
         .section-title {
             font-size: 18px;
             font-weight: 600;
             color: #333;
             margin-bottom: 16px;
         }
-        
+
         .notification-grid {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
             gap: 16px;
         }
-        
+
         .notification-item {
-            background: rgba(255,255,255,0.8);
+            background: rgba(255, 255, 255, 0.8);
             border-radius: 16px;
             padding: 16px;
             text-align: center;
@@ -143,12 +152,12 @@
             cursor: pointer;
             position: relative;
         }
-        
+
         .notification-item:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
         }
-        
+
         .notification-icon {
             width: 48px;
             height: 48px;
@@ -160,13 +169,13 @@
             font-size: 24px;
             color: white;
         }
-        
+
         .notification-label {
             font-size: 12px;
             color: #666;
             line-height: 1.3;
         }
-        
+
         .badge {
             position: absolute;
             top: 8px;
@@ -182,22 +191,22 @@
             color: white;
             font-weight: 600;
         }
-        
+
         .bottom-nav {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
             height: 80px;
-            background: rgba(255,255,255,0.95);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             display: flex;
             align-items: center;
             justify-content: space-around;
-            border-top: 1px solid rgba(0,0,0,0.1);
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
             z-index: 100;
         }
-        
+
         .nav-item {
             display: flex;
             flex-direction: column;
@@ -205,21 +214,21 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
-        
+
         .nav-item.active {
             color: #1976d2;
         }
-        
+
         .nav-icon {
             width: 24px;
             height: 24px;
             margin-bottom: 4px;
         }
-        
+
         .nav-label {
             font-size: 12px;
         }
-        
+
         .ai-doctor-icon {
             width: 48px;
             height: 48px;
@@ -231,7 +240,7 @@
             color: white;
             font-size: 24px;
         }
-        
+
         .scan-icon {
             position: fixed;
             bottom: 100px;
@@ -255,25 +264,39 @@
             transform: scale(1.1);
             box-shadow: 0 6px 20px rgba(25, 118, 210, 0.4);
         }
-        
+
         .fade-in {
             animation: fadeIn 0.6s ease-out;
         }
-        
+
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        
+
         .pulse {
             animation: pulse 2s infinite;
         }
-        
+
         @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
         }
-        
+
         .data-sync {
             position: fixed;
             top: 20px;
@@ -286,27 +309,70 @@
             z-index: 1000;
             animation: syncPulse 2s infinite;
         }
-        
+
         @keyframes syncPulse {
-            0%, 100% { opacity: 0.8; }
-            50% { opacity: 1; }
+
+            0%,
+            100% {
+                opacity: 0.8;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        /* 消息提醒浮动按钮 */
+        .message-float-btn {
+            position: fixed;
+            bottom: 100px;
+            left: 20px;
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #1976d2, #1565c0);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(25, 118, 210, 0.3);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .message-float-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(25, 118, 210, 0.4);
+        }
+
+        .message-float-btn .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff4444;
+            color: white;
+            border-radius: 10px;
+            padding: 2px 6px;
+            font-size: 12px;
+            min-width: 18px;
+            text-align: center;
+            animation: pulse 2s infinite;
         }
     </style>
 </head>
+
 <body>
     <!-- 状态栏 -->
     <div class="status-bar">
         <span>15:35</span>
         <div class="flex items-center space-x-1">
             <span>📶</span>
-            <span>📶</span>
-            <span>📶</span>
-            <span>📶</span>
-            <span>📶</span>
             <span>🔋</span>
         </div>
     </div>
-    
+
     <!-- 主要内容 -->
     <div class="main-content">
         <!-- 用药管理区域 -->
@@ -320,13 +386,14 @@
                     <div class="w-full h-full relative">
                         <!-- 圆形进度环 -->
                         <svg width="120" height="120" viewBox="0 0 120 120" class="transform -rotate-90">
-                            <circle cx="60" cy="60" r="50" fill="none" stroke="#e3f2fd" stroke-width="8"/>
-                            <circle cx="60" cy="60" r="50" fill="none" stroke="#2196f3" stroke-width="8" 
-                                    stroke-dasharray="314" stroke-dashoffset="78" stroke-linecap="round"/>
+                            <circle cx="60" cy="60" r="50" fill="none" stroke="#e3f2fd" stroke-width="8" />
+                            <circle cx="60" cy="60" r="50" fill="none" stroke="#2196f3" stroke-width="8"
+                                stroke-dasharray="314" stroke-dashoffset="78" stroke-linecap="round" />
                         </svg>
                         <!-- 中心图标 -->
                         <div class="absolute inset-0 flex items-center justify-center">
-                            <div class="w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center">
+                            <div
+                                class="w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center">
                                 <i class="fas fa-pills text-white text-2xl"></i>
                             </div>
                         </div>
@@ -338,7 +405,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- 操作卡片 -->
         <div class="action-grid">
             <div class="action-card" onclick="updateMedicationStatus(this)">
@@ -356,7 +423,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- 消息提醒 -->
         <div class="notification-section">
             <div class="section-title">消息提醒</div>
@@ -380,9 +447,16 @@
                     </div>
                     <div class="notification-label">体检报告<br>上传通知</div>
                 </div>
+                <div class="notification-item" onclick="goToMessages()">
+                    <div class="notification-icon" style="background: #ff9800;">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <div class="notification-label">健康指导</div>
+                    <div class="badge">1</div>
+                </div>
             </div>
         </div>
-        
+
         <!-- 扫码区域 -->
         <div class="flex justify-end mb-4">
             <div class="scan-icon" onclick="openScanner()">
@@ -390,7 +464,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- 底部导航 -->
     <div class="bottom-nav">
         <div class="nav-item active" onclick="switchNav(this)">
@@ -421,7 +495,7 @@
                 }, '*');
             }
         }
-        
+
         // 预约挂号
         function makeAppointment(element) {
             animateCard(element);
@@ -432,12 +506,12 @@
                 }, '*');
             }
         }
-        
+
         // 处理通知
         function handleNotification(element, type) {
             animateCard(element);
-            
-            switch(type) {
+
+            switch (type) {
                 case 'health':
                     if (window.parent) {
                         window.parent.postMessage({
@@ -467,7 +541,7 @@
                     break;
             }
         }
-        
+
         // 扫码功能
         function openScanner() {
             if (window.parent) {
@@ -477,25 +551,25 @@
                 }, '*');
             }
         }
-        
+
         // 卡片点击动画
         function animateCard(element) {
             element.style.transform = 'scale(0.95)';
             element.style.transition = 'transform 0.1s ease';
-            
+
             setTimeout(() => {
                 element.style.transform = 'scale(1)';
                 element.style.transition = 'transform 0.3s ease';
             }, 100);
         }
-        
+
         // 切换底部导航
         function switchNav(element) {
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.classList.remove('active');
             });
             element.classList.add('active');
-            
+
             const label = element.querySelector('.nav-label').textContent;
             if (window.parent) {
                 window.parent.postMessage({
@@ -503,14 +577,19 @@
                     data: { action: 'navigation', page: label }
                 }, '*');
             }
-            
+
             // 添加点击动画
             element.style.transform = 'scale(0.9)';
             setTimeout(() => {
                 element.style.transform = 'scale(1)';
             }, 150);
         }
-        
+
+        // 跳转到消息中心
+        function goToMessages() {
+            window.location.href = 'patient-messages.html';
+        }
+
         // 页面加载动画
         window.addEventListener('load', () => {
             const cards = document.querySelectorAll('.action-card, .notification-item');
@@ -519,7 +598,7 @@
                     card.style.opacity = '0';
                     card.style.transform = 'translateY(20px)';
                     card.style.transition = 'all 0.6s ease';
-                    
+
                     setTimeout(() => {
                         card.style.opacity = '1';
                         card.style.transform = 'translateY(0)';
@@ -529,4 +608,5 @@
         });
     </script>
 </body>
+
 </html>

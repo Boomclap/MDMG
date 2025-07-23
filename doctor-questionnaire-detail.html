@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>问卷详情</title>
+    <link href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet" onerror="this.onerror=null;this.href='https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css'">
+    <link href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-M/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" onerror="this.onerror=null;this.href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css'">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * { 
+            font-family: 'Noto Sans SC', Tahoma, Arial, Roboto, "Droid Sans", "Helvetica Neue", "Droid Sans Fallback", "Heiti SC", "Hiragino Sans GB", Simsun, sans-serif; 
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(180deg, #e3f2fd 0%, #f8f9fa 100%);
+            height: 100vh;
+            overflow-y: auto;
+        }
+        
+        .status-bar {
+            height: 44px;
+            background: transparent;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .top-nav {
+            height: 56px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .main-content {
+            padding: 16px;
+            padding-bottom: 100px;
+        }
+        
+        .section-card {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-right: 8px;
+            color: #1976d2;
+        }
+        
+        .patient-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .patient-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 18px;
+            margin-right: 12px;
+        }
+        
+        .patient-details {
+            flex: 1;
+        }
+        
+        .patient-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        
+        .patient-meta {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .questionnaire-meta {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 12px;
+        }
+        
+        .meta-item {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .meta-value {
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .question-item {
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .question-text {
+            font-size: 15px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .answer-text {
+            font-size: 15px;
+            color: #1976d2;
+            background: rgba(25, 118, 210, 0.05);
+            padding: 10px 12px;
+            border-radius: 8px;
+            border-left: 3px solid #1976d2;
+        }
+        
+        .report-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border: 1px dashed #ccc;
+        }
+        
+        .report-placeholder i {
+            font-size: 32px;
+            color: #aaa;
+            margin-bottom: 12px;
+        }
+        
+        .report-placeholder-text {
+            font-size: 15px;
+            color: #666;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        
+        .report-image {
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .report-meta {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 16px;
+        }
+        
+        .action-button {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .primary-button {
+            background: #1976d2;
+            color: white;
+        }
+        
+        .primary-button:hover {
+            background: #1565c0;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+        }
+        
+        .secondary-button {
+            background: rgba(25, 118, 210, 0.1);
+            color: #1976d2;
+            margin-bottom: 12px;
+        }
+        
+        .secondary-button:hover {
+            background: rgba(25, 118, 210, 0.15);
+        }
+        
+        .bottom-actions {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 16px;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .image-gallery {
+            display: flex;
+            overflow-x: auto;
+            gap: 8px;
+            padding: 4px 0;
+            margin-bottom: 12px;
+        }
+        
+        .gallery-item {
+            flex: 0 0 auto;
+            width: 120px;
+            height: 160px;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .gallery-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .image-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            font-size: 12px;
+            text-align: center;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 状态栏 -->
+    <div class="status-bar">
+        <span>下午3:25</span>
+        <div class="flex items-center space-x-1">
+            <span>📶</span>
+            <span>📶</span>
+            <span class="bg-green-500 text-white px-2 py-1 rounded text-xs">5G</span>
+            <span>⚫⚫⚫</span>
+            <span>⭕</span>
+        </div>
+    </div>
+    
+    <!-- 顶部导航 -->
+    <div class="top-nav">
+        <div class="flex items-center">
+            <div class="mr-3 text-blue-600" onclick="goBack()">
+                <i class="fas fa-arrow-left"></i>
+            </div>
+            <div class="font-semibold">问卷详情</div>
+        </div>
+        <div>
+            <i class="fas fa-ellipsis-v text-gray-500"></i>
+        </div>
+    </div>
+    
+    <!-- 主要内容 -->
+    <div class="main-content">
+        <!-- 患者信息 -->
+        <div class="section-card fade-in">
+            <div class="section-title">
+                <i class="fas fa-user-circle"></i>患者信息
+            </div>
+            <div class="patient-info">
+                <div class="patient-avatar">张</div>
+                <div class="patient-details">
+                    <div class="patient-name">张三</div>
+                    <div class="patient-meta">男 | 45岁 | 糖尿病 | 高血压</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 问卷内容 -->
+        <div class="section-card fade-in" style="animation-delay: 0.1s">
+            <div class="section-title">
+                <i class="fas fa-clipboard-list"></i>问卷内容
+            </div>
+            <div class="questionnaire-meta">
+                <div class="meta-item">
+                    问卷类型: <span class="meta-value">糖尿病健康问卷</span>
+                </div>
+                <div class="meta-item">
+                    提交时间: <span class="meta-value">2023-07-15 14:30</span>
+                </div>
+            </div>
+            
+            <div class="question-item">
+                <div class="question-text">1. 您是否有糖尿病家族史？</div>
+                <div class="answer-text">是，父亲有糖尿病</div>
+            </div>
+            
+            <div class="question-item">
+                <div class="question-text">2. 您的空腹血糖值是多少？</div>
+                <div class="answer-text">7.2 mmol/L</div>
+            </div>
+            
+            <div class="question-item">
+                <div class="question-text">3. 您每天的运动时间是多少？</div>
+                <div class="answer-text">30分钟左右，主要是散步</div>
+            </div>
+            
+            <div class="question-item">
+                <div class="question-text">4. 您是否有定期监测血糖的习惯？</div>
+                <div class="answer-text">是，每周监测2-3次</div>
+            </div>
+            
+            <div class="question-item">
+                <div class="question-text">5. 您目前的用药情况如何？</div>
+                <div class="answer-text">口服二甲双胍，每日两次，每次500mg</div>
+            </div>
+        </div>
+        
+        <!-- 体检报告 -->
+        <div class="section-card fade-in" style="animation-delay: 0.2s">
+            <div class="section-title">
+                <i class="fas fa-file-medical"></i>体检报告
+            </div>
+            
+            <!-- 有体检报告的情况 -->
+            <div id="hasReport">
+                <div class="report-meta">
+                    体检日期: <span class="meta-value">2023-06-20</span> | 
+                    医院: <span class="meta-value">XX医院</span>
+                </div>
+                
+                <div class="image-gallery">
+                    <div class="gallery-item" onclick="showFullImage(this)">
+                        <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80" class="gallery-image" alt="体检报告第1页">
+                        <div class="image-overlay">第1页</div>
+                    </div>
+                    <div class="gallery-item" onclick="showFullImage(this)">
+                        <img src="https://images.unsplash.com/photo-1583911860248-4661fe2a2525?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80" class="gallery-image" alt="体检报告第2页">
+                        <div class="image-overlay">第2页</div>
+                    </div>
+                    <div class="gallery-item" onclick="showFullImage(this)">
+                        <img src="https://images.unsplash.com/photo-1579154204601-01588f351e67?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80" class="gallery-image" alt="体检报告第3页">
+                        <div class="image-overlay">第3页</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 无体检报告的情况 -->
+            <div id="noReport" style="display: none;">
+                <div class="report-placeholder">
+                    <i class="fas fa-file-medical-alt"></i>
+                    <div class="report-placeholder-text">患者暂未上传体检报告</div>
+                    <button class="secondary-button action-button" onclick="remindUploadReport()">
+                        <i class="fas fa-bell mr-2"></i>提醒上传体检报告
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 底部操作区 -->
+    <div class="bottom-actions fade-in" style="animation-delay: 0.3s">
+        <button class="primary-button action-button" onclick="provideGuidance()">
+            <i class="fas fa-stethoscope mr-2"></i>提供健康指导
+        </button>
+    </div>
+    
+    <!-- 图片全屏查看模态框 -->
+    <div id="imageModal" class="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center hidden">
+        <div class="absolute top-4 right-4 text-white text-2xl cursor-pointer" onclick="closeModal()">
+            <i class="fas fa-times"></i>
+        </div>
+        <img id="fullImage" src="" class="max-w-full max-h-full object-contain">
+    </div>
+    
+    <script>
+        // 返回上一页
+        function goBack() {
+            window.history.back();
+        }
+        
+        // 提醒上传体检报告
+        function remindUploadReport() {
+            // 显示发送成功的提示
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg';
+            toast.textContent = '提醒已发送';
+            document.body.appendChild(toast);
+            
+            // 3秒后移除提示
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.5s ease';
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 500);
+            }, 3000);
+        }
+        
+        // 提供健康指导
+        function provideGuidance() {
+            window.location.href = 'doctor-guidance-editor.html?patientId=zhang-san';
+        }
+        
+        // 显示全屏图片
+        function showFullImage(element) {
+            const imgSrc = element.querySelector('img').src;
+            document.getElementById('fullImage').src = imgSrc;
+            document.getElementById('imageModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // 关闭模态框
+        function closeModal() {
+            document.getElementById('imageModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+        
+        // 切换体检报告显示状态（用于演示）
+        function toggleReportStatus() {
+            const hasReport = document.getElementById('hasReport');
+            const noReport = document.getElementById('noReport');
+            
+            if (hasReport.style.display === 'none') {
+                hasReport.style.display = 'block';
+                noReport.style.display = 'none';
+            } else {
+                hasReport.style.display = 'none';
+                noReport.style.display = 'block';
+            }
+        }
+        
+        // 页面加载动画
+        window.addEventListener('load', () => {
+            const elements = document.querySelectorAll('.fade-in');
+            elements.forEach((element, index) => {
+                setTimeout(() => {
+                    element.style.opacity = '1';
+                    element.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+            
+            // 演示用：可以通过URL参数控制是否显示体检报告
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('noReport') === 'true') {
+                toggleReportStatus();
+            }
+        });
+    </script>
+</body>
+</html>
