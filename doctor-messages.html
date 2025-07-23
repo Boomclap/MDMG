@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>医生端 - 消息中心</title>
+    
+    <!-- CSS 框架 -->
+    <link href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet" onerror="this.onerror=null;this.href='https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css'">
+    
+    <!-- 图标库 -->
+    <link href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-M/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" onerror="this.onerror=null;this.href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css'">
+    
+    <!-- 字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * { 
+            font-family: 'Noto Sans SC', Tahoma, Arial, Roboto, "Droid Sans", "Helvetica Neue", "Droid Sans Fallback", "Heiti SC", "Hiragino Sans GB", Simsun, sans-serif; 
+        }
+        
+        body {
+            background: linear-gradient(180deg, #e3f2fd 0%, #f8f9fa 100%);
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .status-bar {
+            height: 44px;
+            background: transparent;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .top-nav {
+            height: 60px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .filter-tabs {
+            height: 50px;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            gap: 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .filter-tab {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .filter-tab.active {
+            background: #1976d2;
+            color: white;
+        }
+        
+        .filter-tab:not(.active) {
+            color: #666;
+            background: rgba(0, 0, 0, 0.05);
+        }
+        
+        .filter-tab:not(.active):hover {
+            background: rgba(25, 118, 210, 0.1);
+            color: #1976d2;
+        }
+        
+        .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff4444;
+            color: white;
+            border-radius: 10px;
+            padding: 2px 6px;
+            font-size: 12px;
+            min-width: 18px;
+            text-align: center;
+        }
+        
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 20px;
+        }
+        
+        .message-item {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .message-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        }
+        
+        .message-item.pending::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: #1976d2;
+            animation: pulse 2s infinite;
+        }
+        
+        .message-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .patient-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            margin-right: 12px;
+        }
+        
+        .patient-info {
+            flex: 1;
+        }
+        
+        .patient-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 2px;
+        }
+        
+        .message-content {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .message-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .message-time {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-pending {
+            background: rgba(25, 118, 210, 0.1);
+            color: #1976d2;
+            animation: statusPulse 2s infinite;
+        }
+        
+        .status-completed {
+            background: rgba(76, 175, 80, 0.1);
+            color: #4caf50;
+        }
+        
+        .bottom-nav {
+            height: 80px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 8px;
+            border-radius: 12px;
+        }
+        
+        .nav-item.active {
+            color: #1976d2;
+            background: rgba(25, 118, 210, 0.1);
+        }
+        
+        .nav-item:not(.active) {
+            color: #666;
+        }
+        
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+        
+        .nav-label {
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        @keyframes statusPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(25, 118, 210, 0.3);
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            pointer-events: none;
+        }
+        
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 状态栏 -->
+    <div class="status-bar">
+        <span>上午9:41</span>
+        <div class="flex items-center space-x-1">
+            <span>📶</span>
+            <span>📶</span>
+            <span class="bg-green-500 text-white px-2 py-1 rounded text-xs">5G</span>
+            <span>🔋</span>
+        </div>
+    </div>
+    
+    <!-- 顶部导航 -->
+    <div class="top-nav">
+        <div class="nav-title">消息中心</div>
+        <div class="flex items-center space-x-4">
+            <i class="fas fa-search text-gray-600 cursor-pointer"></i>
+            <i class="fas fa-filter text-gray-600 cursor-pointer"></i>
+        </div>
+    </div>
+    
+    <!-- 筛选标签 -->
+    <div class="filter-tabs">
+        <div class="filter-tab active" onclick="switchFilter(this, 'all')">
+            全部
+            <span class="badge">12</span>
+        </div>
+        <div class="filter-tab" onclick="switchFilter(this, 'pending')">
+            待处理
+            <span class="badge">5</span>
+        </div>
+        <div class="filter-tab" onclick="switchFilter(this, 'completed')">
+            已指导
+            <span class="badge">7</span>
+        </div>
+    </div>
+    
+    <!-- 消息列表 -->
+    <div class="messages-container">
+        <!-- 待处理消息 -->
+        <div class="message-item pending" data-status="pending" onclick="openQuestionnaire(this, 'zhang-san')">
+            <div class="message-header">
+                <div class="patient-avatar">张</div>
+                <div class="patient-info">
+                    <div class="patient-name">张三</div>
+                </div>
+            </div>
+            <div class="message-content">提交了糖尿病健康问卷</div>
+            <div class="message-footer">
+                <div class="message-time">2分钟前</div>
+                <div class="status-badge status-pending">待处理</div>
+            </div>
+        </div>
+        
+        <div class="message-item pending" data-status="pending" onclick="openQuestionnaire(this, 'li-si')">
+            <div class="message-header">
+                <div class="patient-avatar">李</div>
+                <div class="patient-info">
+                    <div class="patient-name">李四</div>
+                </div>
+            </div>
+            <div class="message-content">提交了高血压健康问卷</div>
+            <div class="message-footer">
+                <div class="message-time">15分钟前</div>
+                <div class="status-badge status-pending">待处理</div>
+            </div>
+        </div>
+        
+        <div class="message-item pending" data-status="pending" onclick="openQuestionnaire(this, 'wang-wu')">
+            <div class="message-header">
+                <div class="patient-avatar">王</div>
+                <div class="patient-info">
+                    <div class="patient-name">王五</div>
+                </div>
+            </div>
+            <div class="message-content">提交了心脏病健康问卷</div>
+            <div class="message-footer">
+                <div class="message-time">1小时前</div>
+                <div class="status-badge status-pending">待处理</div>
+            </div>
+        </div>
+        
+        <!-- 已处理消息 -->
+        <div class="message-item" data-status="completed" onclick="openQuestionnaire(this, 'zhao-liu')">
+            <div class="message-header">
+                <div class="patient-avatar">赵</div>
+                <div class="patient-info">
+                    <div class="patient-name">赵六</div>
+                </div>
+            </div>
+            <div class="message-content">提交了糖尿病健康问卷</div>
+            <div class="message-footer">
+                <div class="message-time">昨天 16:30</div>
+                <div class="status-badge status-completed">已指导</div>
+            </div>
+        </div>
+        
+        <div class="message-item" data-status="completed" onclick="openQuestionnaire(this, 'sun-qi')">
+            <div class="message-header">
+                <div class="patient-avatar">孙</div>
+                <div class="patient-info">
+                    <div class="patient-name">孙七</div>
+                </div>
+            </div>
+            <div class="message-content">提交了高血压健康问卷</div>
+            <div class="message-footer">
+                <div class="message-time">昨天 14:20</div>
+                <div class="status-badge status-completed">已指导</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 底部导航 -->
+    <div class="bottom-nav">
+        <div class="nav-item" onclick="switchNav(this)">
+            <div class="nav-icon">
+                <i class="fas fa-home"></i>
+            </div>
+            <div class="nav-label">首页</div>
+        </div>
+        <div class="nav-item active" onclick="switchNav(this)">
+            <div class="nav-icon">
+                <i class="fas fa-envelope"></i>
+            </div>
+            <div class="nav-label">消息</div>
+        </div>
+        <div class="nav-item" onclick="switchNav(this)">
+            <div class="nav-icon">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="nav-label">我的</div>
+        </div>
+    </div>
+    
+    <script>
+        // 切换筛选标签
+        function switchFilter(element, type) {
+            // 移除所有活动状态
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // 添加当前活动状态
+            element.classList.add('active');
+            
+            // 筛选消息
+            const messages = document.querySelectorAll('.message-item');
+            messages.forEach(message => {
+                const status = message.dataset.status;
+                if (type === 'all' || status === type) {
+                    message.style.display = 'block';
+                } else {
+                    message.style.display = 'none';
+                }
+            });
+            
+            // 添加点击动画
+            addRipple(element, event);
+        }
+        
+        // 打开问卷详情
+        function openQuestionnaire(element, patientId) {
+            addRipple(element, event);
+            
+            // 延迟跳转，让动画完成
+            setTimeout(() => {
+                // 这里应该跳转到问卷查看页面
+                // window.location.href = `doctor-questionnaire-view.html?patient=${patientId}`;
+                
+                // 暂时用alert模拟
+                alert(`即将查看 ${element.querySelector('.patient-name').textContent} 的问卷详情`);
+            }, 300);
+        }
+        
+        // 切换底部导航
+        function switchNav(element) {
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            element.classList.add('active');
+            
+            addRipple(element, event);
+        }
+        
+        // 添加波纹效果
+        function addRipple(element, event) {
+            const ripple = document.createElement('div');
+            const rect = element.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = event.clientX - rect.left - size / 2;
+            const y = event.clientY - rect.top - size / 2;
+            
+            ripple.style.cssText = `
+                position: absolute;
+                border-radius: 50%;
+                background: rgba(25, 118, 210, 0.3);
+                transform: scale(0);
+                animation: ripple 0.6s linear;
+                pointer-events: none;
+                width: ${size}px;
+                height: ${size}px;
+                left: ${x}px;
+                top: ${y}px;
+            `;
+            
+            element.style.position = 'relative';
+            element.appendChild(ripple);
+            
+            setTimeout(() => ripple.remove(), 600);
+        }
+        
+        // 监听来自父窗口的消息
+        window.addEventListener('message', function(event) {
+            if (event.data.type === 'updateFromPatient') {
+                // 处理来自患者端的状态更新
+                console.log('收到患者端更新:', event.data.data);
+            }
+        });
+        
+        // 页面加载动画
+        window.addEventListener('load', function() {
+            const messages = document.querySelectorAll('.message-item');
+            messages.forEach((message, index) => {
+                setTimeout(() => {
+                    message.style.opacity = '0';
+                    message.style.transform = 'translateX(-20px)';
+                    message.style.transition = 'all 0.5s ease';
+                    
+                    setTimeout(() => {
+                        message.style.opacity = '1';
+                        message.style.transform = 'translateX(0)';
+                    }, 50);
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>
