@@ -68,7 +68,7 @@
         }
 
         .content-container {
-            height: calc(100vh - 44px - 66px);
+            height: calc(100vh - 44px - 80px);
             overflow: hidden;
         }
 
@@ -163,22 +163,11 @@
         </div>
     </div>
 
-
     <!-- 内容容器 -->
     <div class="content-container">
         <!-- 首页内容 -->
         <div class="page-content active" id="homePage">
             <iframe src="doctor-home-content.html" width="100%" height="100%" frameborder="0"></iframe>
-        </div>
-
-        <!-- 消息页面内容 -->
-        <div class="page-content" id="messagesPage">
-            <iframe src="doctor-messages-content.html" width="100%" height="100%" frameborder="0"></iframe>
-        </div>
-
-        <!-- 我的页面内容 -->
-        <div class="page-content" id="profilePage">
-            <iframe src="doctor-profile-content.html" width="100%" height="100%" frameborder="0"></iframe>
         </div>
     </div>
 
@@ -188,12 +177,11 @@
             <div class="nav-icon">🏠</div>
             <div class="nav-label">首页</div>
         </div>
-        <div class="nav-item" data-page="messages" onclick="switchPage('messages')">
+        <div class="nav-item" data-page="qrcode" onclick="handleQRCode()">
             <div class="nav-icon">
-                <i class="fas fa-envelope"></i>
-                <span class="message-badge" id="messageBadge">5</span>
+                <i class="fas fa-qrcode"></i>
             </div>
-            <div class="nav-label">消息</div>
+            <div class="nav-label">我的医生码</div>
         </div>
         <div class="nav-item" data-page="profile" onclick="switchPage('profile')">
             <div class="nav-icon">👤</div>
@@ -232,7 +220,18 @@
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.classList.remove('active');
             });
-            document.querySelector(`[data-page="${page}"]`).classList.add('active');
+            
+            // 只有当底部导航栏中有对应的元素时才更新其状态
+            const navItem = document.querySelector(`[data-page="${page}"]`);
+            if (navItem) {
+                navItem.classList.add('active');
+                
+                // 添加点击动画
+                navItem.style.transform = 'scale(0.9)';
+                setTimeout(() => {
+                    navItem.style.transform = 'scale(1)';
+                }, 150);
+            }
 
             // 隐藏当前页面
             document.querySelectorAll('.page-content').forEach(content => {
@@ -250,13 +249,6 @@
 
             // 更新顶部导航
             updateTopNav(page);
-
-            // 添加点击动画
-            const navItem = document.querySelector(`[data-page="${page}"]`);
-            navItem.style.transform = 'scale(0.9)';
-            setTimeout(() => {
-                navItem.style.transform = 'scale(1)';
-            }, 150);
         }
 
         // 更新顶部导航
@@ -294,6 +286,12 @@
             }
         });
 
+        // 处理医生码按钮点击
+        function handleQRCode() {
+            // 这里可以添加显示医生码的逻辑
+            alert('医生码功能即将上线');
+        }
+        
         // 初始化页面
         window.addEventListener('load', function () {
             updateTopNav('home');

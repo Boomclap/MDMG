@@ -227,14 +227,83 @@
             text-align: center;
             animation: pulse 2s infinite;
         }
+        
+        /* 问卷提交消息提醒样式 */
+        .questionnaire-notification {
+            background: linear-gradient(135deg, #fff8e1 0%, #fffde7 100%);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(255, 193, 7, 0.2);
+            border-left: 4px solid #ffc107;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .questionnaire-notification:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(255, 193, 7, 0.3);
+        }
+        
+        .notification-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #ffc107, #ffb300);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            margin-right: 16px;
+            position: relative;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff4444;
+            color: white;
+            border-radius: 10px;
+            padding: 2px 6px;
+            font-size: 12px;
+            min-width: 18px;
+            text-align: center;
+        }
+        
+        .notification-content {
+            flex: 1;
+        }
+        
+        .notification-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        
+        .notification-desc {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .notification-action {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
-    <!-- 消息提醒浮动按钮 -->
-    <div class="message-float-btn" onclick="goToMessages()">
-        <i class="fas fa-envelope"></i>
-        <div class="badge" id="messageBadge">5</div>
-    </div>
     
     <!-- 主要内容 -->
     <div class="main-content">
@@ -285,6 +354,21 @@
                 <div class="detail-number">1<span class="text-sm">人</span></div>
                 <div class="detail-label">健康问卷</div>
                 <div class="detail-sublabel">未提交人群</div>
+            </div>
+        </div>
+        
+        <!-- 问卷提交消息提醒 -->
+        <div class="questionnaire-notification fade-in" onclick="goToMessages()">
+            <div class="notification-icon">
+                <i class="fas fa-clipboard-list"></i>
+                <div class="notification-badge">3</div>
+            </div>
+            <div class="notification-content">
+                <div class="notification-title">新问卷提交提醒</div>
+                <div class="notification-desc">您有3份新的健康问卷待查看</div>
+            </div>
+            <div class="notification-action">
+                <i class="fas fa-chevron-right"></i>
             </div>
         </div>
         
@@ -379,9 +463,12 @@
         
         // 跳转到消息页面
         function goToMessages() {
-            if (window.parent && window.parent.switchPage) {
-                window.parent.switchPage('messages');
-            }
+            window.location.href = 'doctor-messages.html';
+        }
+        
+        // 查看问卷详情
+        function viewQuestionnaires() {
+            window.location.href = 'doctor-messages.html';
         }
         
         // 添加 CSS 动画

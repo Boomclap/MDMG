@@ -25,18 +25,8 @@
             padding: 0;
             height: 100vh;
             overflow: hidden;
-        }
-        
-        .status-bar {
-            height: 44px;
-            background: transparent;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 20px;
-            font-size: 14px;
-            font-weight: 600;
-            color: #333;
+            flex-direction: column;
         }
         
         .top-nav {
@@ -54,6 +44,14 @@
             font-size: 18px;
             font-weight: 600;
             color: #333;
+        }
+        
+        .back-button {
+            display: flex;
+            align-items: center;
+            color: #1976d2;
+            cursor: pointer;
+            font-size: 16px;
         }
         
         .filter-tabs {
@@ -203,45 +201,6 @@
             color: #4caf50;
         }
         
-        .bottom-nav {
-            height: 80px;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            display: flex;
-            align-items: center;
-            justify-content: space-around;
-            border-top: 1px solid rgba(0, 0, 0, 0.1);
-        }
-        
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            padding: 8px;
-            border-radius: 12px;
-        }
-        
-        .nav-item.active {
-            color: #1976d2;
-            background: rgba(25, 118, 210, 0.1);
-        }
-        
-        .nav-item:not(.active) {
-            color: #666;
-        }
-        
-        .nav-icon {
-            font-size: 20px;
-            margin-bottom: 4px;
-        }
-        
-        .nav-label {
-            font-size: 12px;
-            font-weight: 500;
-        }
-        
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
@@ -270,23 +229,17 @@
     </style>
 </head>
 <body>
-    <!-- 状态栏 -->
-    <div class="status-bar">
-        <span>上午9:41</span>
-        <div class="flex items-center space-x-1">
-            <span>📶</span>
-            <span>📶</span>
-            <span class="bg-green-500 text-white px-2 py-1 rounded text-xs">5G</span>
-            <span>🔋</span>
-        </div>
-    </div>
-    
     <!-- 顶部导航 -->
     <div class="top-nav">
-        <div class="nav-title">消息中心</div>
+        <div class="back-button" onclick="goBack()">
+            <i class="fas fa-chevron-left mr-2"></i>
+            
+        </div>
+        <div class="nav-title">问卷提交通知</div>
         <div class="flex items-center space-x-4">
-            <i class="fas fa-search text-gray-600 cursor-pointer"></i>
-            <i class="fas fa-filter text-gray-600 cursor-pointer"></i>
+
+                <i class="fas fa-ellipsis-v text-gray-500"></i>
+
         </div>
     </div>
     
@@ -297,11 +250,11 @@
             <span class="badge">12</span>
         </div>
         <div class="filter-tab" onclick="switchFilter(this, 'pending')">
-            待处理
+            待回复
             <span class="badge">5</span>
         </div>
         <div class="filter-tab" onclick="switchFilter(this, 'completed')">
-            已指导
+            已回复
             <span class="badge">7</span>
         </div>
     </div>
@@ -319,7 +272,7 @@
             <div class="message-content">提交了糖尿病健康问卷</div>
             <div class="message-footer">
                 <div class="message-time">2分钟前</div>
-                <div class="status-badge status-pending">待处理</div>
+                <div class="status-badge status-pending">待回复</div>
             </div>
         </div>
         
@@ -333,7 +286,7 @@
             <div class="message-content">提交了高血压健康问卷</div>
             <div class="message-footer">
                 <div class="message-time">15分钟前</div>
-                <div class="status-badge status-pending">待处理</div>
+                <div class="status-badge status-pending">待回复</div>
             </div>
         </div>
         
@@ -347,7 +300,7 @@
             <div class="message-content">提交了心脏病健康问卷</div>
             <div class="message-footer">
                 <div class="message-time">1小时前</div>
-                <div class="status-badge status-pending">待处理</div>
+                <div class="status-badge status-pending">待回复</div>
             </div>
         </div>
         
@@ -362,7 +315,7 @@
             <div class="message-content">提交了糖尿病健康问卷</div>
             <div class="message-footer">
                 <div class="message-time">昨天 16:30</div>
-                <div class="status-badge status-completed">已指导</div>
+                <div class="status-badge status-completed">已回复</div>
             </div>
         </div>
         
@@ -376,30 +329,8 @@
             <div class="message-content">提交了高血压健康问卷</div>
             <div class="message-footer">
                 <div class="message-time">昨天 14:20</div>
-                <div class="status-badge status-completed">已指导</div>
+                <div class="status-badge status-completed">已回复</div>
             </div>
-        </div>
-    </div>
-    
-    <!-- 底部导航 -->
-    <div class="bottom-nav">
-        <div class="nav-item" onclick="switchNav(this)">
-            <div class="nav-icon">
-                <i class="fas fa-home"></i>
-            </div>
-            <div class="nav-label">首页</div>
-        </div>
-        <div class="nav-item active" onclick="switchNav(this)">
-            <div class="nav-icon">
-                <i class="fas fa-envelope"></i>
-            </div>
-            <div class="nav-label">消息</div>
-        </div>
-        <div class="nav-item" onclick="switchNav(this)">
-            <div class="nav-icon">
-                <i class="fas fa-user"></i>
-            </div>
-            <div class="nav-label">我的</div>
         </div>
     </div>
     
@@ -435,22 +366,19 @@
             
             // 延迟跳转，让动画完成
             setTimeout(() => {
-                // 这里应该跳转到问卷查看页面
-                // window.location.href = `doctor-questionnaire-view.html?patient=${patientId}`;
-                
-                // 暂时用alert模拟
-                alert(`即将查看 ${element.querySelector('.patient-name').textContent} 的问卷详情`);
+                // 跳转到问卷查看页面
+                window.location.href = `doctor-questionnaire-detail.html?patient=${patientId}`;
             }, 300);
         }
         
-        // 切换底部导航
-        function switchNav(element) {
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            element.classList.add('active');
-            
-            addRipple(element, event);
+        // 返回上一页
+        function goBack() {
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                // 如果没有历史记录，则返回到主页
+                window.location.href = 'doctor-main.html';
+            }
         }
         
         // 添加波纹效果
@@ -479,14 +407,6 @@
             
             setTimeout(() => ripple.remove(), 600);
         }
-        
-        // 监听来自父窗口的消息
-        window.addEventListener('message', function(event) {
-            if (event.data.type === 'updateFromPatient') {
-                // 处理来自患者端的状态更新
-                console.log('收到患者端更新:', event.data.data);
-            }
-        });
         
         // 页面加载动画
         window.addEventListener('load', function() {
