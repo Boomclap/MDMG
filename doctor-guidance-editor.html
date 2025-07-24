@@ -1,17 +1,21 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>健康指导编辑器</title>
-    <link href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet" onerror="this.onerror=null;this.href='https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css'">
-    <link href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-M/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" onerror="this.onerror=null;this.href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css'">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet"
+        onerror="this.onerror=null;this.href='https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css'">
+    <link href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-M/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"
+        onerror="this.onerror=null;this.href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css'">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
     <style>
-        * { 
-            font-family: 'Noto Sans SC', Tahoma, Arial, Roboto, "Droid Sans", "Helvetica Neue", "Droid Sans Fallback", "Heiti SC", "Hiragino Sans GB", Simsun, sans-serif; 
+        * {
+            font-family: 'Noto Sans SC', Tahoma, Arial, Roboto, "Droid Sans", "Helvetica Neue", "Droid Sans Fallback", "Heiti SC", "Hiragino Sans GB", Simsun, sans-serif;
         }
-        
+
         body {
             margin: 0;
             padding: 0;
@@ -19,7 +23,7 @@
             height: 100vh;
             overflow-y: auto;
         }
-        
+
         .status-bar {
             height: 44px;
             background: transparent;
@@ -31,7 +35,7 @@
             font-weight: 600;
             color: #333;
         }
-        
+
         .top-nav {
             height: 56px;
             background: rgba(255, 255, 255, 0.95);
@@ -45,12 +49,12 @@
             top: 0;
             z-index: 100;
         }
-        
+
         .main-content {
             padding: 16px;
             padding-bottom: 100px;
         }
-        
+
         .section-card {
             background: white;
             border-radius: 16px;
@@ -58,7 +62,7 @@
             margin-bottom: 16px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
         }
-        
+
         .section-title {
             font-size: 16px;
             font-weight: 600;
@@ -67,17 +71,17 @@
             display: flex;
             align-items: center;
         }
-        
+
         .section-title i {
             margin-right: 8px;
             color: #1976d2;
         }
-        
+
         .patient-info {
             display: flex;
             align-items: center;
         }
-        
+
         .patient-avatar {
             width: 48px;
             height: 48px;
@@ -91,23 +95,23 @@
             font-size: 18px;
             margin-right: 12px;
         }
-        
+
         .patient-details {
             flex: 1;
         }
-        
+
         .patient-name {
             font-size: 18px;
             font-weight: 600;
             color: #333;
             margin-bottom: 4px;
         }
-        
+
         .patient-meta {
             font-size: 14px;
             color: #666;
         }
-        
+
         .template-scroll {
             display: flex;
             overflow-x: auto;
@@ -116,7 +120,7 @@
             margin-bottom: 12px;
             -webkit-overflow-scrolling: touch;
         }
-        
+
         .template-item {
             flex: 0 0 auto;
             padding: 12px 16px;
@@ -130,19 +134,20 @@
             transition: all 0.3s ease;
             white-space: nowrap;
         }
-        
-        .template-item:hover, .template-item.active {
+
+        .template-item:hover,
+        .template-item.active {
             background: rgba(25, 118, 210, 0.1);
             border-color: rgba(25, 118, 210, 0.2);
             transform: translateY(-2px);
         }
-        
+
         .editor-container {
             border: 1px solid #e0e0e0;
             border-radius: 12px;
             overflow: hidden;
         }
-        
+
         .editor-toolbar {
             display: flex;
             align-items: center;
@@ -152,7 +157,7 @@
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
         }
-        
+
         .toolbar-button {
             padding: 6px 8px;
             background: transparent;
@@ -163,19 +168,19 @@
             transition: all 0.2s ease;
             margin-right: 4px;
         }
-        
+
         .toolbar-button:hover {
             background: rgba(0, 0, 0, 0.05);
             color: #333;
         }
-        
+
         .toolbar-divider {
             width: 1px;
             height: 24px;
             background: #e0e0e0;
             margin: 0 8px;
         }
-        
+
         .editor-content {
             padding: 16px;
             min-height: 200px;
@@ -184,18 +189,18 @@
             line-height: 1.6;
             color: #333;
         }
-        
+
         .suggestion-list {
             margin-top: 16px;
         }
-        
+
         .suggestion-item {
             display: flex;
             align-items: flex-start;
             padding: 12px 16px;
             border-bottom: 1px solid #f0f0f0;
         }
-        
+
         .suggestion-checkbox {
             width: 20px;
             height: 20px;
@@ -206,7 +211,7 @@
             cursor: pointer;
             flex-shrink: 0;
         }
-        
+
         .suggestion-checkbox.checked::after {
             content: '';
             position: absolute;
@@ -218,21 +223,21 @@
             border-width: 0 2px 2px 0;
             transform: rotate(45deg);
         }
-        
+
         .suggestion-checkbox.checked {
             background: #1976d2;
         }
-        
+
         .suggestion-text {
             font-size: 15px;
             color: #333;
             flex: 1;
         }
-        
+
         .suggestion-group {
             margin-bottom: 20px;
         }
-        
+
         .suggestion-group-title {
             font-size: 14px;
             font-weight: 600;
@@ -242,7 +247,7 @@
             background: rgba(25, 118, 210, 0.05);
             border-radius: 6px;
         }
-        
+
         .suggestion-radio {
             width: 20px;
             height: 20px;
@@ -253,7 +258,7 @@
             cursor: pointer;
             flex-shrink: 0;
         }
-        
+
         .suggestion-radio.checked::after {
             content: '';
             position: absolute;
@@ -264,7 +269,7 @@
             background: #1976d2;
             border-radius: 50%;
         }
-        
+
         .bottom-actions {
             position: fixed;
             bottom: 0;
@@ -276,7 +281,7 @@
             display: flex;
             gap: 12px;
         }
-        
+
         .action-button {
             display: block;
             padding: 14px;
@@ -287,29 +292,29 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
-        
+
         .primary-button {
             background: #1976d2;
             color: white;
             flex: 2;
         }
-        
+
         .primary-button:hover {
             background: #1565c0;
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
         }
-        
+
         .secondary-button {
             background: rgba(25, 118, 210, 0.1);
             color: #1976d2;
             flex: 1;
         }
-        
+
         .secondary-button:hover {
             background: rgba(25, 118, 210, 0.15);
         }
-        
+
         .modal {
             position: fixed;
             top: 0;
@@ -325,12 +330,12 @@
             visibility: hidden;
             transition: all 0.3s ease;
         }
-        
+
         .modal.active {
             opacity: 1;
             visibility: visible;
         }
-        
+
         .modal-content {
             width: 90%;
             max-height: 80vh;
@@ -340,11 +345,11 @@
             transform: translateY(20px);
             transition: all 0.3s ease;
         }
-        
+
         .modal.active .modal-content {
             transform: translateY(0);
         }
-        
+
         .modal-header {
             padding: 16px;
             border-bottom: 1px solid #eee;
@@ -352,58 +357,187 @@
             align-items: center;
             justify-content: space-between;
         }
-        
+
         .modal-title {
             font-size: 18px;
             font-weight: 600;
             color: #333;
         }
-        
+
         .modal-close {
             font-size: 20px;
             color: #666;
             cursor: pointer;
         }
-        
+
         .modal-body {
             padding: 16px;
         }
-        
+
         .preview-content {
             font-size: 15px;
             line-height: 1.6;
             color: #333;
         }
-        
+
         .preview-content p {
             margin-bottom: 12px;
         }
-        
+
         .preview-content ul {
             margin-bottom: 12px;
             padding-left: 20px;
         }
-        
+
         .preview-content li {
             margin-bottom: 8px;
         }
-        
+
         .preview-content strong {
             color: #1976d2;
         }
-        
+
         .fade-in {
             animation: fadeIn 0.5s ease-out;
         }
-        
+
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 侧边抽屉样式 */
+        .drawer {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 90%;
+            height: 100%;
+            background: white;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+        }
+
+        .drawer.active {
+            right: 0;
+        }
+
+        .drawer-header {
+            padding: 16px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 10;
+        }
+
+        .drawer-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .drawer-close {
+            font-size: 20px;
+            color: #666;
+            cursor: pointer;
+        }
+
+        .drawer-body {
+            padding: 16px;
+        }
+
+        .drawer-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .drawer-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .question-item {
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .question-text {
+            font-size: 15px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .answer-text {
+            font-size: 15px;
+            color: #1976d2;
+            background: rgba(25, 118, 210, 0.05);
+            padding: 10px 12px;
+            border-radius: 8px;
+            border-left: 3px solid #1976d2;
+        }
+
+        .image-gallery {
+            display: flex;
+            overflow-x: auto;
+            gap: 8px;
+            padding: 4px 0;
+            margin-bottom: 12px;
+        }
+
+        .gallery-item {
+            flex: 0 0 auto;
+            width: 120px;
+            height: 160px;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .gallery-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            font-size: 12px;
+            text-align: center;
         }
     </style>
 </head>
+
 <body>
-    
+
     <!-- 顶部导航 -->
     <div class="top-nav">
         <div class="flex items-center">
@@ -422,7 +556,7 @@
             <i class="fas fa-ellipsis-v text-gray-500"></i>
         </div>
     </div>
-    
+
     <!-- 主要内容 -->
     <div class="main-content">
         <!-- 患者信息 -->
@@ -438,7 +572,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- 第一层：模板选择 -->
         <div class="section-card fade-in" style="animation-delay: 0.1s">
             <div class="section-title">
@@ -462,7 +596,7 @@
                 <!-- 动态生成建议内容 -->
             </div>
         </div>
-        
+
         <!-- 第三层：编辑区域 -->
         <div class="section-card fade-in" style="animation-delay: 0.3s">
             <div class="section-title">
@@ -499,7 +633,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- 底部操作区 -->
     <div class="bottom-actions fade-in" style="animation-delay: 0.4s">
         <button class="secondary-button action-button" onclick="previewGuidance()">
@@ -509,7 +643,7 @@
             <i class="fas fa-paper-plane mr-2"></i>发送
         </button>
     </div>
-    
+
     <!-- 预览模态框 -->
     <div id="previewModal" class="modal">
         <div class="modal-content">
@@ -524,476 +658,617 @@
             </div>
         </div>
     </div>
-    
-    <script>
-        // 模板数据结构
-        const templates = {
-            'diabetes-diet': {
-                name: '糖尿病饮食指导',
-                suggestions: {
-                    text: [
-                        { id: 'diet-control', title: '控制饮食', content: '减少碳水化合物摄入，控制每餐主食量' },
-                        { id: 'quit-smoking', title: '戒烟戒酒', content: '避免吸烟和饮酒，保持健康生活方式' },
-                        { id: 'regular-sleep', title: '规律作息', content: '保持良好的睡眠习惯，每晚7-8小时' }
-                    ],
-                    multiple: {
-                        'diet-types': {
-                            title: '饮食控制方式（可多选）',
-                            options: [
-                                { id: 'low-salt', title: '少盐饮食', content: '每日盐摄入量控制在5g以下' },
-                                { id: 'low-sugar', title: '少糖饮食', content: '避免精制糖和高糖水果' },
-                                { id: 'more-vegetables', title: '多吃蔬菜', content: '增加蔬菜和优质蛋白质比例' },
-                                { id: 'control-staple', title: '控制主食量', content: '每餐主食控制在1-2两' }
-                            ]
-                        }
-                    },
-                    single: {
-                        'followup': {
-                            title: '复诊频率（单选）',
-                            options: [
-                                { id: 'one-month', title: '1个月后复诊' },
-                                { id: 'three-months', title: '3个月后复诊' },
-                                { id: 'six-months', title: '6个月后复诊' }
-                            ]
+
+    <!-- 问卷抽屉 -->
+    <div id="questionnaireDrawerOverlay" class="drawer-overlay" onclick="closeQuestionnaireDrawer()"></div>
+    <div id="questionnaireDrawer" class="drawer">
+        <div class="drawer-header">
+            <div class="drawer-title">健康问卷</div>
+            <div class="drawer-close" onclick="closeQuestionnaireDrawer()">
+                <i class="fas fa-times"></i>
+            </div>
+        </div>
+        <div class="drawer-body">
+            <div class="question-item">
+                <div class="question-text">1. 您的年龄是？</div>
+                <div class="answer-text">45岁</div>
+            </div>
+            <div class="question-item">
+                <div class="question-text">2. 您是否有糖尿病家族史？</div>
+                <div class="answer-text">是，父亲有糖尿病</div>
+            </div>
+            <div class="question-item">
+                <div class="question-text">3. 您目前的血糖控制情况如何？</div>
+                <div class="answer-text">空腹血糖7.2 mmol/L，餐后2小时血糖10.5 mmol/L</div>
+            </div>
+            <div class="question-item">
+                <div class="question-text">4. 您平时的饮食习惯是？</div>
+                <div class="answer-text">喜欢吃甜食，主食摄入较多，蔬菜摄入不足</div>
+            </div>
+            <div class="question-item">
+                <div class="question-text">5. 您的运动频率是？</div>
+                <div class="answer-text">很少运动，每周不到1次</div>
+            </div>
+            <div class="question-item">
+                <div class="question-text">6. 您是否有其他慢性疾病？</div>
+                <div class="answer-text">轻度高血压</div>
+            </div>
+            <div class="question-item">
+                <div class="question-text">7. 您目前服用的药物有？</div>
+                <div class="answer-text">二甲双胍 500mg，每日2次</div>
+            </div>
+            <div class="question-item">
+                <div class="question-text">8. 您的睡眠质量如何？</div>
+                <div class="answer-text">一般，经常失眠，每晚睡眠时间约6小时</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 报告抽屉 -->
+    <div id="reportDrawerOverlay" class="drawer-overlay" onclick="closeReportDrawer()"></div>
+    <div id="reportDrawer" class="drawer">
+        <div class="drawer-header">
+            <div class="drawer-title">体检报告</div>
+            <div class="drawer-close" onclick="closeReportDrawer()">
+                <i class="fas fa-times"></i>
+            </div>
+        </div>
+        <div class="drawer-body">
+            <div class="image-gallery">
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=300&h=400&fit=crop"
+                        alt="血常规报告" class="gallery-image">
+                    <div class="image-overlay">血常规报告</div>
+                </div>
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=300&h=400&fit=crop"
+                        alt="血糖检测" class="gallery-image">
+                    <div class="image-overlay">血糖检测</div>
+                </div>
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1584362917165-526a968579e8?w=300&h=400&fit=crop"
+                        alt="尿常规" class="gallery-image">
+                    <div class="image-overlay">尿常规</div>
+                </div>
+            </div>
+
+            <div class="question-item">
+                <div class="question-text">血糖指标</div>
+                <div class="answer-text">
+                    空腹血糖：7.2 mmol/L (正常范围: 3.9-6.1)<br>
+                    餐后2小时血糖：10.5 mmol/L (正常范围: <7.8)<br>
+                        糖化血红蛋白：8.1% (正常范围: <7.0%) </div>
+                </div>
+
+                <div class="question-item">
+                    <div class="question-text">血压指标</div>
+                    <div class="answer-text">
+                        收缩压：145 mmHg<br>
+                        舒张压：92 mmHg<br>
+                        (正常范围: <140 /90 mmHg) </div>
+                    </div>
+
+                    <div class="question-item">
+                        <div class="question-text">血脂指标</div>
+                        <div class="answer-text">
+                            总胆固醇：5.8 mmol/L (正常范围: <5.2)<br>
+                                甘油三酯：2.1 mmol/L (正常范围: <1.7)<br>
+                                    低密度脂蛋白：3.5 mmol/L (正常范围: <3.4) </div>
+                        </div>
+
+                        <div class="question-item">
+                            <div class="question-text">肾功能指标</div>
+                            <div class="answer-text">
+                                肌酐：85 μmol/L (正常范围: 44-133)<br>
+                                尿素氮：6.2 mmol/L (正常范围: 3.2-7.1)<br>
+                                尿蛋白：阴性
+                            </div>
+                        </div>
+
+                        <div class="question-item">
+                            <div class="question-text">体重指标</div>
+                            <div class="answer-text">
+                                身高：175cm<br>
+                                体重：78kg<br>
+                                BMI：25.5 (轻度超重)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+                    // 模板数据结构
+                    const templates = {
+                        'diabetes-diet': {
+                            name: '糖尿病饮食指导',
+                            suggestions: {
+                                text: [
+                                    { id: 'diet-control', content: '减少碳水化合物摄入，控制每餐主食量' },
+                                    { id: 'quit-smoking', content: '避免吸烟和饮酒，保持健康生活方式' },
+                                    { id: 'regular-sleep', content: '保持良好的睡眠习惯，每晚7-8小时' }
+                                ],
+                                multiple: {
+                                    'diet-types': {
+                                        title: '饮食控制方式（可多选）',
+                                        options: [
+                                            { id: 'low-salt', content: '每日盐摄入量控制在5g以下' },
+                                            { id: 'low-sugar', content: '避免精制糖和高糖水果' },
+                                            { id: 'more-vegetables', content: '增加蔬菜和优质蛋白质比例' },
+                                            { id: 'control-staple', content: '每餐主食控制在1-2两' }
+                                        ]
+                                    }
+                                },
+                                single: {
+                                    'followup': {
+                                        title: '复诊频率（单选）',
+                                        options: [
+                                            { id: 'one-month', content: '1个月后复诊' },
+                                            { id: 'three-months', content: '3个月后复诊' },
+                                            { id: 'six-months', content: '6个月后复诊' }
+                                        ]
+                                    },
+                                    'monitor': {
+                                        title: '血糖监测频率（单选）',
+                                        options: [
+                                            { id: 'daily', content: '每天监测血糖' },
+                                            { id: 'twice-week', content: '每周2-3次监测血糖' },
+                                            { id: 'once-week', content: '每周1次监测血糖' }
+                                        ]
+                                    }
+                                }
+                            }
                         },
-                        'monitor': {
-                            title: '血糖监测频率（单选）',
-                            options: [
-                                { id: 'daily', title: '每天监测' },
-                                { id: 'twice-week', title: '每周2-3次' },
-                                { id: 'once-week', title: '每周1次' }
-                            ]
+                        'diabetes-exercise': {
+                            name: '糖尿病运动指导',
+                            suggestions: {
+                                text: [
+                                    { id: 'regular-exercise', content: '每天坚持30分钟中等强度运动' },
+                                    { id: 'monitor-glucose', content: '避免低血糖风险' }
+                                ],
+                                multiple: {
+                                    'exercise-types': {
+                                        title: '运动类型（可多选）',
+                                        options: [
+                                            { id: 'walking', content: '每天快走30分钟' },
+                                            { id: 'swimming', content: '游泳是很好的有氧运动' },
+                                            { id: 'jogging', content: '适度慢跑，注意心率控制' },
+                                            { id: 'cycling', content: '骑行锻炼，增强体质' }
+                                        ]
+                                    }
+                                },
+                                single: {
+                                    'exercise-time': {
+                                        title: '运动时间（单选）',
+                                        options: [
+                                            { id: 'morning', content: '早晨运动' },
+                                            { id: 'afternoon', content: '下午运动' },
+                                            { id: 'evening', content: '晚上运动' }
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+                        'hypertension': {
+                            name: '高血压用药指导',
+                            suggestions: {
+                                text: [
+                                    { id: 'medication', content: '请按时服用处方药物，不要自行停药' },
+                                    { id: 'bp-monitor', content: '每天早晚测量血压并记录' }
+                                ],
+                                multiple: {
+                                    'lifestyle': {
+                                        title: '生活方式调整（可多选）',
+                                        options: [
+                                            { id: 'low-salt-diet', content: '每日盐摄入量小于5g' },
+                                            { id: 'weight-control', content: '保持健康体重' },
+                                            { id: 'quit-smoking', content: '避免吸烟，限制酒精摄入' },
+                                            { id: 'stress-management', content: '学习放松技巧，缓解压力' }
+                                        ]
+                                    }
+                                },
+                                single: {
+                                    'followup': {
+                                        title: '复诊频率（单选）',
+                                        options: [
+                                            { id: 'two-weeks', content: '2周后复诊' },
+                                            { id: 'one-month', content: '1个月后复诊' },
+                                            { id: 'three-months', content: '3个月后复诊' }
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+                        'general-health': {
+                            name: '一般健康建议',
+                            suggestions: {
+                                text: [
+                                    { id: 'balanced-diet', content: '每天摄入足够的蔬菜水果' },
+                                    { id: 'regular-exercise', content: '每周至少150分钟中等强度运动' },
+                                    { id: 'adequate-sleep', content: '保证每晚7-8小时高质量睡眠' }
+                                ],
+                                multiple: {
+                                    'health-habits': {
+                                        title: '健康习惯（可多选）',
+                                        options: [
+                                            { id: 'drink-water', title: '多喝水', content: '每天饮水1500-2000ml' },
+                                            { id: 'sun-exposure', title: '适当晒太阳', content: '每天晒太阳15-30分钟' },
+                                            { id: 'social-activity', title: '社交活动', content: '保持良好的社交关系' },
+                                            { id: 'hobby', title: '培养爱好', content: '发展健康的兴趣爱好' }
+                                        ]
+                                    }
+                                },
+                                single: {
+                                    'checkup': {
+                                        title: '体检频率（单选）',
+                                        options: [
+                                            { id: 'half-year', title: '体检频率', content: '半年一次体检' },
+                                            { id: 'one-year', title: '体检频率', content: '一年一次体检' },
+                                            { id: 'two-years', title: '体检频率', content: '两年一次体检' }
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+                        'custom': {
+                            name: '自定义模板',
+                            suggestions: {
+                                text: [
+                                    { id: 'custom1', title: '自定义建议1', content: '请添加个性化建议' },
+                                    { id: 'custom2', title: '自定义建议2', content: '请添加个性化建议' }
+                                ],
+                                multiple: {},
+                                single: {}
+                            }
                         }
-                    }
-                }
-            },
-            'diabetes-exercise': {
-                name: '糖尿病运动指导',
-                suggestions: {
-                    text: [
-                        { id: 'regular-exercise', title: '规律运动', content: '每天坚持30分钟中等强度运动' },
-                        { id: 'monitor-glucose', title: '运动前后监测血糖', content: '避免低血糖风险' }
-                    ],
-                    multiple: {
-                        'exercise-types': {
-                            title: '运动类型（可多选）',
-                            options: [
-                                { id: 'walking', title: '快走', content: '每天快走30分钟' },
-                                { id: 'swimming', title: '游泳', content: '游泳是很好的有氧运动' },
-                                { id: 'jogging', title: '慢跑', content: '适度慢跑，注意心率控制' },
-                                { id: 'cycling', title: '骑自行车', content: '骑行锻炼，增强体质' }
-                            ]
-                        }
-                    },
-                    single: {
-                        'exercise-time': {
-                            title: '运动时间（单选）',
-                            options: [
-                                { id: 'morning', title: '早晨运动' },
-                                { id: 'afternoon', title: '下午运动' },
-                                { id: 'evening', title: '晚上运动' }
-                            ]
-                        }
-                    }
-                }
-            },
-            'hypertension': {
-                name: '高血压用药指导',
-                suggestions: {
-                    text: [
-                        { id: 'medication', title: '按时服药', content: '请按时服用处方药物，不要自行停药' },
-                        { id: 'bp-monitor', title: '血压监测', content: '每天早晚测量血压并记录' }
-                    ],
-                    multiple: {
-                        'lifestyle': {
-                            title: '生活方式调整（可多选）',
-                            options: [
-                                { id: 'low-salt-diet', title: '低盐饮食', content: '每日盐摄入量小于5g' },
-                                { id: 'weight-control', title: '控制体重', content: '保持健康体重' },
-                                { id: 'quit-smoking', title: '戒烟限酒', content: '避免吸烟，限制酒精摄入' },
-                                { id: 'stress-management', title: '压力管理', content: '学习放松技巧，缓解压力' }
-                            ]
-                        }
-                    },
-                    single: {
-                        'followup': {
-                            title: '复诊频率（单选）',
-                            options: [
-                                { id: 'two-weeks', title: '2周后复诊' },
-                                { id: 'one-month', title: '1个月后复诊' },
-                                { id: 'three-months', title: '3个月后复诊' }
-                            ]
-                        }
-                    }
-                }
-            },
-            'general-health': {
-                name: '一般健康建议',
-                suggestions: {
-                    text: [
-                        { id: 'balanced-diet', title: '均衡饮食', content: '每天摄入足够的蔬菜水果' },
-                        { id: 'regular-exercise', title: '规律运动', content: '每周至少150分钟中等强度运动' },
-                        { id: 'adequate-sleep', title: '充足睡眠', content: '保证每晚7-8小时高质量睡眠' }
-                    ],
-                    multiple: {
-                        'health-habits': {
-                            title: '健康习惯（可多选）',
-                            options: [
-                                { id: 'drink-water', title: '多喝水', content: '每天饮水1500-2000ml' },
-                                { id: 'sun-exposure', title: '适当晒太阳', content: '每天晒太阳15-30分钟' },
-                                { id: 'social-activity', title: '社交活动', content: '保持良好的社交关系' },
-                                { id: 'hobby', title: '培养爱好', content: '发展健康的兴趣爱好' }
-                            ]
-                        }
-                    },
-                    single: {
-                        'checkup': {
-                            title: '体检频率（单选）',
-                            options: [
-                                { id: 'half-year', title: '半年一次' },
-                                { id: 'one-year', title: '一年一次' },
-                                { id: 'two-years', title: '两年一次' }
-                            ]
-                        }
-                    }
-                }
-            },
-            'custom': {
-                name: '自定义模板',
-                suggestions: {
-                    text: [
-                        { id: 'custom1', title: '自定义建议1', content: '请添加个性化建议' },
-                        { id: 'custom2', title: '自定义建议2', content: '请添加个性化建议' }
-                    ],
-                    multiple: {},
-                    single: {}
-                }
-            }
-        };
+                    };
 
-        // 当前选择的模板
-        let currentTemplate = 'diabetes-diet';
+                    // 当前选择的模板
+                    let currentTemplate = 'diabetes-diet';
 
-        // 页面加载时初始化
-        document.addEventListener('DOMContentLoaded', function() {
-            selectTemplate('diabetes-diet');
-        });
+                    // 页面加载时初始化
+                    document.addEventListener('DOMContentLoaded', function () {
+                        selectTemplate('diabetes-diet');
+                    });
 
-        // 返回上一页
-        function goBack() {
-            window.history.back();
-        }
-        
-        // 选择模板
-        function selectTemplate(templateId) {
-            // 更新模板选择状态
-            document.querySelectorAll('.template-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            
-            // 找到被点击的模板项并激活
-            const clickedItem = Array.from(document.querySelectorAll('.template-item')).find(item => 
-                item.getAttribute('onclick').includes(templateId)
-            );
-            if (clickedItem) {
-                clickedItem.classList.add('active');
-            }
-            
-            // 更新当前模板
-            currentTemplate = templateId;
-            
-            // 渲染建议选择区域
-            renderSuggestions(templateId);
-        }
-        
-        // 渲染建议选择区域
-        function renderSuggestions(templateId) {
-            const template = templates[templateId];
-            const container = document.getElementById('suggestionContainer');
-            
-            if (!template) {
-                container.innerHTML = '<p class="text-gray-500">请选择一个模板</p>';
-                return;
-            }
-            
-            let html = '';
-            
-            // 渲染文本模式建议
-            if (template.suggestions.text && template.suggestions.text.length > 0) {
-                html += '<div class="suggestion-group">';
-                html += '<div class="suggestion-group-title">基础建议</div>';
-                
-                template.suggestions.text.forEach(suggestion => {
-                    html += `
+                    // 返回上一页
+                    function goBack() {
+                        window.history.back();
+                    }
+
+                    // 选择模板
+                    function selectTemplate(templateId) {
+                        // 更新模板选择状态
+                        document.querySelectorAll('.template-item').forEach(item => {
+                            item.classList.remove('active');
+                        });
+
+                        // 找到被点击的模板项并激活
+                        const clickedItem = Array.from(document.querySelectorAll('.template-item')).find(item =>
+                            item.getAttribute('onclick').includes(templateId)
+                        );
+                        if (clickedItem) {
+                            clickedItem.classList.add('active');
+                        }
+
+                        // 更新当前模板
+                        currentTemplate = templateId;
+
+                        // 渲染建议选择区域
+                        renderSuggestions(templateId);
+                    }
+
+                    // 渲染建议选择区域
+                    function renderSuggestions(templateId) {
+                        const template = templates[templateId];
+                        const container = document.getElementById('suggestionContainer');
+
+                        if (!template) {
+                            container.innerHTML = '<p class="text-gray-500">请选择一个模板</p>';
+                            return;
+                        }
+
+                        let html = '';
+
+                        // 渲染文本模式建议
+                        if (template.suggestions.text && template.suggestions.text.length > 0) {
+                            html += '<div class="suggestion-group">';
+                            html += '<div class="suggestion-group-title">基础建议</div>';
+
+                            template.suggestions.text.forEach(suggestion => {
+                                html += `
                         <div class="suggestion-item" onclick="toggleTextSuggestion(this, '${suggestion.id}')">
                             <div class="suggestion-checkbox"></div>
-                            <div class="suggestion-text">${suggestion.title}</div>
+                            <div class="suggestion-text">${suggestion.content}</div>
                         </div>
                     `;
-                });
-                
-                html += '</div>';
-            }
-            
-            // 渲染多选模式建议
-            Object.keys(template.suggestions.multiple).forEach(groupKey => {
-                const group = template.suggestions.multiple[groupKey];
-                html += '<div class="suggestion-group">';
-                html += `<div class="suggestion-group-title">${group.title}</div>`;
-                
-                group.options.forEach(option => {
-                    html += `
+                            });
+
+                            html += '</div>';
+                        }
+
+                        // 渲染多选模式建议
+                        Object.keys(template.suggestions.multiple).forEach(groupKey => {
+                            const group = template.suggestions.multiple[groupKey];
+                            html += '<div class="suggestion-group">';
+                            html += `<div class="suggestion-group-title">${group.title}</div>`;
+
+                            group.options.forEach(option => {
+                                html += `
                         <div class="suggestion-item" onclick="toggleMultipleSuggestion(this, '${groupKey}', '${option.id}')">
                             <div class="suggestion-checkbox"></div>
-                            <div class="suggestion-text">${option.title}</div>
+                            <div class="suggestion-text">${option.content}</div>
                         </div>
                     `;
-                });
-                
-                html += '</div>';
-            });
-            
-            // 渲染单选模式建议
-            Object.keys(template.suggestions.single).forEach(groupKey => {
-                const group = template.suggestions.single[groupKey];
-                html += '<div class="suggestion-group">';
-                html += `<div class="suggestion-group-title">${group.title}</div>`;
-                
-                group.options.forEach(option => {
-                    html += `
+                            });
+
+                            html += '</div>';
+                        });
+
+                        // 渲染单选模式建议
+                        Object.keys(template.suggestions.single).forEach(groupKey => {
+                            const group = template.suggestions.single[groupKey];
+                            html += '<div class="suggestion-group">';
+                            html += `<div class="suggestion-group-title">${group.title}</div>`;
+
+                            group.options.forEach(option => {
+                                html += `
                         <div class="suggestion-item" onclick="toggleSingleSuggestion(this, '${groupKey}', '${option.id}')">
                             <div class="suggestion-radio"></div>
-                            <div class="suggestion-text">${option.title}</div>
+                            <div class="suggestion-text">${option.content}</div>
                         </div>
                     `;
-                });
-                
-                html += '</div>';
-            });
-            
-            container.innerHTML = html;
-        }
-        
-        // 文本模式：直接勾选
-        function toggleTextSuggestion(element, suggestionId) {
-            const checkbox = element.querySelector('.suggestion-checkbox');
-            checkbox.classList.toggle('checked');
-            
-            // 更新编辑器内容
-            updateEditorWithSuggestions();
-        }
-        
-        // 多选模式：可选择多个
-        function toggleMultipleSuggestion(element, groupKey, optionId) {
-            const checkbox = element.querySelector('.suggestion-checkbox');
-            checkbox.classList.toggle('checked');
-            
-            // 更新编辑器内容
-            updateEditorWithSuggestions();
-        }
-        
-        // 单选模式：只能选一个
-        function toggleSingleSuggestion(element, groupKey, optionId) {
-            // 先清除同组其他选项
-            const groupElements = document.querySelectorAll(`[onclick*="${groupKey}"]`);
-            groupElements.forEach(item => {
-                const radio = item.querySelector('.suggestion-radio');
-                if (radio) {
-                    radio.classList.remove('checked');
-                }
-            });
-            
-            // 选中当前选项
-            const radio = element.querySelector('.suggestion-radio');
-            radio.classList.add('checked');
-            
-            // 更新编辑器内容
-            updateEditorWithSuggestions();
-        }
-        
-        // 根据选中的建议更新编辑器内容
-        function updateEditorWithSuggestions() {
-            const template = templates[currentTemplate];
-            if (!template) return;
-            
-            const selectedSuggestions = [];
-            
-            // 获取选中的文本建议
-            template.suggestions.text.forEach(suggestion => {
-                const element = document.querySelector(`[onclick*="${suggestion.id}"]`);
-                if (element) {
-                    const checkbox = element.querySelector('.suggestion-checkbox');
-                    if (checkbox && checkbox.classList.contains('checked')) {
-                        selectedSuggestions.push({
-                            title: suggestion.title,
-                            content: suggestion.content
+                            });
+
+                            html += '</div>';
                         });
+
+                        container.innerHTML = html;
                     }
-                }
-            });
-            
-            // 获取选中的多选建议
-            Object.keys(template.suggestions.multiple).forEach(groupKey => {
-                const group = template.suggestions.multiple[groupKey];
-                group.options.forEach(option => {
-                    const element = document.querySelector(`[onclick*="${option.id}"]`);
-                    if (element) {
+
+                    // 文本模式：直接勾选
+                    function toggleTextSuggestion(element, suggestionId) {
                         const checkbox = element.querySelector('.suggestion-checkbox');
-                        if (checkbox && checkbox.classList.contains('checked')) {
-                            selectedSuggestions.push({
-                                title: option.title,
-                                content: option.content
-                            });
-                        }
+                        checkbox.classList.toggle('checked');
+
+                        // 更新编辑器内容
+                        updateEditorWithSuggestions();
                     }
-                });
-            });
-            
-            // 获取选中的单选建议
-            Object.keys(template.suggestions.single).forEach(groupKey => {
-                const group = template.suggestions.single[groupKey];
-                group.options.forEach(option => {
-                    const element = document.querySelector(`[onclick*="${option.id}"]`);
-                    if (element) {
+
+                    // 多选模式：可选择多个
+                    function toggleMultipleSuggestion(element, groupKey, optionId) {
+                        const checkbox = element.querySelector('.suggestion-checkbox');
+                        checkbox.classList.toggle('checked');
+
+                        // 更新编辑器内容
+                        updateEditorWithSuggestions();
+                    }
+
+                    // 单选模式：只能选一个
+                    function toggleSingleSuggestion(element, groupKey, optionId) {
+                        // 先清除同组其他选项
+                        const groupElements = document.querySelectorAll(`[onclick*="${groupKey}"]`);
+                        groupElements.forEach(item => {
+                            const radio = item.querySelector('.suggestion-radio');
+                            if (radio) {
+                                radio.classList.remove('checked');
+                            }
+                        });
+
+                        // 选中当前选项
                         const radio = element.querySelector('.suggestion-radio');
-                        if (radio && radio.classList.contains('checked')) {
-                            selectedSuggestions.push({
-                                title: option.title,
-                                content: option.content || ''
+                        radio.classList.add('checked');
+
+                        // 更新编辑器内容
+                        updateEditorWithSuggestions();
+                    }
+
+                    // 根据选中的建议更新编辑器内容
+                    function updateEditorWithSuggestions() {
+                        const template = templates[currentTemplate];
+                        if (!template) return;
+
+                        const selectedSuggestions = [];
+
+                        // 获取选中的文本建议
+                        template.suggestions.text.forEach(suggestion => {
+                            const element = document.querySelector(`[onclick*="${suggestion.id}"]`);
+                            if (element) {
+                                const checkbox = element.querySelector('.suggestion-checkbox');
+                                if (checkbox && checkbox.classList.contains('checked')) {
+                                    selectedSuggestions.push({
+                                        content: suggestion.content
+                                    });
+                                }
+                            }
+                        });
+
+                        // 获取选中的多选建议
+                        Object.keys(template.suggestions.multiple).forEach(groupKey => {
+                            const group = template.suggestions.multiple[groupKey];
+                            group.options.forEach(option => {
+                                const element = document.querySelector(`[onclick*="${option.id}"]`);
+                                if (element) {
+                                    const checkbox = element.querySelector('.suggestion-checkbox');
+                                    if (checkbox && checkbox.classList.contains('checked')) {
+                                        selectedSuggestions.push({
+                                            title: group.title.replace('（可多选）', ''),
+                                            content: option.content
+                                        });
+                                    }
+                                }
                             });
+                        });
+
+                        // 获取选中的单选建议
+                        Object.keys(template.suggestions.single).forEach(groupKey => {
+                            const group = template.suggestions.single[groupKey];
+                            group.options.forEach(option => {
+                                const element = document.querySelector(`[onclick*="${option.id}"]`);
+                                if (element) {
+                                    const radio = element.querySelector('.suggestion-radio');
+                                    if (radio && radio.classList.contains('checked')) {
+                                        selectedSuggestions.push({
+                                            title: group.title.replace('（单选）', ''),
+                                            content: option.content || ''
+                                        });
+                                    }
+                                }
+                            });
+                        });
+
+                        // 生成编辑器内容
+                        let editorContent = '<p>尊敬的张先生：</p>\n\n';
+                        editorContent += '<p>根据您的健康问卷，我为您提供以下健康建议：</p>\n\n';
+
+                        if (selectedSuggestions.length > 0) {
+                            editorContent += '<ul>\n';
+                            selectedSuggestions.forEach(suggestion => {
+                                // 文本模式：直接显示content
+                                // 多选和单选模式：显示title + content
+                                if (suggestion.title && suggestion.content && suggestion.title !== suggestion.content) {
+                                    editorContent += `    <li><strong>${suggestion.title}：</strong>${suggestion.content}</li>\n`;
+                                } else {
+                                    editorContent += `    <li>${suggestion.content}</li>\n`;
+                                }
+                            });
+                            editorContent += '</ul>\n\n';
                         }
+
+                        editorContent += '<p>请继续保持良好的自我管理，如有任何不适，请及时联系我。</p>';
+
+                        // 更新编辑器
+                        document.getElementById('editor').innerHTML = editorContent;
                     }
-                });
-            });
-            
-            // 生成编辑器内容
-            let editorContent = '<p>尊敬的张先生：</p>\n\n';
-            editorContent += '<p>根据您的健康问卷，我为您提供以下健康建议：</p>\n\n';
-            
-            if (selectedSuggestions.length > 0) {
-                editorContent += '<ul>\n';
-                selectedSuggestions.forEach(suggestion => {
-                    if (suggestion.content) {
-                        editorContent += `    <li><strong>${suggestion.title}：</strong>${suggestion.content}</li>\n`;
-                    } else {
-                        editorContent += `    <li>${suggestion.title}</li>\n`;
+
+                    // 文本格式化
+                    function formatText(command) {
+                        document.execCommand(command, false, null);
+                        document.getElementById('editor').focus();
                     }
-                });
-                editorContent += '</ul>\n\n';
-            }
-            
-            editorContent += '<p>请继续保持良好的自我管理，如有任何不适，请及时联系我。</p>';
-            
-            // 更新编辑器
-            document.getElementById('editor').innerHTML = editorContent;
-        }
-        
-        // 文本格式化
-        function formatText(command) {
-            document.execCommand(command, false, null);
-            document.getElementById('editor').focus();
-        }
-        
-        // 列表格式化
-        function formatList(type) {
-            if (type === 'bullet') {
-                document.execCommand('insertUnorderedList', false, null);
-            } else if (type === 'number') {
-                document.execCommand('insertOrderedList', false, null);
-            }
-            document.getElementById('editor').focus();
-        }
-        
-        // 清除格式
-        function clearFormatting() {
-            document.execCommand('removeFormat', false, null);
-            document.getElementById('editor').focus();
-        }
-        
-        // 预览健康指导
-        function previewGuidance() {
-            const content = document.getElementById('editor').innerHTML;
-            document.getElementById('previewContent').innerHTML = content;
-            document.getElementById('previewModal').classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-        
-        // 关闭模态框
-        function closeModal() {
-            document.getElementById('previewModal').classList.remove('active');
-            document.body.style.overflow = 'auto';
-        }
-        
-        // 发送健康指导
-        function sendGuidance() {
-            // 获取编辑器内容
-            const content = document.getElementById('editor').innerHTML;
-            
-            // 获取选中的建议
-            const selectedSuggestions = [];
-            document.querySelectorAll('.suggestion-item').forEach(item => {
-                const checkbox = item.querySelector('.suggestion-checkbox');
-                const radio = item.querySelector('.suggestion-radio');
-                const text = item.querySelector('.suggestion-text');
-                
-                if (text && ((checkbox && checkbox.classList.contains('checked')) || 
-                    (radio && radio.classList.contains('checked')))) {
-                    selectedSuggestions.push(text.textContent);
-                }
-            });
-            
-            // 创建健康指导数据
-            const guidanceData = {
-                id: 'guidance-' + Date.now(),
-                doctorId: 'doctor-001',
-                doctorName: '李医生',
-                doctorTitle: '内分泌科主任医师',
-                patientId: 'patient-001',
-                questionnaireId: 'questionnaire-001',
-                template: currentTemplate,
-                content: content,
-                suggestions: selectedSuggestions,
-                createdAt: Date.now(),
-                status: 'sent'
-            };
-            
-            // 发送消息到父窗口
-            if (window.parent) {
-                window.parent.postMessage({
-                    type: 'doctorAction',
-                    data: { 
-                        action: 'sendGuidance',
-                        guidanceId: guidanceData.id,
-                        doctorName: guidanceData.doctorName,
-                        doctorTitle: guidanceData.doctorTitle,
-                        content: '根据您的健康问卷，我为您提供了一些健康建议，请查看详情...'
+
+                    // 列表格式化
+                    function formatList(type) {
+                        if (type === 'bullet') {
+                            document.execCommand('insertUnorderedList', false, null);
+                        } else if (type === 'number') {
+                            document.execCommand('insertOrderedList', false, null);
+                        }
+                        document.getElementById('editor').focus();
                     }
-                }, '*');
-            }
-            
-            // 显示发送成功的提示
-            const toast = document.createElement('div');
-            toast.className = 'fixed top-20 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
-            toast.textContent = '健康指导已发送';
-            document.body.appendChild(toast);
-            
-            setTimeout(() => {
-                if (document.body.contains(toast)) {
-                    document.body.removeChild(toast);
-                }
-                goBack();
-            }, 2000);
-        }
-        
-        // 显示问卷抽屉
-        function showQuestionnaireDrawer() {
-            console.log('显示问卷抽屉');
-        }
-        
-        // 显示报告抽屉
-        function showReportDrawer() {
-            console.log('显示报告抽屉');
-        }
-    </script>
+
+                    // 清除格式
+                    function clearFormatting() {
+                        document.execCommand('removeFormat', false, null);
+                        document.getElementById('editor').focus();
+                    }
+
+                    // 预览健康指导
+                    function previewGuidance() {
+                        const content = document.getElementById('editor').innerHTML;
+                        document.getElementById('previewContent').innerHTML = content;
+                        document.getElementById('previewModal').classList.add('active');
+                        document.body.style.overflow = 'hidden';
+                    }
+
+                    // 关闭模态框
+                    function closeModal() {
+                        document.getElementById('previewModal').classList.remove('active');
+                        document.body.style.overflow = 'auto';
+                    }
+
+                    // 发送健康指导
+                    function sendGuidance() {
+                        // 获取编辑器内容
+                        const content = document.getElementById('editor').innerHTML;
+
+                        // 获取选中的建议
+                        const selectedSuggestions = [];
+                        document.querySelectorAll('.suggestion-item').forEach(item => {
+                            const checkbox = item.querySelector('.suggestion-checkbox');
+                            const radio = item.querySelector('.suggestion-radio');
+                            const text = item.querySelector('.suggestion-text');
+
+                            if (text && ((checkbox && checkbox.classList.contains('checked')) ||
+                                (radio && radio.classList.contains('checked')))) {
+                                selectedSuggestions.push(text.textContent);
+                            }
+                        });
+
+                        // 创建健康指导数据
+                        const guidanceData = {
+                            id: 'guidance-' + Date.now(),
+                            doctorId: 'doctor-001',
+                            doctorName: '李医生',
+                            doctorTitle: '内分泌科主任医师',
+                            patientId: 'patient-001',
+                            questionnaireId: 'questionnaire-001',
+                            template: currentTemplate,
+                            content: content,
+                            suggestions: selectedSuggestions,
+                            createdAt: Date.now(),
+                            status: 'sent'
+                        };
+
+                        // 发送消息到父窗口
+                        if (window.parent) {
+                            window.parent.postMessage({
+                                type: 'doctorAction',
+                                data: {
+                                    action: 'sendGuidance',
+                                    guidanceId: guidanceData.id,
+                                    doctorName: guidanceData.doctorName,
+                                    doctorTitle: guidanceData.doctorTitle,
+                                    content: '根据您的健康问卷，我为您提供了一些健康建议，请查看详情...'
+                                }
+                            }, '*');
+                        }
+
+                        // 显示发送成功的提示
+                        const toast = document.createElement('div');
+                        toast.className = 'fixed top-20 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+                        toast.textContent = '健康指导已发送';
+                        document.body.appendChild(toast);
+
+                        setTimeout(() => {
+                            if (document.body.contains(toast)) {
+                                document.body.removeChild(toast);
+                            }
+                            goBack();
+                        }, 2000);
+                    }
+
+                    // 显示问卷抽屉
+                    function showQuestionnaireDrawer() {
+                        document.getElementById('questionnaireDrawer').classList.add('active');
+                        document.getElementById('questionnaireDrawerOverlay').classList.add('active');
+                        document.body.style.overflow = 'hidden';
+                    }
+
+                    // 关闭问卷抽屉
+                    function closeQuestionnaireDrawer() {
+                        document.getElementById('questionnaireDrawer').classList.remove('active');
+                        document.getElementById('questionnaireDrawerOverlay').classList.remove('active');
+                        document.body.style.overflow = 'auto';
+                    }
+
+                    // 显示报告抽屉
+                    function showReportDrawer() {
+                        document.getElementById('reportDrawer').classList.add('active');
+                        document.getElementById('reportDrawerOverlay').classList.add('active');
+                        document.body.style.overflow = 'hidden';
+                    }
+
+                    // 关闭报告抽屉
+                    function closeReportDrawer() {
+                        document.getElementById('reportDrawer').classList.remove('active');
+                        document.getElementById('reportDrawerOverlay').classList.remove('active');
+                        document.body.style.overflow = 'auto';
+                    }
+                </script>
 </body>
+
+</html>
+</script>
+</body>
+
 </html>
