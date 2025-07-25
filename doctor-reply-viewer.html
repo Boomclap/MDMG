@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>医生端 - 查看回复</title>
+    <link href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet" onerror="this.onerror=null;this.href='https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css'">
+    <link href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-M/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" onerror="this.onerror=null;this.href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css'">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * { 
+            font-family: 'Noto Sans SC', Tahoma, Arial, Roboto, "Droid Sans", "Helvetica Neue", "Droid Sans Fallback", "Heiti SC", "Hiragino Sans GB", Simsun, sans-serif; 
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(180deg, #e3f2fd 0%, #f8f9fa 100%);
+            height: 100vh;
+            overflow-y: auto;
+        }
+        
+        .top-nav {
+            height: 56px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .main-content {
+            padding: 16px;
+            padding-bottom: 100px;
+        }
+        
+        .section-card {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-right: 8px;
+            color: #1976d2;
+        }
+        
+        .patient-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .patient-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 18px;
+            margin-right: 12px;
+        }
+        
+        .patient-details {
+            flex: 1;
+        }
+        
+        .patient-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        
+        .patient-meta {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .reply-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: rgba(25, 118, 210, 0.05);
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .doctor-info {
+            font-size: 14px;
+            font-weight: 500;
+            color: #1976d2;
+        }
+        
+        .reply-time {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .readonly-content {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 15px;
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        .readonly-content p {
+            margin-bottom: 12px;
+        }
+        
+        .readonly-content ul {
+            margin-bottom: 12px;
+            padding-left: 20px;
+        }
+        
+        .readonly-content li {
+            margin-bottom: 8px;
+        }
+        
+        .readonly-content strong {
+            color: #1976d2;
+        }
+        
+        .bottom-actions {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 16px;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 12px;
+        }
+        
+        .action-button {
+            display: block;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+        
+        .secondary-button {
+            background: rgba(25, 118, 210, 0.1);
+            color: #1976d2;
+        }
+        
+        .secondary-button:hover {
+            background: rgba(25, 118, 210, 0.15);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- 顶部导航 -->
+    <div class="top-nav">
+        <div class="flex items-center">
+            <div class="mr-3 text-blue-600" onclick="goBack()">
+                <i class="fas fa-arrow-left"></i>
+            </div>
+            <div class="font-semibold">查看回复详情</div>
+        </div>
+        <div class="flex items-center">
+            <span class="text-sm text-green-600 font-medium">已回复</span>
+        </div>
+    </div>
+    
+    <!-- 主要内容 -->
+    <div class="main-content">
+        <!-- 患者信息 -->
+        <div class="section-card fade-in">
+            <div class="section-title">
+                <i class="fas fa-user-circle"></i>患者信息
+            </div>
+            <div class="patient-info">
+                <div class="patient-avatar" id="patientAvatar">张</div>
+                <div class="patient-details">
+                    <div class="patient-name" id="patientName">张三</div>
+                    <div class="patient-meta" id="patientMeta">男 | 45岁 | 糖尿病健康问卷</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 回复信息 -->
+        <div class="section-card fade-in" style="animation-delay: 0.1s">
+            <div class="section-title">
+                <i class="fas fa-info-circle"></i>回复信息
+            </div>
+            <div class="reply-meta">
+                <span class="doctor-info" id="doctorInfo">李医生 - 内分泌科主任医师</span>
+                <span class="reply-time" id="replyTime">2024年1月15日 14:30</span>
+            </div>
+        </div>
+        
+        <!-- 回复内容 -->
+        <div class="section-card fade-in" style="animation-delay: 0.2s">
+            <div class="section-title">
+                <i class="fas fa-file-text"></i>回复内容
+            </div>
+            <div class="readonly-content" id="replyContent">
+                <!-- 显示完整的回复内容 -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- 底部操作 -->
+    <div class="bottom-actions fade-in" style="animation-delay: 0.3s">
+        <button class="secondary-button action-button" onclick="goBack()">
+            <i class="fas fa-arrow-left mr-2"></i>返回消息列表
+        </button>
+    </div>
+    
+    <script>
+        // 返回上一页
+        function goBack() {
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                window.location.href = 'doctor-messages.html';
+            }
+        }
+        
+        // 页面加载时获取回复数据
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const patientId = urlParams.get('patient');
+            
+            if (patientId) {
+                loadReplyData(patientId);
+            }
+        });
+        
+        // 加载回复数据
+        function loadReplyData(patientId) {
+            // 模拟数据 - 实际应用中从后端获取或localStorage获取
+            const replyDataMap = {
+                'zhang-san': {
+                    patient: {
+                        name: '张三',
+                        avatar: '张',
+                        meta: '男 | 45岁 | 糖尿病健康问卷'
+                    },
+                    reply: {
+                        doctor: '李医生 - 内分泌科主任医师',
+                        time: '昨天 16:30',
+                        content: `
+                            <p>尊敬的张先生：</p>
+                            <p>根据您提交的糖尿病健康问卷和体检报告，我为您提供以下健康建议：</p>
+                            <ul>
+                                <li><strong>饮食控制：</strong>建议减少碳水化合物摄入，增加蔬菜和优质蛋白质的比例。每餐主食控制在1-2两，避免精制糖和高糖水果。</li>
+                                <li><strong>运动建议：</strong>每天进行30分钟中等强度的有氧运动，如快走、慢跑或游泳。运动前后测量血糖，避免低血糖风险。</li>
+                                <li><strong>血糖监测：</strong>您的空腹血糖为7.2 mmol/L，略高于正常范围（3.9-6.1 mmol/L）。建议每周监测3-4次空腹和餐后2小时血糖，并记录结果。</li>
+                                <li><strong>复诊安排：</strong>建议3个月后复诊，必要时可提前预约。</li>
+                            </ul>
+                            <p>请继续保持良好的自我管理，如有任何不适，请及时联系我。</p>
+                        `
+                    }
+                },
+                'zhao-liu': {
+                    patient: {
+                        name: '赵六',
+                        avatar: '赵',
+                        meta: '女 | 52岁 | 糖尿病健康问卷'
+                    },
+                    reply: {
+                        doctor: '李医生 - 内分泌科主任医师',
+                        time: '昨天 16:30',
+                        content: `
+                            <p>尊敬的赵女士：</p>
+                            <p>根据您提交的糖尿病健康问卷，我为您提供以下健康建议：</p>
+                            <ul>
+                                <li><strong>饮食管理：</strong>控制碳水化合物摄入，建议采用少食多餐的方式，每日5-6餐。</li>
+                                <li><strong>血糖监测：</strong>每天监测空腹和餐后血糖，记录数值变化。</li>
+                                <li><strong>运动指导：</strong>每天进行适量运动，如散步、太极等，避免剧烈运动。</li>
+                                <li><strong>用药提醒：</strong>按时服用降糖药物，不可自行调整剂量。</li>
+                            </ul>
+                            <p>请定期复诊，有任何问题随时联系。</p>
+                        `
+                    }
+                },
+                'sun-qi': {
+                    patient: {
+                        name: '孙七',
+                        avatar: '孙',
+                        meta: '男 | 38岁 | 高血压健康问卷'
+                    },
+                    reply: {
+                        doctor: '李医生 - 内分泌科主任医师',
+                        time: '昨天 14:20',
+                        content: `
+                            <p>尊敬的孙先生：</p>
+                            <p>根据您的高血压健康问卷和体检报告，我为您提供以下管理建议：</p>
+                            <ul>
+                                <li><strong>用药指导：</strong>请按时服用处方药物，不要自行停药或调整剂量。最好在固定时间服药。</li>
+                                <li><strong>血压监测：</strong>建议每天早晚各测量一次血压，记录数值。测量前应休息5分钟。</li>
+                                <li><strong>饮食建议：</strong>低盐饮食（每日盐摄入量<5g），增加钾的摄入，限制酒精摄入。</li>
+                                <li><strong>生活方式：</strong>规律作息，适当运动，避免精神紧张，戒烟限酒。</li>
+                            </ul>
+                            <p>如血压波动明显或出现头痛、头晕等不适症状，请及时就医。</p>
+                        `
+                    }
+                }
+            };
+            
+            const replyData = replyDataMap[patientId];
+            
+            if (replyData) {
+                // 更新患者信息
+                document.getElementById('patientAvatar').textContent = replyData.patient.avatar;
+                document.getElementById('patientName').textContent = replyData.patient.name;
+                document.getElementById('patientMeta').textContent = replyData.patient.meta;
+                
+                // 更新回复信息
+                document.getElementById('doctorInfo').textContent = replyData.reply.doctor;
+                document.getElementById('replyTime').textContent = replyData.reply.time;
+                
+                // 显示回复内容
+                document.getElementById('replyContent').innerHTML = replyData.reply.content;
+            } else {
+                // 如果没有找到数据，显示默认内容
+                document.getElementById('replyContent').innerHTML = '<p>暂无回复内容</p>';
+            }
+        }
+    </script>
+</body>
+</html>
