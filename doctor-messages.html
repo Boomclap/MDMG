@@ -370,7 +370,7 @@
             setTimeout(() => {
                 if (status === 'pending') {
                     // 待回复消息 - 跳转到编辑器
-                    window.location.href = `doctor-guidance-editor.html?patient=${patientId}`;
+                    window.location.href = `doctor-questionnaire-detail.html?patient=${patientId}`;
                 } else if (status === 'completed') {
                     // 已回复消息 - 跳转到查看回复详情
                     window.location.href = `doctor-reply-viewer.html?patient=${patientId}`;

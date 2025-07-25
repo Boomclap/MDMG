@@ -1222,7 +1222,8 @@
                             if (document.body.contains(toast)) {
                                 document.body.removeChild(toast);
                             }
-                            goBack();
+                            // 发送成功后直接返回到消息列表页面
+                            window.location.href = 'doctor-messages.html';
                         }, 2000);
                     }
 
