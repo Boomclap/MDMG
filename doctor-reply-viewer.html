@@ -1,18 +1,22 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>医生端 - 查看回复</title>
-    <link href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet" onerror="this.onerror=null;this.href='https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css'">
-    <link href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-M/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" onerror="this.onerror=null;this.href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css'">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
-    
+    <link href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet"
+        onerror="this.onerror=null;this.href='https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css'">
+    <link href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-M/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"
+        onerror="this.onerror=null;this.href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css'">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+
     <style>
-        * { 
-            font-family: 'Noto Sans SC', Tahoma, Arial, Roboto, "Droid Sans", "Helvetica Neue", "Droid Sans Fallback", "Heiti SC", "Hiragino Sans GB", Simsun, sans-serif; 
+        * {
+            font-family: 'Noto Sans SC', Tahoma, Arial, Roboto, "Droid Sans", "Helvetica Neue", "Droid Sans Fallback", "Heiti SC", "Hiragino Sans GB", Simsun, sans-serif;
         }
-        
+
         body {
             margin: 0;
             padding: 0;
@@ -20,7 +24,7 @@
             height: 100vh;
             overflow-y: auto;
         }
-        
+
         .top-nav {
             height: 56px;
             background: rgba(255, 255, 255, 0.95);
@@ -34,12 +38,12 @@
             top: 0;
             z-index: 100;
         }
-        
+
         .main-content {
             padding: 16px;
             padding-bottom: 100px;
         }
-        
+
         .section-card {
             background: white;
             border-radius: 16px;
@@ -47,7 +51,7 @@
             margin-bottom: 16px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
         }
-        
+
         .section-title {
             font-size: 16px;
             font-weight: 600;
@@ -56,17 +60,17 @@
             display: flex;
             align-items: center;
         }
-        
+
         .section-title i {
             margin-right: 8px;
             color: #1976d2;
         }
-        
+
         .patient-info {
             display: flex;
             align-items: center;
         }
-        
+
         .patient-avatar {
             width: 48px;
             height: 48px;
@@ -80,23 +84,23 @@
             font-size: 18px;
             margin-right: 12px;
         }
-        
+
         .patient-details {
             flex: 1;
         }
-        
+
         .patient-name {
             font-size: 18px;
             font-weight: 600;
             color: #333;
             margin-bottom: 4px;
         }
-        
+
         .patient-meta {
             font-size: 14px;
             color: #666;
         }
-        
+
         .reply-meta {
             display: flex;
             justify-content: space-between;
@@ -106,18 +110,18 @@
             border-radius: 8px;
             margin-bottom: 16px;
         }
-        
+
         .doctor-info {
             font-size: 14px;
             font-weight: 500;
             color: #1976d2;
         }
-        
+
         .reply-time {
             font-size: 12px;
             color: #666;
         }
-        
+
         .readonly-content {
             background: #f8f9fa;
             border: 1px solid #e9ecef;
@@ -127,24 +131,24 @@
             line-height: 1.6;
             color: #333;
         }
-        
+
         .readonly-content p {
             margin-bottom: 12px;
         }
-        
+
         .readonly-content ul {
             margin-bottom: 12px;
             padding-left: 20px;
         }
-        
+
         .readonly-content li {
             margin-bottom: 8px;
         }
-        
+
         .readonly-content strong {
             color: #1976d2;
         }
-        
+
         .bottom-actions {
             position: fixed;
             bottom: 0;
@@ -156,7 +160,7 @@
             display: flex;
             gap: 12px;
         }
-        
+
         .action-button {
             display: block;
             padding: 14px;
@@ -168,25 +172,26 @@
             transition: all 0.3s ease;
             flex: 1;
         }
-        
+
         .secondary-button {
             background: rgba(25, 118, 210, 0.1);
             color: #1976d2;
         }
-        
+
         .secondary-button:hover {
             background: rgba(25, 118, 210, 0.15);
         }
-        
+
         .fade-in {
             animation: fadeIn 0.5s ease-out;
         }
-        
+
         @keyframes fadeIn {
             from {
                 opacity: 0;
                 transform: translateY(10px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -194,8 +199,9 @@
         }
     </style>
 </head>
+
 <body>
-    
+
     <!-- 顶部导航 -->
     <div class="top-nav">
         <div class="flex items-center">
@@ -208,7 +214,7 @@
             <span class="text-sm text-green-600 font-medium">已回复</span>
         </div>
     </div>
-    
+
     <!-- 主要内容 -->
     <div class="main-content">
         <!-- 患者信息 -->
@@ -224,7 +230,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- 回复信息 -->
         <div class="section-card fade-in" style="animation-delay: 0.1s">
             <div class="section-title">
@@ -235,7 +241,7 @@
                 <span class="reply-time" id="replyTime">2024年1月15日 14:30</span>
             </div>
         </div>
-        
+
         <!-- 回复内容 -->
         <div class="section-card fade-in" style="animation-delay: 0.2s">
             <div class="section-title">
@@ -246,14 +252,14 @@
             </div>
         </div>
     </div>
-    
+
     <!-- 底部操作 -->
     <div class="bottom-actions fade-in" style="animation-delay: 0.3s">
         <button class="secondary-button action-button" onclick="goBack()">
             <i class="fas fa-arrow-left mr-2"></i>返回消息列表
         </button>
     </div>
-    
+
     <script>
         // 返回上一页
         function goBack() {
@@ -263,17 +269,17 @@
                 window.location.href = 'doctor-messages.html';
             }
         }
-        
+
         // 页面加载时获取回复数据
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const urlParams = new URLSearchParams(window.location.search);
             const patientId = urlParams.get('patient');
-            
+
             if (patientId) {
                 loadReplyData(patientId);
             }
         });
-        
+
         // 加载回复数据
         function loadReplyData(patientId) {
             // 模拟数据 - 实际应用中从后端获取或localStorage获取
@@ -345,19 +351,19 @@
                     }
                 }
             };
-            
+
             const replyData = replyDataMap[patientId];
-            
+
             if (replyData) {
                 // 更新患者信息
                 document.getElementById('patientAvatar').textContent = replyData.patient.avatar;
                 document.getElementById('patientName').textContent = replyData.patient.name;
                 document.getElementById('patientMeta').textContent = replyData.patient.meta;
-                
+
                 // 更新回复信息
                 document.getElementById('doctorInfo').textContent = replyData.reply.doctor;
                 document.getElementById('replyTime').textContent = replyData.reply.time;
-                
+
                 // 显示回复内容
                 document.getElementById('replyContent').innerHTML = replyData.reply.content;
             } else {
@@ -367,4 +373,5 @@
         }
     </script>
 </body>
+
 </html>
