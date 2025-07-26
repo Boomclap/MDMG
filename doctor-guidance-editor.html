@@ -533,6 +533,100 @@
             font-size: 12px;
             text-align: center;
         }
+
+        /* 数值输入模式样式 */
+        .numeric-input-item {
+            display: block;
+            padding: 16px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .numeric-input-item:hover {
+            background: rgba(25, 118, 210, 0.02);
+        }
+
+        .numeric-input-item.active {
+            background: rgba(25, 118, 210, 0.05);
+        }
+
+        .numeric-input-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .numeric-input-label {
+            font-size: 15px;
+            color: #333;
+            font-weight: 500;
+            line-height: 1.4;
+            margin-left: 8px;
+        }
+
+        .numeric-input-container {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding-left: 32px;
+        }
+
+        .numeric-input {
+            width: 90px;
+            padding: 10px 12px;
+            border: 2px solid #1976d2;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+            color: #1976d2;
+            background: white;
+            outline: none;
+            margin-right: 8px;
+        }
+
+        .numeric-input:focus {
+            border-color: #1565c0;
+            box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+        }
+
+        .numeric-unit {
+            margin-right: 12px;
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+            min-width: 40px;
+        }
+
+        .numeric-controls {
+            display: flex;
+            gap: 4px;
+        }
+
+        .numeric-btn {
+            width: 32px;
+            height: 32px;
+            border: 1px solid #1976d2;
+            background: white;
+            color: #1976d2;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin: 0 2px;
+        }
+
+        .numeric-btn:hover {
+            background: #1976d2;
+            color: white;
+        }
+
+        .numeric-btn:active {
+            transform: scale(0.95);
+        }
     </style>
 </head>
 
@@ -583,7 +677,6 @@
                 <div class="template-item" onclick="selectTemplate('diabetes-exercise')">糖尿病运动指导</div>
                 <div class="template-item" onclick="selectTemplate('hypertension')">高血压用药指导</div>
                 <div class="template-item" onclick="selectTemplate('general-health')">一般健康建议</div>
-                <div class="template-item" onclick="selectTemplate('custom')">自定义模板</div>
             </div>
         </div>
 
@@ -783,24 +876,25 @@
                             name: '糖尿病饮食指导',
                             suggestions: {
                                 text: [
-                                    { id: 'diet-control', content: '减少碳水化合物摄入，控制每餐主食量' },
-                                    { id: 'quit-smoking', content: '避免吸烟和饮酒，保持健康生活方式' },
-                                    { id: 'regular-sleep', content: '保持良好的睡眠习惯，每晚7-8小时' }
+                                    { id: 'diet-control', content: '减少碳水化合物摄入，控制每餐主食量', defaultSelected: true },
+                                    { id: 'quit-smoking', content: '避免吸烟和饮酒，保持健康生活方式', defaultSelected: false },
+                                    { id: 'regular-sleep', content: '保持良好的睡眠习惯，每晚7-8小时', defaultSelected: true }
                                 ],
                                 multiple: {
                                     'diet-types': {
                                         title: '饮食控制方式（可多选）',
                                         options: [
-                                            { id: 'low-salt', content: '每日盐摄入量控制在5g以下' },
-                                            { id: 'low-sugar', content: '避免精制糖和高糖水果' },
-                                            { id: 'more-vegetables', content: '增加蔬菜和优质蛋白质比例' },
-                                            { id: 'control-staple', content: '每餐主食控制在1-2两' }
+                                            { id: 'low-salt', content: '每日盐摄入量控制在5g以下', defaultSelected: true },
+                                            { id: 'low-sugar', content: '避免精制糖和高糖水果', defaultSelected: true },
+                                            { id: 'more-vegetables', content: '增加蔬菜和优质蛋白质比例', defaultSelected: false },
+                                            { id: 'control-staple', content: '每餐主食控制在1-2两', defaultSelected: true }
                                         ]
                                     }
                                 },
                                 single: {
                                     'followup': {
                                         title: '复诊频率（单选）',
+                                        defaultSelected: 'one-month',
                                         options: [
                                             { id: 'one-month', content: '1个月后复诊' },
                                             { id: 'three-months', content: '3个月后复诊' },
@@ -809,11 +903,41 @@
                                     },
                                     'monitor': {
                                         title: '血糖监测频率（单选）',
+                                        defaultSelected: 'twice-week',
                                         options: [
                                             { id: 'daily', content: '每天监测血糖' },
                                             { id: 'twice-week', content: '每周2-3次监测血糖' },
                                             { id: 'once-week', content: '每周1次监测血糖' }
                                         ]
+                                    }
+                                },
+                                numeric: {
+                                    'daily-calories': {
+                                        title: '每日热量摄入',
+                                        unit: 'kcal',
+                                        defaultValue: 1800,
+                                        defaultSelected: true,
+                                        min: 1200,
+                                        max: 2500,
+                                        step: 50
+                                    },
+                                    'carb-ratio': {
+                                        title: '碳水化合物比例',
+                                        unit: '%',
+                                        defaultValue: 45,
+                                        defaultSelected: false,
+                                        min: 30,
+                                        max: 60,
+                                        step: 5
+                                    },
+                                    'meal-times': {
+                                        title: '每日用餐次数',
+                                        unit: '次',
+                                        defaultValue: 5,
+                                        defaultSelected: true,
+                                        min: 3,
+                                        max: 6,
+                                        step: 1
                                     }
                                 }
                             }
@@ -845,6 +969,24 @@
                                             { id: 'evening', content: '晚上运动' }
                                         ]
                                     }
+                                },
+                                numeric: {
+                                    'exercise-duration': {
+                                        title: '每日运动时长',
+                                        unit: '分钟',
+                                        defaultValue: 30,
+                                        min: 10,
+                                        max: 120,
+                                        step: 5
+                                    },
+                                    'exercise-frequency': {
+                                        title: '每周运动次数',
+                                        unit: '次',
+                                        defaultValue: 5,
+                                        min: 3,
+                                        max: 7,
+                                        step: 1
+                                    }
                                 }
                             }
                         },
@@ -874,6 +1016,24 @@
                                             { id: 'one-month', content: '1个月后复诊' },
                                             { id: 'three-months', content: '3个月后复诊' }
                                         ]
+                                    }
+                                },
+                                numeric: {
+                                    'systolic-bp': {
+                                        title: '目标收缩压',
+                                        unit: 'mmHg',
+                                        defaultValue: 130,
+                                        min: 110,
+                                        max: 140,
+                                        step: 5
+                                    },
+                                    'diastolic-bp': {
+                                        title: '目标舒张压',
+                                        unit: 'mmHg',
+                                        defaultValue: 80,
+                                        min: 70,
+                                        max: 90,
+                                        step: 5
                                     }
                                 }
                             }
@@ -906,6 +1066,24 @@
                                             { id: 'two-years', title: '体检频率', content: '两年一次体检' }
                                         ]
                                     }
+                                },
+                                numeric: {
+                                    'daily-water': {
+                                        title: '每日饮水量',
+                                        unit: 'ml',
+                                        defaultValue: 2000,
+                                        min: 1500,
+                                        max: 3000,
+                                        step: 100
+                                    },
+                                    'sleep-hours': {
+                                        title: '每日睡眠时长',
+                                        unit: '小时',
+                                        defaultValue: 8,
+                                        min: 6,
+                                        max: 10,
+                                        step: 0.5
+                                    }
                                 }
                             }
                         }
@@ -913,6 +1091,40 @@
 
                     // 当前选择的模板
                     let currentTemplate = 'diabetes-diet';
+
+                    // 存储数值输入的值
+                    let numericValues = {};
+
+                    // 更新数值
+                    function updateNumericValue(key, value) {
+                        const template = templates[currentTemplate];
+                        const numeric = template.suggestions.numeric[key];
+
+                        // 验证数值范围
+                        value = Math.max(numeric.min, Math.min(numeric.max, parseInt(value) || numeric.defaultValue));
+
+                        // 更新输入框显示
+                        const input = document.getElementById(`numeric-${key}`);
+                        if (input) {
+                            input.value = value;
+                        }
+
+                        // 存储数值
+                        numericValues[key] = value;
+
+                        // 更新编辑器内容
+                        updateEditorWithSuggestions();
+                    }
+
+                    // 调整数值（+/-按钮）
+                    function adjustNumericValue(key, delta) {
+                        const input = document.getElementById(`numeric-${key}`);
+                        if (input) {
+                            const currentValue = parseInt(input.value) || 0;
+                            const newValue = currentValue + delta;
+                            updateNumericValue(key, newValue);
+                        }
+                    }
 
                     // 页面加载时初始化
                     document.addEventListener('DOMContentLoaded', function () {
@@ -1011,7 +1223,121 @@
                             html += '</div>';
                         });
 
+                        // 渲染数值输入模式建议
+                        if (template.suggestions.numeric && Object.keys(template.suggestions.numeric).length > 0) {
+                            html += '<div class="suggestion-group">';
+                            html += '<div class="suggestion-group-title">数值设置</div>';
+
+                            Object.keys(template.suggestions.numeric).forEach(numericKey => {
+                                const numeric = template.suggestions.numeric[numericKey];
+                                html += `
+                                    <div class="numeric-input-item" onclick="toggleNumericSuggestion(this, '${numericKey}')">
+                                        <div class="numeric-input-header">
+                                            <div class="suggestion-checkbox"></div>
+                                            <div class="numeric-input-label">${numeric.title}</div>
+                                        </div>
+                                        <div class="numeric-input-container">
+                                            <input type="number" class="numeric-input" 
+                                                   id="numeric-${numericKey}"
+                                                   value="${numeric.defaultValue}" 
+                                                   min="${numeric.min}" 
+                                                   max="${numeric.max}" 
+                                                   step="${numeric.step}"
+                                                   onclick="event.stopPropagation()"
+                                                   onchange="updateNumericValue('${numericKey}', this.value)">
+                                            <span class="numeric-unit">${numeric.unit}</span>
+                                            <div class="numeric-controls">
+                                                <button class="numeric-btn" onclick="event.stopPropagation(); adjustNumericValue('${numericKey}', -${numeric.step})">
+                                                    <i class="fas fa-minus"></i>
+                                                </button>
+                                                <button class="numeric-btn" onclick="event.stopPropagation(); adjustNumericValue('${numericKey}', ${numeric.step})">
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                            });
+
+                            html += '</div>';
+                        }
+
                         container.innerHTML = html;
+
+                        // 应用默认选中状态
+                        applyDefaultSelections(templateId);
+                    }
+
+                    // 应用默认选中状态
+                    function applyDefaultSelections(templateId) {
+                        const template = templates[templateId];
+                        if (!template) return;
+
+                        // 应用文本建议的默认选中状态
+                        if (template.suggestions.text) {
+                            template.suggestions.text.forEach(suggestion => {
+                                if (suggestion.defaultSelected) {
+                                    const element = document.querySelector(`[onclick*="toggleTextSuggestion(this, '${suggestion.id}')"]`);
+                                    if (element) {
+                                        const checkbox = element.querySelector('.suggestion-checkbox');
+                                        if (checkbox) {
+                                            checkbox.classList.add('checked');
+                                        }
+                                    }
+                                }
+                            });
+                        }
+
+                        // 应用多选建议的默认选中状态
+                        Object.keys(template.suggestions.multiple || {}).forEach(groupKey => {
+                            const group = template.suggestions.multiple[groupKey];
+                            group.options.forEach(option => {
+                                if (option.defaultSelected) {
+                                    const element = document.querySelector(`[onclick*="toggleMultipleSuggestion(this, '${groupKey}', '${option.id}')"]`);
+                                    if (element) {
+                                        const checkbox = element.querySelector('.suggestion-checkbox');
+                                        if (checkbox) {
+                                            checkbox.classList.add('checked');
+                                        }
+                                    }
+                                }
+                            });
+                        });
+
+                        // 应用单选建议的默认选中状态
+                        Object.keys(template.suggestions.single || {}).forEach(groupKey => {
+                            const group = template.suggestions.single[groupKey];
+                            if (group.defaultSelected) {
+                                const element = document.querySelector(`[onclick*="toggleSingleSuggestion(this, '${groupKey}', '${group.defaultSelected}')"]`);
+                                if (element) {
+                                    const radio = element.querySelector('.suggestion-radio');
+                                    if (radio) {
+                                        radio.classList.add('checked');
+                                    }
+                                }
+                            }
+                        });
+
+                        // 应用数值建议的默认选中状态
+                        Object.keys(template.suggestions.numeric || {}).forEach(numericKey => {
+                            const numeric = template.suggestions.numeric[numericKey];
+                            if (numeric.defaultSelected) {
+                                const element = document.querySelector(`[onclick*="toggleNumericSuggestion(this, '${numericKey}')"]`);
+                                if (element) {
+                                    const checkbox = element.querySelector('.suggestion-checkbox');
+                                    if (checkbox) {
+                                        checkbox.classList.add('checked');
+                                    }
+                                }
+                                // 初始化数值
+                                numericValues[numericKey] = numeric.defaultValue;
+                            }
+                        });
+
+                        // 应用默认选中状态后更新编辑器内容
+                        setTimeout(() => {
+                            updateEditorWithSuggestions();
+                        }, 100);
                     }
 
                     // 文本模式：直接勾选
@@ -1046,6 +1372,25 @@
                         // 选中当前选项
                         const radio = element.querySelector('.suggestion-radio');
                         radio.classList.add('checked');
+
+                        // 更新编辑器内容
+                        updateEditorWithSuggestions();
+                    }
+
+                    // 数值模式：可选择或取消选择
+                    function toggleNumericSuggestion(element, numericKey) {
+                        const checkbox = element.querySelector('.suggestion-checkbox');
+                        checkbox.classList.toggle('checked');
+
+                        // 如果选中，确保数值已初始化
+                        if (checkbox.classList.contains('checked')) {
+                            const template = templates[currentTemplate];
+                            const numeric = template.suggestions.numeric[numericKey];
+                            const input = document.getElementById(`numeric-${numericKey}`);
+                            if (input && !numericValues[numericKey]) {
+                                numericValues[numericKey] = parseInt(input.value) || numeric.defaultValue;
+                            }
+                        }
 
                         // 更新编辑器内容
                         updateEditorWithSuggestions();
@@ -1105,6 +1450,25 @@
                             });
                         });
 
+                        // 获取选中的数值输入建议
+                        Object.keys(template.suggestions.numeric || {}).forEach(numericKey => {
+                            const numeric = template.suggestions.numeric[numericKey];
+                            const element = document.querySelector(`[onclick*="toggleNumericSuggestion(this, '${numericKey}')"]`);
+
+                            if (element) {
+                                const checkbox = element.querySelector('.suggestion-checkbox');
+                                if (checkbox && checkbox.classList.contains('checked')) {
+                                    const input = document.getElementById(`numeric-${numericKey}`);
+                                    const value = input ? parseInt(input.value) : numeric.defaultValue;
+
+                                    selectedSuggestions.push({
+                                        title: numeric.title,
+                                        content: `${value}${numeric.unit}`
+                                    });
+                                }
+                            }
+                        });
+
                         // 生成编辑器内容
                         let editorContent = '<p>尊敬的张先生：</p>\n\n';
                         editorContent += '<p>根据您的健康问卷，我为您提供以下健康建议：</p>\n\n';
@@ -1113,7 +1477,7 @@
                             editorContent += '<ul>\n';
                             selectedSuggestions.forEach(suggestion => {
                                 // 文本模式：直接显示content
-                                // 多选和单选模式：显示title + content
+                                // 多选、单选和数值模式：显示title + content
                                 if (suggestion.title && suggestion.content && suggestion.title !== suggestion.content) {
                                     editorContent += `    <li><strong>${suggestion.title}：</strong>${suggestion.content}</li>\n`;
                                 } else {
