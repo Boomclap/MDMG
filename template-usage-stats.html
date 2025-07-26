@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>模板使用统计</title>
+    <link href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet"
+        onerror="this.onerror=null;this.href='https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css'">
+    <link href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-M/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"
+        onerror="this.onerror=null;this.href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css'">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        * {
+            font-family: 'Noto Sans SC', Tahoma, Arial, Roboto, "Droid Sans", "Helvetica Neue", "Droid Sans Fallback", "Heiti SC", "Hiragino Sans GB", Simsun, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .top-nav {
+            height: 56px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .main-container {
+            padding: 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stats-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .stats-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .stats-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 20px;
+            color: white;
+        }
+
+        .stats-icon.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .stats-icon.success {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .stats-icon.warning {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .stats-icon.info {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+
+        .stats-title {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .stats-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .chart-title i {
+            margin-right: 8px;
+            color: #1890ff;
+        }
+
+        .usage-chart {
+            height: 300px;
+            display: flex;
+            align-items: end;
+            justify-content: space-around;
+            padding: 20px 0;
+            border-bottom: 2px solid #f0f0f0;
+            position: relative;
+        }
+
+        .chart-bar {
+            width: 40px;
+            background: linear-gradient(180deg, #1890ff 0%, #40a9ff 100%);
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .chart-bar:hover {
+            background: linear-gradient(180deg, #1565c0 0%, #1890ff 100%);
+            transform: scale(1.05);
+        }
+
+        .chart-bar-label {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            color: #666;
+            white-space: nowrap;
+        }
+
+        .chart-bar-value {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            font-weight: 600;
+            color: #333;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 2px 6px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .template-ranking {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .ranking-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .ranking-item:last-child {
+            border-bottom: none;
+        }
+
+        .ranking-number {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            margin-right: 12px;
+        }
+
+        .ranking-number.top {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #333;
+        }
+
+        .ranking-number.normal {
+            background: #f5f5f5;
+            color: #666;
+        }
+
+        .ranking-info {
+            flex: 1;
+        }
+
+        .ranking-name {
+            font-size: 15px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .ranking-category {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .ranking-count {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1890ff;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 顶部导航 -->
+    <div class="top-nav">
+        <div class="flex items-center">
+            <div class="mr-3 text-blue-600 cursor-pointer" onclick="goBack()">
+                <i class="fas fa-arrow-left"></i>
+            </div>
+            <div class="font-semibold">模板使用统计</div>
+        </div>
+        <div class="flex items-center">
+            <button class="btn btn-secondary" onclick="refreshStats()">
+                <i class="fas fa-sync-alt"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- 主容器 -->
+    <div class="main-container">
+        <!-- 统计卡片 -->
+        <div class="stats-grid">
+            <div class="stats-card">
+                <div class="stats-header">
+                    <div class="stats-icon primary">
+                        <i class="fas fa-file-medical-alt"></i>
+                    </div>
+                    <div>
+                        <div class="stats-title">模板总数</div>
+                        <div class="stats-value" id="totalTemplates">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-card">
+                <div class="stats-header">
+                    <div class="stats-icon success">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div>
+                        <div class="stats-title">总使用次数</div>
+                        <div class="stats-value" id="totalUsage">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-card">
+                <div class="stats-header">
+                    <div class="stats-icon warning">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div>
+                        <div class="stats-title">平均使用次数</div>
+                        <div class="stats-value" id="averageUsage">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-card">
+                <div class="stats-header">
+                    <div class="stats-icon info">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div>
+                        <div class="stats-title">最近更新</div>
+                        <div class="stats-value" id="lastUpdate" style="font-size: 16px;">--</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 使用趋势图表 -->
+        <div class="chart-container">
+            <div class="chart-title">
+                <i class="fas fa-chart-bar"></i>模板使用分布
+            </div>
+            <div class="usage-chart" id="usageChart">
+                <!-- 图表将在这里动态生成 -->
+            </div>
+        </div>
+
+        <!-- 模板排行榜 -->
+        <div class="template-ranking">
+            <div class="chart-title">
+                <i class="fas fa-trophy"></i>使用排行榜
+            </div>
+            <div id="rankingList">
+                <!-- 排行榜将在这里动态生成 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let templates = {};
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function () {
+            loadTemplates();
+            renderStats();
+        });
+
+        // 返回上一页
+        function goBack() {
+            window.history.back();
+        }
+
+        // 加载模板数据
+        function loadTemplates() {
+            const savedTemplates = localStorage.getItem('healthTemplates');
+            if (savedTemplates) {
+                templates = JSON.parse(savedTemplates);
+            }
+        }
+
+        // 渲染统计数据
+        function renderStats() {
+            const templateList = Object.values(templates);
+            
+            // 基础统计
+            const totalTemplates = templateList.length;
+            const totalUsage = templateList.reduce((sum, template) => sum + (template.usageCount || 0), 0);
+            const averageUsage = totalTemplates > 0 ? Math.round(totalUsage / totalTemplates) : 0;
+            
+            // 最近更新时间
+            const lastUpdateTime = templateList.length > 0 
+                ? Math.max(...templateList.map(t => t.updatedAt || t.createdAt || 0))
+                : 0;
+            
+            // 更新统计卡片
+            document.getElementById('totalTemplates').textContent = totalTemplates;
+            document.getElementById('totalUsage').textContent = totalUsage;
+            document.getElementById('averageUsage').textContent = averageUsage;
+            document.getElementById('lastUpdate').textContent = lastUpdateTime > 0 
+                ? formatRelativeTime(lastUpdateTime) 
+                : '--';
+
+            // 渲染图表和排行榜
+            renderUsageChart(templateList);
+            renderRanking(templateList);
+        }
+
+        // 渲染使用分布图表
+        function renderUsageChart(templateList) {
+            const chartContainer = document.getElementById('usageChart');
+            
+            if (templateList.length === 0) {
+                chartContainer.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <div>暂无数据</div>
+                    </div>
+                `;
+                return;
+            }
+
+            // 按使用次数排序，取前10个
+            const sortedTemplates = templateList
+                .sort((a, b) => (b.usageCount || 0) - (a.usageCount || 0))
+                .slice(0, 10);
+
+            const maxUsage = Math.max(...sortedTemplates.map(t => t.usageCount || 0));
+            
+            let html = '';
+            sortedTemplates.forEach(template => {
+                const usage = template.usageCount || 0;
+                const height = maxUsage > 0 ? (usage / maxUsage) * 200 : 10;
+                
+                html += `
+                    <div class="chart-bar" style="height: ${height}px;" title="${template.name}: ${usage}次">
+                        <div class="chart-bar-value">${usage}</div>
+                        <div class="chart-bar-label">${template.name.length > 6 ? template.name.substring(0, 6) + '...' : template.name}</div>
+                    </div>
+                `;
+            });
+
+            chartContainer.innerHTML = html;
+        }
+
+        // 渲染排行榜
+        function renderRanking(templateList) {
+            const rankingContainer = document.getElementById('rankingList');
+            
+            if (templateList.length === 0) {
+                rankingContainer.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <div>暂无数据</div>
+                    </div>
+                `;
+                return;
+            }
+
+            // 按使用次数排序
+            const sortedTemplates = templateList
+                .sort((a, b) => (b.usageCount || 0) - (a.usageCount || 0));
+
+            let html = '';
+            sortedTemplates.forEach((template, index) => {
+                const isTop3 = index < 3;
+                const rankingClass = isTop3 ? 'top' : 'normal';
+                
+                html += `
+                    <div class="ranking-item">
+                        <div class="ranking-number ${rankingClass}">
+                            ${index + 1}
+                        </div>
+                        <div class="ranking-info">
+                            <div class="ranking-name">${template.name}</div>
+                            <div class="ranking-category">${template.category || '通用'}</div>
+                        </div>
+                        <div class="ranking-count">${template.usageCount || 0}</div>
+                    </div>
+                `;
+            });
+
+            rankingContainer.innerHTML = html;
+        }
+
+        // 格式化相对时间
+        function formatRelativeTime(timestamp) {
+            const now = Date.now();
+            const diff = now - timestamp;
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
+
+            if (minutes < 1) return '刚刚';
+            if (minutes < 60) return `${minutes}分钟前`;
+            if (hours < 24) return `${hours}小时前`;
+            if (days < 7) return `${days}天前`;
+            
+            const date = new Date(timestamp);
+            return `${date.getMonth() + 1}月${date.getDate()}日`;
+        }
+
+        // 刷新统计数据
+        function refreshStats() {
+            loadTemplates();
+            renderStats();
+            
+            // 显示刷新动画
+            const refreshBtn = document.querySelector('.fa-sync-alt');
+            refreshBtn.style.animation = 'spin 1s linear';
+            setTimeout(() => {
+                refreshBtn.style.animation = '';
+            }, 1000);
+        }
+
+        // 添加旋转动画
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes spin {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+
+</html>

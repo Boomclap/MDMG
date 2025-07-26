@@ -1,0 +1,2245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>健康指导模板管理</title>
+    <link href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet"
+        onerror="this.onerror=null;this.href='https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css'">
+    <link href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-M/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"
+        onerror="this.onerror=null;this.href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css'">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Noto Sans SC', Tahoma, Arial, Roboto, "Droid Sans", "Helvetica Neue", "Droid Sans Fallback", "Heiti SC", "Hiragino Sans GB", Simsun, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .top-nav {
+            height: 56px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .main-container {
+            padding: 20px;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: #1890ff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #40a9ff;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #666;
+            border: 1px solid #d9d9d9;
+        }
+
+        .btn-secondary:hover {
+            color: #1890ff;
+            border-color: #1890ff;
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #1890ff;
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th {
+            background: #fafafa;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 500;
+            color: #666;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+
+        .table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .table tbody tr:hover {
+            background: #fafafa;
+        }
+
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .row-number {
+            width: 60px;
+            text-align: center;
+            color: #999;
+        }
+
+        .template-name {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .usage-count {
+            color: #1890ff;
+            font-weight: 500;
+        }
+
+        .date-text {
+            color: #666;
+            font-size: 13px;
+        }
+
+        .action-links {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-link {
+            color: #1890ff;
+            text-decoration: none;
+            font-size: 13px;
+            cursor: pointer;
+            padding: 2px 4px;
+            border-radius: 3px;
+            transition: all 0.2s ease;
+        }
+
+        .action-link:hover {
+            background: rgba(24, 144, 255, 0.1);
+        }
+
+        .action-link.danger {
+            color: #ff4d4f;
+        }
+
+        .action-link.danger:hover {
+            background: rgba(255, 77, 79, 0.1);
+        }
+
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            background: white;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .pagination-info {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .pagination-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pagination-btn {
+            padding: 4px 8px;
+            border: 1px solid #d9d9d9;
+            background: white;
+            color: #666;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            min-width: 32px;
+            text-align: center;
+        }
+
+        .pagination-btn:hover {
+            color: #1890ff;
+            border-color: #1890ff;
+        }
+
+        .pagination-btn.active {
+            background: #1890ff;
+            color: white;
+            border-color: #1890ff;
+        }
+
+        .pagination-btn:disabled {
+            color: #ccc;
+            border-color: #f0f0f0;
+            cursor: not-allowed;
+        }
+
+        .pagination-btn:disabled:hover {
+            color: #ccc;
+            border-color: #f0f0f0;
+        }
+
+        /* 模态框样式 */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .modal-close {
+            font-size: 20px;
+            color: #999;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .modal-close:hover {
+            color: #666;
+            background: #f5f5f5;
+        }
+
+        .modal-body {
+            padding: 20px;
+            max-height: calc(90vh - 120px);
+            overflow-y: auto;
+        }
+
+        .modal-footer {
+            padding: 16px 20px;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #333;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #1890ff;
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+        }
+
+        .form-textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-text {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .empty-subtext {
+            font-size: 14px;
+            opacity: 0.7;
+        }
+
+        /* 建议项目编辑器样式 */
+        .suggestion-tabs {
+            border: 1px solid #f0f0f0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .tab-nav {
+            display: flex;
+            background: #fafafa;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px 16px;
+            border: none;
+            background: transparent;
+            color: #666;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-right: 1px solid #f0f0f0;
+        }
+
+        .tab-btn:last-child {
+            border-right: none;
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: #1890ff;
+            font-weight: 500;
+        }
+
+        .tab-btn:hover:not(.active) {
+            background: rgba(24, 144, 255, 0.05);
+            color: #1890ff;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 16px;
+            min-height: 200px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .tab-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .tab-header span {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 4px;
+        }
+
+        .suggestion-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .suggestion-item {
+            border: 1px solid #f0f0f0;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 8px;
+            background: white;
+            transition: all 0.2s ease;
+        }
+
+        .suggestion-item:hover {
+            border-color: #d9d9d9;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .suggestion-item-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .suggestion-item-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-icon {
+            width: 24px;
+            height: 24px;
+            border: none;
+            background: transparent;
+            color: #666;
+            cursor: pointer;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .btn-icon:hover {
+            background: rgba(0, 0, 0, 0.05);
+            color: #333;
+        }
+
+        .btn-icon.danger:hover {
+            background: rgba(255, 77, 79, 0.1);
+            color: #ff4d4f;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .form-row .form-input {
+            margin-bottom: 0;
+        }
+
+        .form-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .checkbox {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #d9d9d9;
+            border-radius: 3px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .checkbox.checked {
+            background: #1890ff;
+            border-color: #1890ff;
+        }
+
+        .checkbox.checked::after {
+            content: '';
+            position: absolute;
+            top: 1px;
+            left: 4px;
+            width: 4px;
+            height: 8px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+
+        .empty-suggestion {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .empty-suggestion i {
+            font-size: 32px;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 顶部导航 -->
+    <div class="top-nav">
+        <div class="flex items-center">
+            <div class="mr-3 text-blue-600 cursor-pointer" onclick="goBack()">
+                <i class="fas fa-arrow-left"></i>
+            </div>
+            <div class="font-semibold">健康指导模板管理</div>
+        </div>
+        <div class="flex items-center">
+            <i class="fas fa-cog text-gray-500"></i>
+        </div>
+    </div>
+
+    <!-- 主容器 -->
+    <div class="main-container">
+        <!-- 页面头部 -->
+        <div class="page-header">
+            <div class="page-title">模板管理</div>
+            <div class="header-actions">
+                <button class="btn btn-primary" onclick="openCreateModal()">
+                    <i class="fas fa-plus"></i>新建
+                </button>
+                <button class="btn btn-secondary" onclick="showImportModal()">
+                    <i class="fas fa-upload"></i>导入
+                </button>
+            
+            </div>
+        </div>
+
+        <!-- 搜索栏 -->
+        <div class="search-bar">
+            <input type="text" class="search-input" placeholder="请输入模板名称" id="searchInput" onkeyup="searchTemplates()">
+            <button class="btn btn-secondary" onclick="searchTemplates()">
+                <i class="fas fa-search"></i>搜索
+            </button>
+        </div>
+
+        <!-- 表格容器 -->
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="row-number">序号</th>
+                        <th>模板名称</th>
+                        <th>适用分类</th>
+                        <th>使用次数</th>
+                        <th>创建时间</th>
+                        <th>更新时间</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="templateTableBody">
+                    <!-- 表格内容将在这里动态生成 -->
+                </tbody>
+            </table>
+
+            <!-- 分页 -->
+            <div class="pagination">
+                <div class="pagination-info">
+                    共 <span id="totalCount">0</span> 条，每页显示 <span id="pageSize">10</span> 条
+                </div>
+                <div class="pagination-controls">
+                    <button class="pagination-btn" id="prevBtn" onclick="changePage(-1)">上一页</button>
+                    <button class="pagination-btn active" id="currentPageBtn">1</button>
+                    <button class="pagination-btn" id="nextBtn" onclick="changePage(1)">下一页</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 创建/编辑模板弹窗 -->
+    <div id="templateModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="modalTitle">新建模板</div>
+                <div class="modal-close" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">模板名称 <span style="color: #ff4d4f;">*</span></label>
+                    <input type="text" class="form-input" id="modalTemplateName" placeholder="请输入模板名称">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">模板描述</label>
+                    <textarea class="form-input form-textarea" id="modalTemplateDescription" placeholder="请输入模板描述"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">适用分类</label>
+                    <input type="text" class="form-input" id="modalTemplateCategory" placeholder="请输入适用分类">
+                </div>
+
+                <!-- 建议项目编辑区域 -->
+                <div id="modalSuggestionsEditor">
+                    <div class="form-label" style="margin-bottom: 16px;">建议项目配置</div>
+                    
+                    <!-- 标签页导航 -->
+                    <div class="suggestion-tabs">
+                        <div class="tab-nav">
+                            <button class="tab-btn active" onclick="switchTab('text')">文本建议</button>
+                            <button class="tab-btn" onclick="switchTab('multiple')">多选建议</button>
+                            <button class="tab-btn" onclick="switchTab('single')">单选建议</button>
+                            <button class="tab-btn" onclick="switchTab('numeric')">数值设置</button>
+                        </div>
+                        
+                        <!-- 文本建议标签页 -->
+                        <div class="tab-content active" id="textTab">
+                            <div class="tab-header">
+                                <span>文本建议列表</span>
+                                <button class="btn-small btn-primary" onclick="addTextSuggestion()">
+                                    <i class="fas fa-plus"></i>添加建议
+                                </button>
+                            </div>
+                            <div class="suggestion-list" id="textSuggestionList">
+                                <!-- 文本建议项目将在这里动态生成 -->
+                            </div>
+                        </div>
+                        
+                        <!-- 多选建议标签页 -->
+                        <div class="tab-content" id="multipleTab">
+                            <div class="tab-header">
+                                <span>多选建议组列表</span>
+                                <button class="btn-small btn-primary" onclick="addMultipleGroup()">
+                                    <i class="fas fa-plus"></i>添加组
+                                </button>
+                            </div>
+                            <div class="suggestion-list" id="multipleSuggestionList">
+                                <!-- 多选建议组将在这里动态生成 -->
+                            </div>
+                        </div>
+                        
+                        <!-- 单选建议标签页 -->
+                        <div class="tab-content" id="singleTab">
+                            <div class="tab-header">
+                                <span>单选建议组列表</span>
+                                <button class="btn-small btn-primary" onclick="addSingleGroup()">
+                                    <i class="fas fa-plus"></i>添加组
+                                </button>
+                            </div>
+                            <div class="suggestion-list" id="singleSuggestionList">
+                                <!-- 单选建议组将在这里动态生成 -->
+                            </div>
+                        </div>
+                        
+                        <!-- 数值设置标签页 -->
+                        <div class="tab-content" id="numericTab">
+                            <div class="tab-header">
+                                <span>数值设置列表</span>
+                                <button class="btn-small btn-primary" onclick="addNumericSetting()">
+                                    <i class="fas fa-plus"></i>添加设置
+                                </button>
+                            </div>
+                            <div class="suggestion-list" id="numericSuggestionList">
+                                <!-- 数值设置将在这里动态生成 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+                <button class="btn btn-primary" onclick="saveModalTemplate()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 模板预览弹窗 -->
+    <div id="previewModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="previewModalTitle">模板预览</div>
+                <div class="modal-close" onclick="closePreviewModal()">
+                    <i class="fas fa-times"></i>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div id="previewContent">
+                    <!-- 预览内容将在这里动态生成 -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closePreviewModal()">关闭</button>
+                <button class="btn btn-primary" onclick="exportTemplate()">导出模板</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 模板导入弹窗 -->
+    <div id="importModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">导入模板</div>
+                <div class="modal-close" onclick="closeImportModal()">
+                    <i class="fas fa-times"></i>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">选择模板文件</label>
+                    <input type="file" id="importFileInput" accept=".json" class="form-input" onchange="handleFileSelect(event)">
+                    <div style="font-size: 12px; color: #666; margin-top: 4px;">
+                        支持JSON格式的模板文件
+                    </div>
+                </div>
+                <div id="importPreview" style="display: none;">
+                    <div class="form-group">
+                        <label class="form-label">模板预览</label>
+                        <div id="importPreviewContent" style="background: #f8f9fa; padding: 12px; border-radius: 6px; border: 1px solid #e0e0e0;">
+                            <!-- 导入预览内容 -->
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-checkbox">
+                            <div class="checkbox checked" id="overwriteCheckbox" onclick="toggleOverwrite()"></div>
+                            <span>如果存在同名模板，覆盖原有模板</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeImportModal()">取消</button>
+                <button class="btn btn-primary" id="importConfirmBtn" onclick="confirmImport()" disabled>导入</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量
+        let templates = {};
+        let currentTemplateId = null;
+        let currentTab = 'text';
+        let currentTemplate = null;
+        let currentPage = 1;
+        let pageSize = 10;
+        let filteredTemplates = [];
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function () {
+            loadTemplates();
+            renderTemplateTable();
+        });
+
+        // 返回上一页
+        function goBack() {
+            window.history.back();
+        }
+
+        // 从localStorage加载模板数据
+        function loadTemplates() {
+            const savedTemplates = localStorage.getItem('healthTemplates');
+            if (savedTemplates) {
+                templates = JSON.parse(savedTemplates);
+            } else {
+                templates = getDefaultTemplates();
+                saveTemplates();
+            }
+            filteredTemplates = Object.values(templates);
+        }
+
+        // 保存模板到localStorage
+        function saveTemplates() {
+            localStorage.setItem('healthTemplates', JSON.stringify(templates));
+        }
+
+        // 获取默认模板数据
+        function getDefaultTemplates() {
+            return {
+                'diabetes-diet': {
+                    id: 'diabetes-diet',
+                    name: '糖尿病饮食指导',
+                    description: '针对糖尿病患者的饮食管理和营养指导',
+                    category: 'diabetes',
+                    createdAt: Date.now() - 86400000 * 5,
+                    updatedAt: Date.now() - 86400000 * 2,
+                    usageCount: 25,
+                    isActive: true,
+                    suggestions: {
+                        text: [
+                            { id: 'diet-control', content: '减少碳水化合物摄入，控制每餐主食量', defaultSelected: true },
+                            { id: 'quit-smoking', content: '避免吸烟和饮酒，保持健康生活方式', defaultSelected: false }
+                        ],
+                        multiple: {},
+                        single: {},
+                        numeric: {}
+                    }
+                },
+                'diabetes-exercise': {
+                    id: 'diabetes-exercise',
+                    name: '糖尿病运动指导',
+                    description: '糖尿病患者的运动计划和注意事项',
+                    category: 'diabetes',
+                    createdAt: Date.now() - 86400000 * 3,
+                    updatedAt: Date.now() - 86400000 * 1,
+                    usageCount: 18,
+                    isActive: true,
+                    suggestions: {
+                        text: [
+                            { id: 'regular-exercise', content: '每天坚持30分钟中等强度运动', defaultSelected: true }
+                        ],
+                        multiple: {},
+                        single: {},
+                        numeric: {}
+                    }
+                }
+            };
+        }
+
+        // 渲染模板表格
+        function renderTemplateTable() {
+            const tbody = document.getElementById('templateTableBody');
+            const totalCount = filteredTemplates.length;
+
+            document.getElementById('totalCount').textContent = totalCount;
+
+            if (totalCount === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="empty-state">
+                            <div class="empty-icon">
+                                <i class="fas fa-inbox"></i>
+                            </div>
+                            <div class="empty-text">暂无模板数据</div>
+                            <div class="empty-subtext">点击"新建"按钮创建第一个模板</div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            const startIndex = (currentPage - 1) * pageSize;
+            const endIndex = Math.min(startIndex + pageSize, totalCount);
+            const pageData = filteredTemplates.slice(startIndex, endIndex);
+
+            let html = '';
+            pageData.forEach((template, index) => {
+                const rowNumber = startIndex + index + 1;
+                const createDate = formatDate(template.createdAt);
+                const updateDate = formatDate(template.updatedAt);
+
+                html += `
+                    <tr>
+                        <td class="row-number">${rowNumber}</td>
+                        <td class="template-name">${template.name}</td>
+                        <td>${template.category || '通用'}</td>
+                        <td class="usage-count">${template.usageCount || 0}</td>
+                        <td class="date-text">${createDate}</td>
+                        <td class="date-text">${updateDate}</td>
+                        <td>
+                            <div class="action-links">
+                                <a class="action-link" onclick="openEditModal('${template.id}')">编辑</a>
+                                <a class="action-link danger" onclick="deleteTemplateConfirm('${template.id}')">删除</a>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html;
+            updatePagination();
+        }
+
+        // 格式化日期
+        function formatDate(timestamp) {
+            const date = new Date(timestamp);
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            const seconds = String(date.getSeconds()).padStart(2, '0');
+            return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+        }
+
+        // 更新分页控件
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredTemplates.length / pageSize);
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const currentPageBtn = document.getElementById('currentPageBtn');
+
+            currentPageBtn.textContent = currentPage;
+            prevBtn.disabled = currentPage <= 1;
+            nextBtn.disabled = currentPage >= totalPages;
+        }
+
+        // 翻页
+        function changePage(delta) {
+            const totalPages = Math.ceil(filteredTemplates.length / pageSize);
+            const newPage = currentPage + delta;
+
+            if (newPage >= 1 && newPage <= totalPages) {
+                currentPage = newPage;
+                renderTemplateTable();
+            }
+        }
+
+        // 搜索模板
+        function searchTemplates() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+
+            if (searchTerm === '') {
+                filteredTemplates = Object.values(templates);
+            } else {
+                filteredTemplates = Object.values(templates).filter(template =>
+                    template.name.toLowerCase().includes(searchTerm) ||
+                    (template.description && template.description.toLowerCase().includes(searchTerm)) ||
+                    (template.category && template.category.toLowerCase().includes(searchTerm))
+                );
+            }
+
+            currentPage = 1;
+            renderTemplateTable();
+        }
+
+        // 切换标签页
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`[onclick="switchTab('${tabName}')"]`).classList.add('active');
+            
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            
+            currentTab = tabName;
+        }
+
+        // 渲染文本建议
+        function renderTextSuggestions() {
+            const container = document.getElementById('textSuggestionList');
+            const suggestions = currentTemplate?.suggestions?.text || [];
+            
+            if (suggestions.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-suggestion">
+                        <i class="fas fa-file-text"></i>
+                        <div>暂无文本建议</div>
+                        <div style="font-size: 12px; margin-top: 4px;">点击上方"添加建议"按钮开始创建</div>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            suggestions.forEach((suggestion, index) => {
+                html += `
+                    <div class="suggestion-item">
+                        <div class="suggestion-item-header">
+                            <span style="font-weight: 500;">建议 ${index + 1}</span>
+                            <div class="suggestion-item-actions">
+                                <button class="btn-icon danger" onclick="removeTextSuggestion(${index})" title="删除">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <input type="text" class="form-input" placeholder="请输入建议内容" 
+                                   value="${suggestion.content}" 
+                                   onchange="updateTextSuggestion(${index}, 'content', this.value)">
+                        </div>
+                        <div class="form-checkbox">
+                            <div class="checkbox ${suggestion.defaultSelected ? 'checked' : ''}" 
+                                 onclick="toggleTextSuggestionDefault(${index})"></div>
+                            <span>默认选中</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // 添加文本建议
+        function addTextSuggestion() {
+            if (!currentTemplate.suggestions.text) {
+                currentTemplate.suggestions.text = [];
+            }
+            
+            const newSuggestion = {
+                id: 'text-' + Date.now(),
+                content: '',
+                defaultSelected: false
+            };
+            
+            currentTemplate.suggestions.text.push(newSuggestion);
+            renderTextSuggestions();
+        }
+
+        // 删除文本建议
+        function removeTextSuggestion(index) {
+            if (confirm('确定要删除这个建议吗？')) {
+                currentTemplate.suggestions.text.splice(index, 1);
+                renderTextSuggestions();
+            }
+        }
+
+        // 更新文本建议
+        function updateTextSuggestion(index, field, value) {
+            if (currentTemplate.suggestions.text[index]) {
+                currentTemplate.suggestions.text[index][field] = value;
+            }
+        }
+
+        // 切换文本建议默认选中状态
+        function toggleTextSuggestionDefault(index) {
+            if (currentTemplate.suggestions.text[index]) {
+                currentTemplate.suggestions.text[index].defaultSelected = !currentTemplate.suggestions.text[index].defaultSelected;
+                renderTextSuggestions();
+            }
+        }
+
+        // 渲染多选建议
+        function renderMultipleSuggestions() {
+            const container = document.getElementById('multipleSuggestionList');
+            const suggestions = currentTemplate?.suggestions?.multiple || {};
+            const groups = Object.keys(suggestions);
+            
+            if (groups.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-suggestion">
+                        <i class="fas fa-check-square"></i>
+                        <div>暂无多选建议组</div>
+                        <div style="font-size: 12px; margin-top: 4px;">点击上方"添加组"按钮开始创建</div>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            groups.forEach((groupKey, groupIndex) => {
+                const group = suggestions[groupKey];
+                html += `
+                    <div class="suggestion-item">
+                        <div class="suggestion-item-header">
+                            <span style="font-weight: 500;">组 ${groupIndex + 1}: ${group.title}</span>
+                            <div class="suggestion-item-actions">
+                                <button class="btn-icon" onclick="addMultipleOption('${groupKey}')" title="添加选项">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                                <button class="btn-icon danger" onclick="removeMultipleGroup('${groupKey}')" title="删除组">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <input type="text" class="form-input" placeholder="请输入组标题" 
+                                   value="${group.title}" 
+                                   onchange="updateMultipleGroup('${groupKey}', 'title', this.value)">
+                        </div>
+                        <div style="margin-left: 16px; border-left: 2px solid #f0f0f0; padding-left: 12px;">
+                `;
+                
+                group.options.forEach((option, optionIndex) => {
+                    html += `
+                        <div class="form-row" style="margin-bottom: 12px;">
+                            <input type="text" class="form-input" placeholder="请输入选项内容" 
+                                   value="${option.content}" 
+                                   onchange="updateMultipleOption('${groupKey}', ${optionIndex}, 'content', this.value)">
+                            <div class="form-checkbox">
+                                <div class="checkbox ${option.defaultSelected ? 'checked' : ''}" 
+                                     onclick="toggleMultipleOptionDefault('${groupKey}', ${optionIndex})"></div>
+                                <span>默认选中</span>
+                            </div>
+                            <button class="btn-icon danger" onclick="removeMultipleOption('${groupKey}', ${optionIndex})" title="删除选项">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    `;
+                });
+                
+                html += `
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // 添加多选建议组
+        function addMultipleGroup() {
+            if (!currentTemplate.suggestions.multiple) {
+                currentTemplate.suggestions.multiple = {};
+            }
+            
+            const groupKey = 'multiple-group-' + Date.now();
+            currentTemplate.suggestions.multiple[groupKey] = {
+                title: '新建议组',
+                options: []
+            };
+            
+            renderMultipleSuggestions();
+        }
+
+        // 删除多选建议组
+        function removeMultipleGroup(groupKey) {
+            if (confirm('确定要删除这个建议组吗？')) {
+                delete currentTemplate.suggestions.multiple[groupKey];
+                renderMultipleSuggestions();
+            }
+        }
+
+        // 更新多选建议组
+        function updateMultipleGroup(groupKey, field, value) {
+            if (currentTemplate.suggestions.multiple[groupKey]) {
+                currentTemplate.suggestions.multiple[groupKey][field] = value;
+            }
+        }
+
+        // 添加多选选项
+        function addMultipleOption(groupKey) {
+            if (currentTemplate.suggestions.multiple[groupKey]) {
+                const newOption = {
+                    id: 'option-' + Date.now(),
+                    content: '',
+                    defaultSelected: false
+                };
+                currentTemplate.suggestions.multiple[groupKey].options.push(newOption);
+                renderMultipleSuggestions();
+            }
+        }
+
+        // 删除多选选项
+        function removeMultipleOption(groupKey, optionIndex) {
+            if (currentTemplate.suggestions.multiple[groupKey] && 
+                currentTemplate.suggestions.multiple[groupKey].options[optionIndex]) {
+                currentTemplate.suggestions.multiple[groupKey].options.splice(optionIndex, 1);
+                renderMultipleSuggestions();
+            }
+        }
+
+        // 更新多选选项
+        function updateMultipleOption(groupKey, optionIndex, field, value) {
+            if (currentTemplate.suggestions.multiple[groupKey] && 
+                currentTemplate.suggestions.multiple[groupKey].options[optionIndex]) {
+                currentTemplate.suggestions.multiple[groupKey].options[optionIndex][field] = value;
+            }
+        }
+
+        // 切换多选选项默认状态
+        function toggleMultipleOptionDefault(groupKey, optionIndex) {
+            if (currentTemplate.suggestions.multiple[groupKey] && 
+                currentTemplate.suggestions.multiple[groupKey].options[optionIndex]) {
+                const option = currentTemplate.suggestions.multiple[groupKey].options[optionIndex];
+                option.defaultSelected = !option.defaultSelected;
+                renderMultipleSuggestions();
+            }
+        }
+
+        // 渲染单选建议
+        function renderSingleSuggestions() {
+            const container = document.getElementById('singleSuggestionList');
+            const suggestions = currentTemplate?.suggestions?.single || {};
+            const groups = Object.keys(suggestions);
+            
+            if (groups.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-suggestion">
+                        <i class="fas fa-dot-circle"></i>
+                        <div>暂无单选建议组</div>
+                        <div style="font-size: 12px; margin-top: 4px;">点击上方"添加组"按钮开始创建</div>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            groups.forEach((groupKey, groupIndex) => {
+                const group = suggestions[groupKey];
+                html += `
+                    <div class="suggestion-item">
+                        <div class="suggestion-item-header">
+                            <span style="font-weight: 500;">组 ${groupIndex + 1}: ${group.title}</span>
+                            <div class="suggestion-item-actions">
+                                <button class="btn-icon" onclick="addSingleOption('${groupKey}')" title="添加选项">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                                <button class="btn-icon danger" onclick="removeSingleGroup('${groupKey}')" title="删除组">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <input type="text" class="form-input" placeholder="请输入组标题" 
+                                   value="${group.title}" 
+                                   onchange="updateSingleGroup('${groupKey}', 'title', this.value)">
+                        </div>
+                        <div style="margin-left: 16px; border-left: 2px solid #f0f0f0; padding-left: 12px;">
+                `;
+                
+                group.options.forEach((option, optionIndex) => {
+                    const isDefault = group.defaultSelected === option.id;
+                    html += `
+                        <div class="form-row" style="margin-bottom: 12px;">
+                            <input type="text" class="form-input" placeholder="请输入选项内容" 
+                                   value="${option.content}" 
+                                   onchange="updateSingleOption('${groupKey}', ${optionIndex}, 'content', this.value)">
+                            <div class="form-checkbox">
+                                <div class="checkbox ${isDefault ? 'checked' : ''}" 
+                                     onclick="setSingleOptionDefault('${groupKey}', '${option.id}')"></div>
+                                <span>默认选中</span>
+                            </div>
+                            <button class="btn-icon danger" onclick="removeSingleOption('${groupKey}', ${optionIndex})" title="删除选项">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    `;
+                });
+                
+                html += `
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // 添加单选建议组
+        function addSingleGroup() {
+            if (!currentTemplate.suggestions.single) {
+                currentTemplate.suggestions.single = {};
+            }
+            
+            const groupKey = 'single-group-' + Date.now();
+            currentTemplate.suggestions.single[groupKey] = {
+                title: '新建议组',
+                defaultSelected: null,
+                options: []
+            };
+            
+            renderSingleSuggestions();
+        }
+
+        // 删除单选建议组
+        function removeSingleGroup(groupKey) {
+            if (confirm('确定要删除这个建议组吗？')) {
+                delete currentTemplate.suggestions.single[groupKey];
+                renderSingleSuggestions();
+            }
+        }
+
+        // 更新单选建议组
+        function updateSingleGroup(groupKey, field, value) {
+            if (currentTemplate.suggestions.single[groupKey]) {
+                currentTemplate.suggestions.single[groupKey][field] = value;
+            }
+        }
+
+        // 添加单选选项
+        function addSingleOption(groupKey) {
+            if (currentTemplate.suggestions.single[groupKey]) {
+                const newOption = {
+                    id: 'option-' + Date.now(),
+                    content: ''
+                };
+                currentTemplate.suggestions.single[groupKey].options.push(newOption);
+                renderSingleSuggestions();
+            }
+        }
+
+        // 删除单选选项
+        function removeSingleOption(groupKey, optionIndex) {
+            if (currentTemplate.suggestions.single[groupKey] && 
+                currentTemplate.suggestions.single[groupKey].options[optionIndex]) {
+                const option = currentTemplate.suggestions.single[groupKey].options[optionIndex];
+                // 如果删除的是默认选中项，清除默认选中
+                if (currentTemplate.suggestions.single[groupKey].defaultSelected === option.id) {
+                    currentTemplate.suggestions.single[groupKey].defaultSelected = null;
+                }
+                currentTemplate.suggestions.single[groupKey].options.splice(optionIndex, 1);
+                renderSingleSuggestions();
+            }
+        }
+
+        // 更新单选选项
+        function updateSingleOption(groupKey, optionIndex, field, value) {
+            if (currentTemplate.suggestions.single[groupKey] && 
+                currentTemplate.suggestions.single[groupKey].options[optionIndex]) {
+                currentTemplate.suggestions.single[groupKey].options[optionIndex][field] = value;
+            }
+        }
+
+        // 设置单选选项为默认
+        function setSingleOptionDefault(groupKey, optionId) {
+            if (currentTemplate.suggestions.single[groupKey]) {
+                const currentDefault = currentTemplate.suggestions.single[groupKey].defaultSelected;
+                currentTemplate.suggestions.single[groupKey].defaultSelected = currentDefault === optionId ? null : optionId;
+                renderSingleSuggestions();
+            }
+        }
+
+        // 渲染数值设置
+        function renderNumericSuggestions() {
+            const container = document.getElementById('numericSuggestionList');
+            const suggestions = currentTemplate?.suggestions?.numeric || {};
+            const settings = Object.keys(suggestions);
+            
+            if (settings.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-suggestion">
+                        <i class="fas fa-sliders-h"></i>
+                        <div>暂无数值设置</div>
+                        <div style="font-size: 12px; margin-top: 4px;">点击上方"添加设置"按钮开始创建</div>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            settings.forEach((settingKey, index) => {
+                const setting = suggestions[settingKey];
+                html += `
+                    <div class="suggestion-item">
+                        <div class="suggestion-item-header">
+                            <span style="font-weight: 500;">设置 ${index + 1}: ${setting.title}</span>
+                            <div class="suggestion-item-actions">
+                                <button class="btn-icon danger" onclick="removeNumericSetting('${settingKey}')" title="删除设置">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <input type="text" class="form-input" placeholder="请输入设置标题" 
+                                   value="${setting.title}" 
+                                   onchange="updateNumericSetting('${settingKey}', 'title', this.value)">
+                        </div>
+                        <div class="form-row">
+                            <input type="text" class="form-input" placeholder="单位" style="flex: 0 0 80px;"
+                                   value="${setting.unit}" 
+                                   onchange="updateNumericSetting('${settingKey}', 'unit', this.value)">
+                            <input type="number" class="form-input" placeholder="默认值" 
+                                   value="${setting.defaultValue}" 
+                                   onchange="updateNumericSetting('${settingKey}', 'defaultValue', parseFloat(this.value))">
+                        </div>
+                        <div class="form-row">
+                            <input type="number" class="form-input" placeholder="最小值" 
+                                   value="${setting.min}" 
+                                   onchange="updateNumericSetting('${settingKey}', 'min', parseFloat(this.value))">
+                            <input type="number" class="form-input" placeholder="最大值" 
+                                   value="${setting.max}" 
+                                   onchange="updateNumericSetting('${settingKey}', 'max', parseFloat(this.value))">
+                            <input type="number" class="form-input" placeholder="步长" 
+                                   value="${setting.step}" 
+                                   onchange="updateNumericSetting('${settingKey}', 'step', parseFloat(this.value))">
+                        </div>
+                        <div class="form-checkbox">
+                            <div class="checkbox ${setting.defaultSelected ? 'checked' : ''}" 
+                                 onclick="toggleNumericSettingDefault('${settingKey}')"></div>
+                            <span>默认选中</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // 添加数值设置
+        function addNumericSetting() {
+            if (!currentTemplate.suggestions.numeric) {
+                currentTemplate.suggestions.numeric = {};
+            }
+            
+            const settingKey = 'numeric-' + Date.now();
+            currentTemplate.suggestions.numeric[settingKey] = {
+                title: '新数值设置',
+                unit: '',
+                defaultValue: 0,
+                defaultSelected: false,
+                min: 0,
+                max: 100,
+                step: 1
+            };
+            
+            renderNumericSuggestions();
+        }
+
+        // 删除数值设置
+        function removeNumericSetting(settingKey) {
+            if (confirm('确定要删除这个数值设置吗？')) {
+                delete currentTemplate.suggestions.numeric[settingKey];
+                renderNumericSuggestions();
+            }
+        }
+
+        // 更新数值设置
+        function updateNumericSetting(settingKey, field, value) {
+            if (currentTemplate.suggestions.numeric[settingKey]) {
+                currentTemplate.suggestions.numeric[settingKey][field] = value;
+            }
+        }
+
+        // 切换数值设置默认状态
+        function toggleNumericSettingDefault(settingKey) {
+            if (currentTemplate.suggestions.numeric[settingKey]) {
+                currentTemplate.suggestions.numeric[settingKey].defaultSelected = 
+                    !currentTemplate.suggestions.numeric[settingKey].defaultSelected;
+                renderNumericSuggestions();
+            }
+        }
+
+        // 打开创建模板弹窗
+        function openCreateModal() {
+            currentTemplateId = null;
+            currentTemplate = {
+                name: '',
+                description: '',
+                category: '',
+                suggestions: {
+                    text: [],
+                    multiple: {},
+                    single: {},
+                    numeric: {}
+                }
+            };
+            
+            document.getElementById('modalTitle').textContent = '新建模板';
+            document.getElementById('modalTemplateName').value = '';
+            document.getElementById('modalTemplateDescription').value = '';
+            document.getElementById('modalTemplateCategory').value = '';
+            
+            // 切换到文本建议标签页并渲染
+            switchTab('text');
+            renderCurrentTabSuggestions();
+            
+            document.getElementById('templateModal').classList.add('active');
+        }
+
+        // 打开编辑模板弹窗
+        function openEditModal(templateId) {
+            currentTemplateId = templateId;
+            currentTemplate = JSON.parse(JSON.stringify(templates[templateId])); // 深拷贝
+            
+            document.getElementById('modalTitle').textContent = '编辑模板';
+            document.getElementById('modalTemplateName').value = currentTemplate.name;
+            document.getElementById('modalTemplateDescription').value = currentTemplate.description || '';
+            document.getElementById('modalTemplateCategory').value = currentTemplate.category || '';
+            
+            // 切换到文本建议标签页并渲染
+            switchTab('text');
+            renderCurrentTabSuggestions();
+            
+            document.getElementById('templateModal').classList.add('active');
+        }
+
+        // 渲染当前标签页的建议
+        function renderCurrentTabSuggestions() {
+            switch (currentTab) {
+                case 'text':
+                    renderTextSuggestions();
+                    break;
+                case 'multiple':
+                    renderMultipleSuggestions();
+                    break;
+                case 'single':
+                    renderSingleSuggestions();
+                    break;
+                case 'numeric':
+                    renderNumericSuggestions();
+                    break;
+            }
+        }
+
+        // 重写切换标签页函数，添加渲染逻辑
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`[onclick="switchTab('${tabName}')"]`).classList.add('active');
+            
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            
+            currentTab = tabName;
+            
+            // 渲染当前标签页内容
+            if (currentTemplate) {
+                renderCurrentTabSuggestions();
+            }
+        }
+
+        // 关闭弹窗
+        function closeModal() {
+            document.getElementById('templateModal').classList.remove('active');
+            currentTemplate = null;
+            currentTemplateId = null;
+        }
+
+        // 保存模板
+        function saveModalTemplate() {
+            const name = document.getElementById('modalTemplateName').value.trim();
+            const description = document.getElementById('modalTemplateDescription').value.trim();
+            const category = document.getElementById('modalTemplateCategory').value.trim();
+            
+            if (!name) {
+                alert('请输入模板名称');
+                return;
+            }
+            
+            // 更新模板数据
+            currentTemplate.name = name;
+            currentTemplate.description = description;
+            currentTemplate.category = category;
+            currentTemplate.updatedAt = Date.now();
+            
+            if (currentTemplateId) {
+                // 编辑现有模板
+                templates[currentTemplateId] = currentTemplate;
+            } else {
+                // 创建新模板
+                const newId = 'template-' + Date.now();
+                currentTemplate.id = newId;
+                currentTemplate.createdAt = Date.now();
+                currentTemplate.usageCount = 0;
+                currentTemplate.isActive = true;
+                templates[newId] = currentTemplate;
+            }
+            
+            saveTemplates();
+            loadTemplates();
+            renderTemplateTable();
+            closeModal();
+            
+            alert('模板保存成功！');
+        }
+
+        // 复制模板
+        function duplicateTemplate(templateId) {
+            const originalTemplate = templates[templateId];
+            if (!originalTemplate) return;
+            
+            const newTemplate = JSON.parse(JSON.stringify(originalTemplate));
+            const newId = 'template-' + Date.now();
+            
+            newTemplate.id = newId;
+            newTemplate.name = originalTemplate.name + ' - 副本';
+            newTemplate.createdAt = Date.now();
+            newTemplate.updatedAt = Date.now();
+            newTemplate.usageCount = 0;
+            
+            templates[newId] = newTemplate;
+            saveTemplates();
+            loadTemplates();
+            renderTemplateTable();
+            
+            alert('模板复制成功！');
+        }
+
+        // 预览模板
+        function viewTemplate(templateId) {
+            const template = templates[templateId];
+            if (!template) return;
+            
+            document.getElementById('previewModalTitle').textContent = `模板预览 - ${template.name}`;
+            
+            let previewHtml = `
+                <div style="background: #f8f9fa; padding: 16px; border-radius: 8px; margin-bottom: 20px;">
+                    <h3 style="margin: 0 0 8px 0; color: #333;">${template.name}</h3>
+                    <p style="margin: 0; color: #666; font-size: 14px;">${template.description || '暂无描述'}</p>
+                    <div style="margin-top: 8px;">
+                        <span style="background: #e3f2fd; color: #1976d2; padding: 4px 8px; border-radius: 4px; font-size: 12px;">
+                            ${template.category || '通用'}
+                        </span>
+                    </div>
+                </div>
+            `;
+            
+            // 文本建议预览
+            if (template.suggestions.text && template.suggestions.text.length > 0) {
+                previewHtml += `
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="color: #1976d2; margin-bottom: 12px;">
+                            <i class="fas fa-file-text" style="margin-right: 8px;"></i>文本建议
+                        </h4>
+                        <div style="background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 12px;">
+                `;
+                
+                template.suggestions.text.forEach((suggestion, index) => {
+                    const checkedIcon = suggestion.defaultSelected ? 'fa-check-square' : 'fa-square';
+                    const checkedColor = suggestion.defaultSelected ? '#1976d2' : '#ccc';
+                    previewHtml += `
+                        <div style="display: flex; align-items: flex-start; margin-bottom: 8px;">
+                            <i class="fas ${checkedIcon}" style="color: ${checkedColor}; margin-right: 8px; margin-top: 2px;"></i>
+                            <span>${suggestion.content}</span>
+                        </div>
+                    `;
+                });
+                
+                previewHtml += `</div></div>`;
+            }
+            
+            // 多选建议预览
+            if (template.suggestions.multiple && Object.keys(template.suggestions.multiple).length > 0) {
+                previewHtml += `
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="color: #1976d2; margin-bottom: 12px;">
+                            <i class="fas fa-check-square" style="margin-right: 8px;"></i>多选建议
+                        </h4>
+                `;
+                
+                Object.values(template.suggestions.multiple).forEach(group => {
+                    previewHtml += `
+                        <div style="background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+                            <div style="font-weight: 600; color: #333; margin-bottom: 8px;">${group.title}</div>
+                    `;
+                    
+                    group.options.forEach(option => {
+                        const checkedIcon = option.defaultSelected ? 'fa-check-square' : 'fa-square';
+                        const checkedColor = option.defaultSelected ? '#1976d2' : '#ccc';
+                        previewHtml += `
+                            <div style="display: flex; align-items: flex-start; margin-bottom: 4px; margin-left: 16px;">
+                                <i class="fas ${checkedIcon}" style="color: ${checkedColor}; margin-right: 8px; margin-top: 2px;"></i>
+                                <span>${option.content}</span>
+                            </div>
+                        `;
+                    });
+                    
+                    previewHtml += `</div>`;
+                });
+                
+                previewHtml += `</div>`;
+            }
+            
+            // 单选建议预览
+            if (template.suggestions.single && Object.keys(template.suggestions.single).length > 0) {
+                previewHtml += `
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="color: #1976d2; margin-bottom: 12px;">
+                            <i class="fas fa-dot-circle" style="margin-right: 8px;"></i>单选建议
+                        </h4>
+                `;
+                
+                Object.values(template.suggestions.single).forEach(group => {
+                    previewHtml += `
+                        <div style="background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+                            <div style="font-weight: 600; color: #333; margin-bottom: 8px;">${group.title}</div>
+                    `;
+                    
+                    group.options.forEach(option => {
+                        const isSelected = group.defaultSelected === option.id;
+                        const radioIcon = isSelected ? 'fa-dot-circle' : 'fa-circle';
+                        const radioColor = isSelected ? '#1976d2' : '#ccc';
+                        previewHtml += `
+                            <div style="display: flex; align-items: flex-start; margin-bottom: 4px; margin-left: 16px;">
+                                <i class="fas ${radioIcon}" style="color: ${radioColor}; margin-right: 8px; margin-top: 2px;"></i>
+                                <span>${option.content}</span>
+                            </div>
+                        `;
+                    });
+                    
+                    previewHtml += `</div>`;
+                });
+                
+                previewHtml += `</div>`;
+            }
+            
+            // 数值设置预览
+            if (template.suggestions.numeric && Object.keys(template.suggestions.numeric).length > 0) {
+                previewHtml += `
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="color: #1976d2; margin-bottom: 12px;">
+                            <i class="fas fa-sliders-h" style="margin-right: 8px;"></i>数值设置
+                        </h4>
+                        <div style="background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 12px;">
+                `;
+                
+                Object.values(template.suggestions.numeric).forEach(setting => {
+                    const checkedIcon = setting.defaultSelected ? 'fa-check-square' : 'fa-square';
+                    const checkedColor = setting.defaultSelected ? '#1976d2' : '#ccc';
+                    previewHtml += `
+                        <div style="display: flex; align-items: center; margin-bottom: 12px; padding: 8px; background: #f8f9fa; border-radius: 4px;">
+                            <i class="fas ${checkedIcon}" style="color: ${checkedColor}; margin-right: 8px;"></i>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500; margin-bottom: 4px;">${setting.title}</div>
+                                <div style="font-size: 14px; color: #666;">
+                                    默认值: ${setting.defaultValue} ${setting.unit} 
+                                    (范围: ${setting.min}-${setting.max}, 步长: ${setting.step})
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                previewHtml += `</div></div>`;
+            }
+            
+            if (!template.suggestions.text?.length && 
+                !Object.keys(template.suggestions.multiple || {}).length &&
+                !Object.keys(template.suggestions.single || {}).length &&
+                !Object.keys(template.suggestions.numeric || {}).length) {
+                previewHtml += `
+                    <div style="text-align: center; padding: 40px; color: #999;">
+                        <i class="fas fa-inbox" style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;"></i>
+                        <div>该模板暂无建议项目</div>
+                    </div>
+                `;
+            }
+            
+            document.getElementById('previewContent').innerHTML = previewHtml;
+            document.getElementById('previewModal').classList.add('active');
+        }
+
+        // 关闭预览弹窗
+        function closePreviewModal() {
+            document.getElementById('previewModal').classList.remove('active');
+        }
+
+        // 导出模板
+        function exportTemplate() {
+            // 获取当前预览的模板ID（从标题中提取）
+            const title = document.getElementById('previewModalTitle').textContent;
+            const templateName = title.replace('模板预览 - ', '');
+            
+            // 找到对应的模板
+            const template = Object.values(templates).find(t => t.name === templateName);
+            if (!template) {
+                alert('未找到要导出的模板');
+                return;
+            }
+            
+            // 创建导出数据
+            const exportData = {
+                ...template,
+                exportTime: new Date().toISOString(),
+                version: '1.0'
+            };
+            
+            // 创建下载链接
+            const dataStr = JSON.stringify(exportData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${template.name}_模板.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            alert('模板导出成功！');
+        }
+
+        // 显示导入弹窗
+        function showImportModal() {
+            document.getElementById('importModal').classList.add('active');
+            document.getElementById('importFileInput').value = '';
+            document.getElementById('importPreview').style.display = 'none';
+            document.getElementById('importConfirmBtn').disabled = true;
+        }
+
+        // 关闭导入弹窗
+        function closeImportModal() {
+            document.getElementById('importModal').classList.remove('active');
+        }
+
+        // 处理文件选择
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) {
+                document.getElementById('importPreview').style.display = 'none';
+                document.getElementById('importConfirmBtn').disabled = true;
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const templateData = JSON.parse(e.target.result);
+                    
+                    // 验证模板数据格式
+                    if (!validateTemplateData(templateData)) {
+                        alert('模板文件格式不正确，请选择有效的模板文件');
+                        return;
+                    }
+                    
+                    // 显示预览
+                    showImportPreview(templateData);
+                    document.getElementById('importPreview').style.display = 'block';
+                    document.getElementById('importConfirmBtn').disabled = false;
+                    
+                } catch (error) {
+                    alert('文件解析失败，请确保选择的是有效的JSON文件');
+                    document.getElementById('importPreview').style.display = 'none';
+                    document.getElementById('importConfirmBtn').disabled = true;
+                }
+            };
+            
+            reader.readAsText(file);
+        }
+
+        // 验证模板数据格式
+        function validateTemplateData(data) {
+            return data && 
+                   typeof data.name === 'string' && 
+                   data.suggestions && 
+                   typeof data.suggestions === 'object';
+        }
+
+        // 显示导入预览
+        function showImportPreview(templateData) {
+            const previewContent = document.getElementById('importPreviewContent');
+            
+            let html = `
+                <div style="margin-bottom: 12px;">
+                    <strong>模板名称：</strong>${templateData.name}
+                </div>
+                <div style="margin-bottom: 12px;">
+                    <strong>模板描述：</strong>${templateData.description || '无'}
+                </div>
+                <div style="margin-bottom: 12px;">
+                    <strong>适用分类：</strong>${templateData.category || '通用'}
+                </div>
+            `;
+            
+            // 统计建议项目数量
+            const textCount = templateData.suggestions.text ? templateData.suggestions.text.length : 0;
+            const multipleCount = templateData.suggestions.multiple ? Object.keys(templateData.suggestions.multiple).length : 0;
+            const singleCount = templateData.suggestions.single ? Object.keys(templateData.suggestions.single).length : 0;
+            const numericCount = templateData.suggestions.numeric ? Object.keys(templateData.suggestions.numeric).length : 0;
+            
+            html += `
+                <div style="margin-bottom: 12px;">
+                    <strong>建议项目：</strong>
+                    <div style="margin-left: 16px; font-size: 13px; color: #666;">
+                        文本建议：${textCount} 项<br>
+                        多选建议：${multipleCount} 组<br>
+                        单选建议：${singleCount} 组<br>
+                        数值设置：${numericCount} 项
+                    </div>
+                </div>
+            `;
+            
+            // 检查是否存在同名模板
+            const existingTemplate = Object.values(templates).find(t => t.name === templateData.name);
+            if (existingTemplate) {
+                html += `
+                    <div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 8px; border-radius: 4px; color: #856404;">
+                        <i class="fas fa-exclamation-triangle" style="margin-right: 4px;"></i>
+                        检测到同名模板"${templateData.name}"已存在
+                    </div>
+                `;
+            }
+            
+            previewContent.innerHTML = html;
+        }
+
+        // 切换覆盖选项
+        function toggleOverwrite() {
+            const checkbox = document.getElementById('overwriteCheckbox');
+            checkbox.classList.toggle('checked');
+        }
+
+        // 确认导入
+        function confirmImport() {
+            const fileInput = document.getElementById('importFileInput');
+            const file = fileInput.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const templateData = JSON.parse(e.target.result);
+                    const overwrite = document.getElementById('overwriteCheckbox').classList.contains('checked');
+                    
+                    // 检查是否存在同名模板
+                    const existingTemplate = Object.values(templates).find(t => t.name === templateData.name);
+                    if (existingTemplate && !overwrite) {
+                        alert('存在同名模板，请勾选覆盖选项或修改模板名称');
+                        return;
+                    }
+                    
+                    // 生成新的模板ID
+                    let templateId;
+                    if (existingTemplate && overwrite) {
+                        templateId = existingTemplate.id;
+                    } else {
+                        templateId = 'template-' + Date.now();
+                    }
+                    
+                    // 准备模板数据
+                    const newTemplate = {
+                        ...templateData,
+                        id: templateId,
+                        createdAt: existingTemplate ? existingTemplate.createdAt : Date.now(),
+                        updatedAt: Date.now(),
+                        usageCount: existingTemplate ? existingTemplate.usageCount : 0,
+                        isActive: true
+                    };
+                    
+                    // 保存模板
+                    templates[templateId] = newTemplate;
+                    saveTemplates();
+                    loadTemplates();
+                    renderTemplateTable();
+                    closeImportModal();
+                    
+                    alert('模板导入成功！');
+                    
+                } catch (error) {
+                    alert('导入失败：' + error.message);
+                }
+            };
+            
+            reader.readAsText(file);
+        }
+
+        // 导出所有模板
+        function exportAllTemplates() {
+            if (Object.keys(templates).length === 0) {
+                alert('暂无模板可导出');
+                return;
+            }
+            
+            const exportData = {
+                templates: templates,
+                exportTime: new Date().toISOString(),
+                version: '1.0',
+                count: Object.keys(templates).length
+            };
+            
+            const dataStr = JSON.stringify(exportData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `健康指导模板_全部_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            alert(`成功导出 ${Object.keys(templates).length} 个模板！`);
+        }
+
+        // 查看统计页面
+        function viewStats() {
+            window.location.href = 'template-usage-stats.html';
+        }
+
+        // 删除模板确认
+        function deleteTemplateConfirm(templateId) {
+            const template = templates[templateId];
+            if (!template) return;
+            
+            if (confirm(`确定要删除模板"${template.name}"吗？此操作不可撤销。`)) {
+                delete templates[templateId];
+                saveTemplates();
+                loadTemplates();
+                renderTemplateTable();
+                alert('模板删除成功！');
+            }
+        }
+
+        // 添加文本建议
+        function addTextSuggestion() {
+            if (!currentTemplate.suggestions.text) {
+                currentTemplate.suggestions.text = [];
+            }
+            
+            currentTemplate.suggestions.text.push({
+                id: 'text-' + Date.now(),
+                content: '',
+                defaultSelected: false
+            });
+            
+            renderTextSuggestions();
+        }
+
+        // 更新文本建议
+        function updateTextSuggestion(index, field, value) {
+            if (currentTemplate.suggestions.text[index]) {
+                currentTemplate.suggestions.text[index][field] = value;
+            }
+        }
+
+        // 切换文本建议默认选中状态
+        function toggleTextSuggestionDefault(index) {
+            if (currentTemplate.suggestions.text[index]) {
+                currentTemplate.suggestions.text[index].defaultSelected = !currentTemplate.suggestions.text[index].defaultSelected;
+                renderTextSuggestions();
+            }
+        }
+
+        // 删除文本建议
+        function removeTextSuggestion(index) {
+            if (confirm('确定要删除这个建议吗？')) {
+                currentTemplate.suggestions.text.splice(index, 1);
+                renderTextSuggestions();
+            }
+        }
+
+        // 打开创建模板弹窗
+        function openCreateModal() {
+            currentTemplateId = null;
+            document.getElementById('modalTitle').textContent = '新建模板';
+            document.getElementById('modalTemplateName').value = '';
+            document.getElementById('modalTemplateDescription').value = '';
+            document.getElementById('modalTemplateCategory').value = '';
+            
+            currentTemplate = {
+                suggestions: {
+                    text: [],
+                    multiple: {},
+                    single: {},
+                    numeric: {}
+                }
+            };
+            renderTextSuggestions();
+            
+            document.getElementById('templateModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            setTimeout(() => {
+                document.getElementById('modalTemplateName').focus();
+            }, 300);
+        }
+
+        // 打开编辑模板弹窗
+        function openEditModal(templateId) {
+            const template = templates[templateId];
+            if (!template) return;
+
+            currentTemplateId = templateId;
+            document.getElementById('modalTitle').textContent = '编辑模板';
+            document.getElementById('modalTemplateName').value = template.name;
+            document.getElementById('modalTemplateDescription').value = template.description || '';
+            document.getElementById('modalTemplateCategory').value = template.category || '';
+            
+            currentTemplate = JSON.parse(JSON.stringify(template));
+            renderTextSuggestions();
+            
+            document.getElementById('templateModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // 关闭弹窗
+        function closeModal() {
+            document.getElementById('templateModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+            currentTemplateId = null;
+            currentTemplate = null;
+        }
+
+        // 保存模板
+        function saveModalTemplate() {
+            const name = document.getElementById('modalTemplateName').value.trim();
+            const description = document.getElementById('modalTemplateDescription').value.trim();
+            const category = document.getElementById('modalTemplateCategory').value.trim();
+
+            if (!name) {
+                showToast('请输入模板名称', 'error');
+                return;
+            }
+
+            if (currentTemplateId) {
+                const template = templates[currentTemplateId];
+                template.name = name;
+                template.description = description;
+                template.category = category;
+                template.updatedAt = Date.now();
+                template.suggestions = currentTemplate.suggestions;
+            } else {
+                const templateId = 'template-' + Date.now();
+                templates[templateId] = {
+                    id: templateId,
+                    name: name,
+                    description: description,
+                    category: category,
+                    createdAt: Date.now(),
+                    updatedAt: Date.now(),
+                    usageCount: 0,
+                    isActive: true,
+                    suggestions: currentTemplate.suggestions
+                };
+            }
+
+            saveTemplates();
+            filteredTemplates = Object.values(templates);
+            renderTemplateTable();
+            closeModal();
+            
+            showToast(currentTemplateId ? '模板更新成功' : '模板创建成功', 'success');
+        }
+
+        // 复制模板
+        function duplicateTemplate(templateId) {
+            const originalTemplate = templates[templateId];
+            if (!originalTemplate) return;
+
+            const newTemplateId = 'template-' + Date.now();
+            const newTemplate = {
+                ...JSON.parse(JSON.stringify(originalTemplate)),
+                id: newTemplateId,
+                name: originalTemplate.name + ' - 副本',
+                createdAt: Date.now(),
+                updatedAt: Date.now(),
+                usageCount: 0
+            };
+
+            templates[newTemplateId] = newTemplate;
+            saveTemplates();
+            filteredTemplates = Object.values(templates);
+            renderTemplateTable();
+            showToast('模板复制成功', 'success');
+        }
+
+        // 预览模板
+        function viewTemplate(templateId) {
+            showToast('预览功能即将实现', 'info');
+        }
+
+        // 删除模板确认
+        function deleteTemplateConfirm(templateId) {
+            const template = templates[templateId];
+            if (!template) return;
+
+            if (confirm(`确定要删除模板"${template.name}"吗？此操作不可撤销。`)) {
+                delete templates[templateId];
+                saveTemplates();
+                filteredTemplates = Object.values(templates);
+
+                const totalPages = Math.ceil(filteredTemplates.length / pageSize);
+                if (currentPage > totalPages && totalPages > 0) {
+                    currentPage = totalPages;
+                }
+
+                renderTemplateTable();
+                showToast('模板删除成功', 'success');
+            }
+        }
+
+        // 显示提示消息
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `fixed top-20 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg shadow-lg z-50 ${
+                type === 'success' ? 'bg-green-500 text-white' :
+                type === 'error' ? 'bg-red-500 text-white' :
+                'bg-blue-500 text-white'
+            }`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                if (document.body.contains(toast)) {
+                    document.body.removeChild(toast);
+                }
+            }, 3000);
+        }
+
+        // 事件监听
+        document.getElementById('templateModal').addEventListener('click', function (e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        document.getElementById('searchInput').addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                searchTemplates();
+            }
+        });
+    </script>
+</body>
+
+</html>
