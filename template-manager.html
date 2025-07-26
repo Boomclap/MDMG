@@ -11,6 +11,8 @@
         onerror="this.onerror=null;this.href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css'">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap"
         rel="stylesheet">
+    <!-- Excel处理库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         * {
             font-family: 'Noto Sans SC', Tahoma, Arial, Roboto, "Droid Sans", "Helvetica Neue", "Droid Sans Fallback", "Heiti SC", "Hiragino Sans GB", Simsun, sans-serif;
@@ -771,10 +773,46 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
+                    <label class="form-label">导入方式</label>
+                    <div style="display: flex; gap: 16px; margin-bottom: 12px;">
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="radio" name="importType" value="json" checked onchange="switchImportType('json')">
+                            <span>JSON文件</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="radio" name="importType" value="excel" onchange="switchImportType('excel')">
+                            <span>Excel文件</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
                     <label class="form-label">选择模板文件</label>
                     <input type="file" id="importFileInput" accept=".json" class="form-input" onchange="handleFileSelect(event)">
-                    <div style="font-size: 12px; color: #666; margin-top: 4px;">
+                    <div id="fileTypeHint" style="font-size: 12px; color: #666; margin-top: 4px;">
                         支持JSON格式的模板文件
+                    </div>
+                </div>
+                
+                <!-- Excel导入说明 -->
+                <div id="excelInstructions" style="display: none; margin-top: 16px;">
+                    <div class="form-label">Excel文件格式说明</div>
+                    <div style="background: #f8f9fa; padding: 16px; border-radius: 6px; border: 1px solid #e0e0e0; font-size: 13px; line-height: 1.5;">
+                        <div style="font-weight: 500; margin-bottom: 8px;">Excel文件应包含以下列：</div>
+                        <ul style="margin: 0; padding-left: 20px;">
+                            <li><strong>模板名称</strong> (必填) - 模板的名称</li>
+                            <li><strong>模板描述</strong> (可选) - 模板的详细描述</li>
+                            <li><strong>适用分类</strong> (可选) - 模板适用的分类</li>
+                            <li><strong>文本建议</strong> (可选) - 多个建议用分号(;)分隔</li>
+                            <li><strong>多选建议组</strong> (可选) - 格式：组名:选项1,选项2;组名2:选项3,选项4</li>
+                            <li><strong>单选建议组</strong> (可选) - 格式：组名:选项1,选项2;组名2:选项3,选项4</li>
+                            <li><strong>数值设置</strong> (可选) - 格式：设置名:最小值-最大值-单位;设置名2:最小值-最大值-单位</li>
+                        </ul>
+                        <div style="margin-top: 12px;">
+                            <a href="#" onclick="downloadExcelTemplate()" style="color: #1890ff; text-decoration: none;">
+                                <i class="fas fa-download"></i> 下载Excel模板文件
+                            </a>
+                        </div>
                     </div>
                 </div>
                 <div id="importPreview" style="display: none;">
@@ -2201,6 +2239,300 @@
                 renderTemplateTable();
                 showToast('模板删除成功', 'success');
             }
+        }
+
+        // 切换导入类型
+        function switchImportType(type) {
+            const fileInput = document.getElementById('importFileInput');
+            const fileTypeHint = document.getElementById('fileTypeHint');
+            const excelInstructions = document.getElementById('excelInstructions');
+            
+            if (type === 'excel') {
+                fileInput.accept = '.xlsx,.xls';
+                fileTypeHint.textContent = '支持Excel格式文件 (.xlsx, .xls)';
+                excelInstructions.style.display = 'block';
+            } else {
+                fileInput.accept = '.json';
+                fileTypeHint.textContent = '支持JSON格式的模板文件';
+                excelInstructions.style.display = 'none';
+            }
+            
+            // 清空文件选择
+            fileInput.value = '';
+            document.getElementById('importPreview').style.display = 'none';
+            document.getElementById('importConfirmBtn').disabled = true;
+        }
+
+        // 下载Excel模板文件
+        function downloadExcelTemplate() {
+            const templateData = [
+                {
+                    '模板名称': '糖尿病饮食指导示例',
+                    '模板描述': '针对糖尿病患者的饮食管理和营养指导',
+                    '适用分类': 'diabetes',
+                    '文本建议': '减少碳水化合物摄入，控制每餐主食量;避免吸烟和饮酒，保持健康生活方式',
+                    '多选建议组': '饮食控制:少油少盐,多吃蔬菜,定时定量;运动建议:有氧运动,力量训练,柔韧性训练',
+                    '单选建议组': '运动强度:轻度运动,中度运动,高强度运动;复查频率:每月一次,每季度一次,每半年一次',
+                    '数值设置': '每日步数:5000-10000-步;血糖监测:4-8-次/天'
+                },
+                {
+                    '模板名称': '高血压管理指导',
+                    '模板描述': '高血压患者的日常管理和生活指导',
+                    '适用分类': 'hypertension',
+                    '文本建议': '定期监测血压;按时服用降压药物',
+                    '多选建议组': '生活方式:低盐饮食,适量运动,戒烟限酒',
+                    '单选建议组': '血压目标:<140/90mmHg,<130/80mmHg,<120/80mmHg',
+                    '数值设置': '每日盐摄入:3-6-克;运动时间:30-60-分钟/天'
+                }
+            ];
+
+            const ws = XLSX.utils.json_to_sheet(templateData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, '模板数据');
+            
+            // 设置列宽
+            const colWidths = [
+                { wch: 20 }, // 模板名称
+                { wch: 30 }, // 模板描述
+                { wch: 15 }, // 适用分类
+                { wch: 40 }, // 文本建议
+                { wch: 50 }, // 多选建议组
+                { wch: 50 }, // 单选建议组
+                { wch: 30 }  // 数值设置
+            ];
+            ws['!cols'] = colWidths;
+            
+            XLSX.writeFile(wb, '健康指导模板导入模板.xlsx');
+        }
+
+        // 处理Excel文件解析
+        function parseExcelFile(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        const sheetName = workbook.SheetNames[0];
+                        const worksheet = workbook.Sheets[sheetName];
+                        const jsonData = XLSX.utils.sheet_to_json(worksheet);
+                        
+                        const templates = jsonData.map(row => parseExcelRow(row));
+                        resolve(templates.filter(t => t !== null));
+                    } catch (error) {
+                        reject(error);
+                    }
+                };
+                reader.onerror = reject;
+                reader.readAsArrayBuffer(file);
+            });
+        }
+
+        // 解析Excel行数据
+        function parseExcelRow(row) {
+            const templateName = row['模板名称'];
+            if (!templateName || templateName.trim() === '') {
+                return null;
+            }
+
+            const template = {
+                id: 'template-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9),
+                name: templateName.trim(),
+                description: row['模板描述'] || '',
+                category: row['适用分类'] || '通用',
+                createdAt: Date.now(),
+                updatedAt: Date.now(),
+                usageCount: 0,
+                isActive: true,
+                suggestions: {
+                    text: [],
+                    multiple: {},
+                    single: {},
+                    numeric: {}
+                }
+            };
+
+            // 解析文本建议
+            if (row['文本建议']) {
+                const textSuggestions = row['文本建议'].split(';').filter(s => s.trim());
+                textSuggestions.forEach((suggestion, index) => {
+                    template.suggestions.text.push({
+                        id: 'text-' + index,
+                        content: suggestion.trim(),
+                        defaultSelected: index === 0
+                    });
+                });
+            }
+
+            // 解析多选建议组
+            if (row['多选建议组']) {
+                const multipleGroups = row['多选建议组'].split(';').filter(g => g.trim());
+                multipleGroups.forEach(group => {
+                    const [groupName, optionsStr] = group.split(':');
+                    if (groupName && optionsStr) {
+                        const options = optionsStr.split(',').map(opt => opt.trim()).filter(opt => opt);
+                        if (options.length > 0) {
+                            const groupId = 'multiple-' + groupName.trim().replace(/\s+/g, '-');
+                            template.suggestions.multiple[groupId] = {
+                                id: groupId,
+                                title: groupName.trim(),
+                                options: options.map((opt, index) => ({
+                                    id: groupId + '-' + index,
+                                    text: opt,
+                                    defaultSelected: false
+                                }))
+                            };
+                        }
+                    }
+                });
+            }
+
+            // 解析单选建议组
+            if (row['单选建议组']) {
+                const singleGroups = row['单选建议组'].split(';').filter(g => g.trim());
+                singleGroups.forEach(group => {
+                    const [groupName, optionsStr] = group.split(':');
+                    if (groupName && optionsStr) {
+                        const options = optionsStr.split(',').map(opt => opt.trim()).filter(opt => opt);
+                        if (options.length > 0) {
+                            const groupId = 'single-' + groupName.trim().replace(/\s+/g, '-');
+                            template.suggestions.single[groupId] = {
+                                id: groupId,
+                                title: groupName.trim(),
+                                options: options.map((opt, index) => ({
+                                    id: groupId + '-' + index,
+                                    text: opt,
+                                    defaultSelected: index === 0
+                                }))
+                            };
+                        }
+                    }
+                });
+            }
+
+            // 解析数值设置
+            if (row['数值设置']) {
+                const numericSettings = row['数值设置'].split(';').filter(s => s.trim());
+                numericSettings.forEach(setting => {
+                    const [settingName, rangeStr] = setting.split(':');
+                    if (settingName && rangeStr) {
+                        const [min, max, unit] = rangeStr.split('-');
+                        if (min && max && unit) {
+                            const settingId = 'numeric-' + settingName.trim().replace(/\s+/g, '-');
+                            template.suggestions.numeric[settingId] = {
+                                id: settingId,
+                                title: settingName.trim(),
+                                min: parseInt(min) || 0,
+                                max: parseInt(max) || 100,
+                                unit: unit.trim(),
+                                defaultValue: parseInt(min) || 0
+                            };
+                        }
+                    }
+                });
+            }
+
+            return template;
+        }
+
+        // 修改文件选择处理函数
+        async function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const importType = document.querySelector('input[name="importType"]:checked').value;
+            
+            try {
+                let templatesData;
+                
+                if (importType === 'excel') {
+                    templatesData = await parseExcelFile(file);
+                } else {
+                    // JSON文件处理
+                    const text = await file.text();
+                    const jsonData = JSON.parse(text);
+                    templatesData = Array.isArray(jsonData) ? jsonData : [jsonData];
+                }
+
+                if (templatesData.length === 0) {
+                    showToast('文件中没有找到有效的模板数据', 'error');
+                    return;
+                }
+
+                // 显示预览
+                displayImportPreview(templatesData);
+                document.getElementById('importConfirmBtn').disabled = false;
+                
+            } catch (error) {
+                console.error('文件解析错误:', error);
+                showToast('文件格式错误或内容无效', 'error');
+            }
+        }
+
+        // 显示导入预览
+        function displayImportPreview(templatesData) {
+            const previewContent = document.getElementById('importPreviewContent');
+            let html = `<div style="font-size: 14px; margin-bottom: 12px;">将导入 ${templatesData.length} 个模板：</div>`;
+            
+            templatesData.forEach((template, index) => {
+                html += `
+                    <div style="margin-bottom: 8px; padding: 8px; background: white; border-radius: 4px; border: 1px solid #e0e0e0;">
+                        <div style="font-weight: 500;">${index + 1}. ${template.name}</div>
+                        <div style="font-size: 12px; color: #666; margin-top: 4px;">
+                            分类: ${template.category} | 
+                            文本建议: ${template.suggestions.text.length}个 | 
+                            多选组: ${Object.keys(template.suggestions.multiple).length}个 | 
+                            单选组: ${Object.keys(template.suggestions.single).length}个 | 
+                            数值设置: ${Object.keys(template.suggestions.numeric).length}个
+                        </div>
+                    </div>
+                `;
+            });
+            
+            previewContent.innerHTML = html;
+            document.getElementById('importPreview').style.display = 'block';
+            
+            // 保存到全局变量供确认导入时使用
+            window.pendingImportData = templatesData;
+        }
+
+        // 确认导入
+        function confirmImport() {
+            if (!window.pendingImportData) return;
+            
+            const overwrite = document.getElementById('overwriteCheckbox').classList.contains('checked');
+            let importedCount = 0;
+            let skippedCount = 0;
+            
+            window.pendingImportData.forEach(template => {
+                const existingTemplate = Object.values(templates).find(t => t.name === template.name);
+                
+                if (existingTemplate && !overwrite) {
+                    skippedCount++;
+                } else {
+                    if (existingTemplate && overwrite) {
+                        template.id = existingTemplate.id;
+                        template.createdAt = existingTemplate.createdAt;
+                        template.usageCount = existingTemplate.usageCount;
+                    }
+                    templates[template.id] = template;
+                    importedCount++;
+                }
+            });
+            
+            saveTemplates();
+            filteredTemplates = Object.values(templates);
+            renderTemplateTable();
+            closeImportModal();
+            
+            let message = `成功导入 ${importedCount} 个模板`;
+            if (skippedCount > 0) {
+                message += `，跳过 ${skippedCount} 个重名模板`;
+            }
+            showToast(message, 'success');
+            
+            // 清理临时数据
+            delete window.pendingImportData;
         }
 
         // 显示提示消息
