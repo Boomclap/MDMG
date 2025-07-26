@@ -664,7 +664,17 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">适用分类</label>
-                    <input type="text" class="form-input" id="modalTemplateCategory" placeholder="请输入适用分类">
+                    <select class="form-input" id="modalTemplateCategory">
+                        <option value="">请选择适用分类</option>
+                        <option value="coronary-heart-disease">冠心病</option>
+                        <option value="hypertension">高血压</option>
+                        <option value="heart-failure">心脏病</option>
+                        <option value="diabetes">糖尿病</option>
+                        <option value="hyperuricemia">高尿酸血症</option>
+                        <option value="hyperglycemia">高血糖</option>
+                        <option value="hyperlipidemia">高血脂</option>
+                        <option value="myocarditis">心肌炎</option>
+                    </select>
                 </div>
 
                 <!-- 建议项目编辑区域 -->
@@ -839,6 +849,29 @@
         let currentPage = 1;
         let pageSize = 10;
         let filteredTemplates = [];
+        
+        // 支持的病症分类
+        const supportedCategories = [
+            { value: 'coronary-heart-disease', label: '冠心病' },
+            { value: 'hypertension', label: '高血压' },
+            { value: 'heart-failure', label: '心脏病' },
+            { value: 'diabetes', label: '糖尿病' },
+            { value: 'hyperuricemia', label: '高尿酸血症' },
+            { value: 'hyperglycemia', label: '高血糖' },
+            { value: 'hyperlipidemia', label: '高血脂' },
+            { value: 'myocarditis', label: '心肌炎' }
+        ];
+
+        // 获取分类显示名称
+        function getCategoryLabel(categoryValue) {
+            const category = supportedCategories.find(cat => cat.value === categoryValue);
+            return category ? category.label : categoryValue || '通用';
+        }
+
+        // 验证分类是否有效
+        function isValidCategory(categoryValue) {
+            return supportedCategories.some(cat => cat.value === categoryValue);
+        }
 
         // 页面加载时初始化
         document.addEventListener('DOMContentLoaded', function () {
@@ -890,18 +923,19 @@
                         numeric: {}
                     }
                 },
-                'diabetes-exercise': {
-                    id: 'diabetes-exercise',
-                    name: '糖尿病运动指导',
-                    description: '糖尿病患者的运动计划和注意事项',
-                    category: 'diabetes',
+                'hypertension-management': {
+                    id: 'hypertension-management',
+                    name: '高血压管理指导',
+                    description: '高血压患者的日常管理和生活指导',
+                    category: 'hypertension',
                     createdAt: Date.now() - 86400000 * 3,
                     updatedAt: Date.now() - 86400000 * 1,
                     usageCount: 18,
                     isActive: true,
                     suggestions: {
                         text: [
-                            { id: 'regular-exercise', content: '每天坚持30分钟中等强度运动', defaultSelected: true }
+                            { id: 'regular-monitoring', content: '定期监测血压，记录血压变化', defaultSelected: true },
+                            { id: 'medication-compliance', content: '按时服用降压药物，不可随意停药', defaultSelected: true }
                         ],
                         multiple: {},
                         single: {},
@@ -947,7 +981,7 @@
                     <tr>
                         <td class="row-number">${rowNumber}</td>
                         <td class="template-name">${template.name}</td>
-                        <td>${template.category || '通用'}</td>
+                        <td>${getCategoryLabel(template.category)}</td>
                         <td class="usage-count">${template.usageCount || 0}</td>
                         <td class="date-text">${createDate}</td>
                         <td class="date-text">${updateDate}</td>
@@ -2245,7 +2279,16 @@
                 { '字段名称': '适用分类', '值': 'diabetes' }
             ];
             const basicInfoWs = XLSX.utils.json_to_sheet(basicInfoData);
+            
+            // 添加分类说明工作表
+            const categoryData = supportedCategories.map(cat => ({
+                '分类代码': cat.value,
+                '分类名称': cat.label
+            }));
+            const categoryWs = XLSX.utils.json_to_sheet(categoryData);
+            
             XLSX.utils.book_append_sheet(wb, basicInfoWs, '模板基本信息');
+            XLSX.utils.book_append_sheet(wb, categoryWs, '分类代码说明');
             
             // 工作表2: 文本建议
             const textSuggestionsData = [
@@ -2357,11 +2400,32 @@
                             return;
                         }
                         
+                        // 获取并验证分类
+                        const categoryValue = basicInfoData.find(row => row['字段名称'] === '适用分类')?.['值'];
+                        let validatedCategory = '';
+                        
+                        if (categoryValue) {
+                            // 检查是否是有效的分类代码
+                            if (isValidCategory(categoryValue)) {
+                                validatedCategory = categoryValue;
+                            } else {
+                                // 尝试通过分类名称匹配
+                                const categoryByLabel = supportedCategories.find(cat => cat.label === categoryValue);
+                                if (categoryByLabel) {
+                                    validatedCategory = categoryByLabel.value;
+                                } else {
+                                    // 如果都不匹配，抛出错误
+                                    reject(new Error(`不支持的分类："${categoryValue}"。支持的分类：${supportedCategories.map(cat => cat.label).join('、')}`));
+                                    return;
+                                }
+                            }
+                        }
+
                         const template = {
                             id: 'template-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9),
                             name: templateName,
                             description: basicInfoData.find(row => row['字段名称'] === '模板描述')?.['值'] || '',
-                            category: basicInfoData.find(row => row['字段名称'] === '适用分类')?.['值'] || '通用',
+                            category: validatedCategory,
                             createdAt: Date.now(),
                             updatedAt: Date.now(),
                             usageCount: 0,
@@ -2479,7 +2543,7 @@
                     <div style="background: white; padding: 12px; border-radius: 4px; border: 1px solid #e0e0e0;">
                         <div><strong>模板名称：</strong>${templateData.name}</div>
                         <div style="margin-top: 4px;"><strong>模板描述：</strong>${templateData.description || '无'}</div>
-                        <div style="margin-top: 4px;"><strong>适用分类：</strong>${templateData.category}</div>
+                        <div style="margin-top: 4px;"><strong>适用分类：</strong>${getCategoryLabel(templateData.category)}</div>
                     </div>
                 </div>
                 
