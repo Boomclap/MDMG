@@ -852,20 +852,20 @@
         
         // 支持的病症分类
         const supportedCategories = [
-            { value: 'coronary-heart-disease', label: '冠心病' },
-            { value: 'hypertension', label: '高血压' },
-            { value: 'heart-failure', label: '心脏病' },
-            { value: 'diabetes', label: '糖尿病' },
-            { value: 'hyperuricemia', label: '高尿酸血症' },
-            { value: 'hyperglycemia', label: '高血糖' },
-            { value: 'hyperlipidemia', label: '高血脂' },
-            { value: 'myocarditis', label: '心肌炎' }
+            { value: '冠心病' },
+            { value: '高血压'},
+            { value: '心脏病'},
+            { value: '糖尿病'},
+            { value: '高尿酸血症'},
+            { value: '高血糖'},
+            { value: '高血脂'},
+            { value: '心肌炎'}
         ];
 
         // 获取分类显示名称
         function getCategoryLabel(categoryValue) {
             const category = supportedCategories.find(cat => cat.value === categoryValue);
-            return category ? category.label : categoryValue || '通用';
+            return category ? category.value : categoryValue || '通用';
         }
 
         // 验证分类是否有效
@@ -2276,19 +2276,18 @@
             const basicInfoData = [
                 { '字段名称': '模板名称', '值': '糖尿病饮食指导' },
                 { '字段名称': '模板描述', '值': '针对糖尿病患者的饮食管理和营养指导' },
-                { '字段名称': '适用分类', '值': 'diabetes' }
+                { '字段名称': '适用分类', '值': '' }
             ];
             const basicInfoWs = XLSX.utils.json_to_sheet(basicInfoData);
             
             // 添加分类说明工作表
             const categoryData = supportedCategories.map(cat => ({
-                '分类代码': cat.value,
-                '分类名称': cat.label
+                '病症名': cat.value
             }));
             const categoryWs = XLSX.utils.json_to_sheet(categoryData);
             
             XLSX.utils.book_append_sheet(wb, basicInfoWs, '模板基本信息');
-            XLSX.utils.book_append_sheet(wb, categoryWs, '分类代码说明');
+            XLSX.utils.book_append_sheet(wb, categoryWs, '分类病症');
             
             // 工作表2: 文本建议
             const textSuggestionsData = [
