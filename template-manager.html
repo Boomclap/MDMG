@@ -796,12 +796,17 @@
                     <div style="background: #f8f9fa; padding: 16px; border-radius: 6px; border: 1px solid #e0e0e0; font-size: 13px; line-height: 1.5;">
                         <div style="font-weight: 500; margin-bottom: 8px;">Excel文件应包含以下工作表：</div>
                         <ul style="margin: 0; padding-left: 20px;">
-                            <li><strong>模板基本信息</strong> - 包含模板名称、描述、分类</li>
+                            <li><strong>模板基本信息</strong> - 包含模板名称、描述、分类（从下拉列表选择或留空）</li>
+                            <li><strong>分类病症</strong> - 支持的病症分类列表（用于下拉选择）</li>
                             <li><strong>文本建议</strong> - 文本类型的建议项目</li>
                             <li><strong>多选建议组</strong> - 多选类型的建议组和选项</li>
                             <li><strong>单选建议组</strong> - 单选类型的建议组和选项</li>
                             <li><strong>数值设置</strong> - 数值类型的设置项目</li>
                         </ul>
+                        <div style="margin-top: 12px; padding: 8px; background: #e3f2fd; border-radius: 4px; color: #1565c0;">
+                            <i class="fas fa-info-circle" style="margin-right: 4px;"></i>
+                            <strong>分类填写说明：</strong>在"模板基本信息"工作表中，"适用分类"可以从"分类病症"工作表中选择，也可以留空表示通用模板。
+                        </div>
                         <div style="margin-top: 12px;">
                             <a href="#" onclick="downloadExcelTemplate()" style="color: #1890ff; text-decoration: none;">
                                 <i class="fas fa-download"></i> 下载Excel模板文件
@@ -823,12 +828,16 @@
                         <div style="display: flex; flex-direction: column; gap: 8px;">
                             <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
                                 <input type="radio" name="conflictHandling" value="rename" checked>
-                                <span>如果存在同名模板，自动重命名</span>
+                                <span>如果存在同名模板，自动重命名（推荐）</span>
                             </label>
                             <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
                                 <input type="radio" name="conflictHandling" value="overwrite">
                                 <span>如果存在同名模板，覆盖原模板</span>
                             </label>
+                        </div>
+                        <div style="margin-top: 8px; font-size: 12px; color: #666;">
+                            <i class="fas fa-lightbulb" style="margin-right: 4px;"></i>
+                            建议选择"自动重命名"以避免意外覆盖现有模板
                         </div>
                     </div>
                 </div>
@@ -1928,10 +1937,26 @@
 
         // 验证模板数据格式
         function validateTemplateData(data) {
-            return data && 
-                   typeof data.name === 'string' && 
-                   data.suggestions && 
-                   typeof data.suggestions === 'object';
+            if (!data || typeof data !== 'object') {
+                return false;
+            }
+            
+            // 检查必需字段
+            if (!data.name || typeof data.name !== 'string' || data.name.trim() === '') {
+                return false;
+            }
+            
+            // 检查建议项目结构
+            if (!data.suggestions || typeof data.suggestions !== 'object') {
+                return false;
+            }
+            
+            // 检查分类是否有效（如果提供的话）
+            if (data.category && data.category.trim() !== '' && !isValidCategory(data.category.trim())) {
+                return false;
+            }
+            
+            return true;
         }
 
         // 显示导入预览
@@ -2274,16 +2299,20 @@
             
             // 工作表1: 模板基本信息
             const basicInfoData = [
-                { '字段名称': '模板名称', '值': '糖尿病饮食指导' },
-                { '字段名称': '模板描述', '值': '针对糖尿病患者的饮食管理和营养指导' },
-                { '字段名称': '适用分类', '值': '' }
+                { '字段名称': '模板名称', '值': '糖尿病饮食指导', '说明': '必填项，请输入模板名称' },
+                { '字段名称': '模板描述', '值': '针对糖尿病患者的饮食管理和营养指导', '说明': '可选项，描述模板用途' },
+                { '字段名称': '适用分类', '值': '糖尿病', '说明': '请从"分类病症"工作表中选择，或留空表示通用模板' }
             ];
             const basicInfoWs = XLSX.utils.json_to_sheet(basicInfoData);
             
-            // 添加分类说明工作表
-            const categoryData = supportedCategories.map(cat => ({
-                '病症名': cat.value
-            }));
+            // 添加分类说明工作表 - 包含空选项表示通用
+            const categoryData = [
+                { '病症分类': '', '说明': '留空表示通用模板，适用于所有病症' },
+                ...supportedCategories.map(cat => ({
+                    '病症分类': cat.value,
+                    '说明': `适用于${cat.value}患者`
+                }))
+            ];
             const categoryWs = XLSX.utils.json_to_sheet(categoryData);
             
             XLSX.utils.book_append_sheet(wb, basicInfoWs, '模板基本信息');
@@ -2301,41 +2330,52 @@
             
             // 工作表3: 多选建议组
             const multipleGroupsData = [
-                { '组名': '饮食控制', '选项序号': 1, '选项内容': '少油少盐', '默认选中': '是' },
-                { '组名': '饮食控制', '选项序号': 2, '选项内容': '多吃蔬菜', '默认选中': '否' },
-                { '组名': '饮食控制', '选项序号': 3, '选项内容': '定时定量', '默认选中': '是' },
-                { '组名': '饮食控制', '选项序号': 4, '选项内容': '控制总热量', '默认选中': '否' },
-                { '组名': '运动建议', '选项序号': 1, '选项内容': '有氧运动', '默认选中': '是' },
-                { '组名': '运动建议', '选项序号': 2, '选项内容': '力量训练', '默认选中': '否' },
-                { '组名': '运动建议', '选项序号': 3, '选项内容': '柔韧性训练', '默认选中': '否' }
+                { '组名': '饮食控制', '选项序号': 1, '选项内容': '少油少盐，清淡饮食', '默认选中': '是' },
+                { '组名': '饮食控制', '选项序号': 2, '选项内容': '多吃新鲜蔬菜水果', '默认选中': '否' },
+                { '组名': '饮食控制', '选项序号': 3, '选项内容': '定时定量进餐', '默认选中': '是' },
+                { '组名': '饮食控制', '选项序号': 4, '选项内容': '控制总热量摄入', '默认选中': '否' },
+                { '组名': '运动建议', '选项序号': 1, '选项内容': '每日30分钟有氧运动', '默认选中': '是' },
+                { '组名': '运动建议', '选项序号': 2, '选项内容': '适量力量训练', '默认选中': '否' },
+                { '组名': '运动建议', '选项序号': 3, '选项内容': '柔韧性和平衡训练', '默认选中': '否' }
             ];
             const multipleWs = XLSX.utils.json_to_sheet(multipleGroupsData);
             XLSX.utils.book_append_sheet(wb, multipleWs, '多选建议组');
             
             // 工作表4: 单选建议组
             const singleGroupsData = [
-                { '组名': '运动强度', '选项序号': 1, '选项内容': '轻度运动', '默认选中': '否' },
-                { '组名': '运动强度', '选项序号': 2, '选项内容': '中度运动', '默认选中': '是' },
-                { '组名': '运动强度', '选项序号': 3, '选项内容': '高强度运动', '默认选中': '否' },
-                { '组名': '复查频率', '选项序号': 1, '选项内容': '每月一次', '默认选中': '是' },
-                { '组名': '复查频率', '选项序号': 2, '选项内容': '每季度一次', '默认选中': '否' },
-                { '组名': '复查频率', '选项序号': 3, '选项内容': '每半年一次', '默认选中': '否' }
+                { '组名': '运动强度', '选项序号': 1, '选项内容': '轻度运动（散步、太极）', '默认选中': '否' },
+                { '组名': '运动强度', '选项序号': 2, '选项内容': '中度运动（快走、游泳）', '默认选中': '是' },
+                { '组名': '运动强度', '选项序号': 3, '选项内容': '高强度运动（跑步、球类）', '默认选中': '否' },
+                { '组名': '复查频率', '选项序号': 1, '选项内容': '每月复查一次', '默认选中': '是' },
+                { '组名': '复查频率', '选项序号': 2, '选项内容': '每季度复查一次', '默认选中': '否' },
+                { '组名': '复查频率', '选项序号': 3, '选项内容': '每半年复查一次', '默认选中': '否' }
             ];
             const singleWs = XLSX.utils.json_to_sheet(singleGroupsData);
             XLSX.utils.book_append_sheet(wb, singleWs, '单选建议组');
             
             // 工作表5: 数值设置
             const numericSettingsData = [
-                { '序号': 1, '设置名称': '每日步数', '最小值': 5000, '最大值': 10000, '单位': '步', '默认值': 8000 },
-                { '序号': 2, '设置名称': '血糖监测频率', '最小值': 4, '最大值': 8, '单位': '次/天', '默认值': 6 },
-                { '序号': 3, '设置名称': '每日饮水量', '最小值': 1500, '最大值': 3000, '单位': '毫升', '默认值': 2000 },
-                { '序号': 4, '设置名称': '运动时长', '最小值': 30, '最大值': 90, '单位': '分钟', '默认值': 45 }
+                { '序号': 1, '设置名称': '每日步数目标', '最小值': 3000, '最大值': 12000, '单位': '步', '默认值': 8000 },
+                { '序号': 2, '设置名称': '血糖监测频率', '最小值': 2, '最大值': 8, '单位': '次/天', '默认值': 4 },
+                { '序号': 3, '设置名称': '每日饮水量', '最小值': 1200, '最大值': 3000, '单位': '毫升', '默认值': 2000 },
+                { '序号': 4, '设置名称': '每次运动时长', '最小值': 15, '最大值': 120, '单位': '分钟', '默认值': 30 }
             ];
             const numericWs = XLSX.utils.json_to_sheet(numericSettingsData);
             XLSX.utils.book_append_sheet(wb, numericWs, '数值设置');
             
             // 设置列宽
-            [basicInfoWs, textWs, multipleWs, singleWs, numericWs].forEach(ws => {
+            basicInfoWs['!cols'] = [
+                { wch: 15 },  // 字段名称
+                { wch: 35 },  // 值
+                { wch: 40 }   // 说明
+            ];
+            
+            categoryWs['!cols'] = [
+                { wch: 15 },  // 病症分类
+                { wch: 30 }   // 说明
+            ];
+            
+            [textWs, multipleWs, singleWs, numericWs].forEach(ws => {
                 ws['!cols'] = [
                     { wch: 15 },
                     { wch: 30 },
@@ -2381,11 +2421,11 @@
                         const workbook = XLSX.read(data, { type: 'array' });
                         
                         // 检查必需的工作表
-                        const requiredSheets = ['模板基本信息', '文本建议', '多选建议组', '单选建议组', '数值设置'];
+                        const requiredSheets = ['模板基本信息', '分类病症', '文本建议', '多选建议组', '单选建议组', '数值设置'];
                         const missingSheets = requiredSheets.filter(sheet => !workbook.SheetNames.includes(sheet));
                         
                         if (missingSheets.length > 0) {
-                            reject(new Error(`缺少必需的工作表: ${missingSheets.join(', ')}`));
+                            reject(new Error(`缺少必需的工作表: ${missingSheets.join(', ')}\n请下载最新的Excel模板文件`));
                             return;
                         }
                         
@@ -2403,22 +2443,19 @@
                         const categoryValue = basicInfoData.find(row => row['字段名称'] === '适用分类')?.['值'];
                         let validatedCategory = '';
                         
-                        if (categoryValue) {
-                            // 检查是否是有效的分类代码
-                            if (isValidCategory(categoryValue)) {
-                                validatedCategory = categoryValue;
+                        if (categoryValue && categoryValue.trim() !== '') {
+                            const trimmedCategory = categoryValue.trim();
+                            // 检查是否是有效的分类
+                            if (isValidCategory(trimmedCategory)) {
+                                validatedCategory = trimmedCategory;
                             } else {
-                                // 尝试通过分类名称匹配
-                                const categoryByLabel = supportedCategories.find(cat => cat.label === categoryValue);
-                                if (categoryByLabel) {
-                                    validatedCategory = categoryByLabel.value;
-                                } else {
-                                    // 如果都不匹配，抛出错误
-                                    reject(new Error(`不支持的分类："${categoryValue}"。支持的分类：${supportedCategories.map(cat => cat.label).join('、')}`));
-                                    return;
-                                }
+                                // 如果不匹配，给出友好的错误提示
+                                const supportedList = supportedCategories.map(cat => cat.value).join('、');
+                                reject(new Error(`请从Excel模板的"分类病症"工作表中选择有效分类，或留空表示通用模板。\n当前输入："${trimmedCategory}"\n支持的分类：${supportedList}`));
+                                return;
                             }
                         }
+                        // 如果为空或未填写，validatedCategory保持为空字符串，表示通用模板
 
                         const template = {
                             id: 'template-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9),
@@ -2469,7 +2506,7 @@
                                 
                                 multipleGroups[groupId].options.push({
                                     id: groupId + '-' + multipleGroups[groupId].options.length,
-                                    text: row['选项内容'],
+                                    content: row['选项内容'],
                                     defaultSelected: row['默认选中'] === '是'
                                 });
                             }
@@ -2495,9 +2532,13 @@
                                 
                                 singleGroups[groupId].options.push({
                                     id: groupId + '-' + singleGroups[groupId].options.length,
-                                    text: row['选项内容'],
-                                    defaultSelected: row['默认选中'] === '是'
+                                    content: row['选项内容']
                                 });
+                                
+                                // 处理单选的默认选中逻辑
+                                if (row['默认选中'] === '是') {
+                                    singleGroups[groupId].defaultSelected = groupId + '-' + (singleGroups[groupId].options.length - 1);
+                                }
                             }
                         });
                         template.suggestions.single = singleGroups;
@@ -2553,6 +2594,14 @@
                         <div>• 多选建议组：${Object.keys(templateData.suggestions.multiple).length} 组（共 ${Object.values(templateData.suggestions.multiple).reduce((sum, group) => sum + group.options.length, 0)} 个选项）</div>
                         <div>• 单选建议组：${Object.keys(templateData.suggestions.single).length} 组（共 ${Object.values(templateData.suggestions.single).reduce((sum, group) => sum + group.options.length, 0)} 个选项）</div>
                         <div>• 数值设置：${Object.keys(templateData.suggestions.numeric).length} 项</div>
+                        ${templateData.category ? 
+                            `<div style="margin-top: 8px; padding: 4px 8px; background: #e3f2fd; border-radius: 4px; color: #1565c0; font-size: 12px;">
+                                <i class="fas fa-tag" style="margin-right: 4px;"></i>专用于：${getCategoryLabel(templateData.category)}
+                            </div>` : 
+                            `<div style="margin-top: 8px; padding: 4px 8px; background: #f3e5f5; border-radius: 4px; color: #7b1fa2; font-size: 12px;">
+                                <i class="fas fa-globe" style="margin-right: 4px;"></i>通用模板（适用于所有病症）
+                            </div>`
+                        }
                     </div>
                 </div>
                 
@@ -2599,7 +2648,7 @@
                     Object.values(template.suggestions.multiple).forEach(group => {
                         html += `<div style="margin: 8px 0;"><em>${group.title}：</em><ul style="margin: 4px 0; padding-left: 20px;">`;
                         group.options.forEach(option => {
-                            html += `<li>${option.text} ${option.defaultSelected ? '(默认选中)' : ''}</li>`;
+                            html += `<li>${option.content} ${option.defaultSelected ? '(默认选中)' : ''}</li>`;
                         });
                         html += '</ul></div>';
                     });
@@ -2612,7 +2661,8 @@
                     Object.values(template.suggestions.single).forEach(group => {
                         html += `<div style="margin: 8px 0;"><em>${group.title}：</em><ul style="margin: 4px 0; padding-left: 20px;">`;
                         group.options.forEach(option => {
-                            html += `<li>${option.text} ${option.defaultSelected ? '(默认选中)' : ''}</li>`;
+                            const isDefault = group.defaultSelected === option.id;
+                            html += `<li>${option.content} ${isDefault ? '(默认选中)' : ''}</li>`;
                         });
                         html += '</ul></div>';
                     });
