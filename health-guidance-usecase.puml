@@ -20,24 +20,27 @@ skinparam rectangle {
 title 健康指导模块用例图
 
 ' 设置布局方向
-left to right direction
+top to bottom direction
 
-' 左侧参与者
+' 参与者定义
 actor "患者" as Patient
+actor "医生" as Doctor
+actor "系统管理员" as Admin
 
 ' 定义系统边界
 rectangle "健康指导系统" {
     
-    ' 患者功能区域 - 左上
-    package "患者功能" {
+    ' 患者功能区域
+    rectangle "患者子系统" as PatientSystem {
         usecase "提交健康问卷" as UC1
         usecase "上传体检报告" as UC2
         usecase "接收健康指导" as UC3
         usecase "查看健康指导详情" as UC4
+        usecase "反馈指导效果" as UC5
     }
     
-    ' 医生功能区域 - 中间
-    package "医生功能" {
+    ' 医生功能区域
+    rectangle "医生子系统" as DoctorSystem {
         usecase "接收问卷通知" as UC6
         usecase "查看患者问卷" as UC7
         usecase "查看体检报告" as UC8
@@ -47,27 +50,26 @@ rectangle "健康指导系统" {
         usecase "管理患者列表" as UC12
     }
     
-    ' 管理员功能区域 - 右下
-    package "模板管理" {
+    ' 管理员功能区域
+    rectangle "模板管理子系统" as AdminSystem {
         usecase "创建指导模板" as UC13
         usecase "编辑指导模板" as UC14
         usecase "删除指导模板" as UC15
+        usecase "模板分类管理" as UC16
         usecase "导入模板" as UC17
         usecase "导出模板" as UC18
         usecase "配置建议项目" as UC19
     }
 }
 
-' 右侧参与者
-actor "医生" as Doctor
-actor "系统管理员" as Admin
-
-' 参与者与用例的关联
+' 患者与用例的关联
 Patient --> UC1
 Patient --> UC2
 Patient --> UC3
 Patient --> UC4
+Patient --> UC5
 
+' 医生与用例的关联
 Doctor --> UC6
 Doctor --> UC7
 Doctor --> UC8
@@ -76,15 +78,18 @@ Doctor --> UC10
 Doctor --> UC11
 Doctor --> UC12
 
+' 管理员与用例的关联
 Admin --> UC13
 Admin --> UC14
 Admin --> UC15
+Admin --> UC16
 Admin --> UC17
 Admin --> UC18
 Admin --> UC19
 
 ' 用例之间的关系
 UC1 ..> UC2 : <<extend>>
+UC3 ..> UC5 : <<extend>>
 
 UC11 ..> UC9 : <<include>>
 UC11 ..> UC10 : <<include>>
@@ -94,8 +99,8 @@ UC13 ..> UC19 : <<include>>
 UC14 ..> UC19 : <<include>>
 
 ' 添加注释
-note top of UC1 : 患者填写糖尿病、高血压等\n各类健康问卷
-note bottom of UC11 : 医生基于问卷和报告\n提供个性化健康指导
-note right of UC13 : 管理员创建和维护\n各类疾病的指导模板
+note right of PatientSystem : 患者通过移动端\n提交问卷和接收指导
+note right of DoctorSystem : 医生处理患者问卷\n并提供健康指导
+note right of AdminSystem : 管理员维护\n指导模板库
 
 @enduml

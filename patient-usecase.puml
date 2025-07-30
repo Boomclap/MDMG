@@ -1,0 +1,64 @@
+@startuml 患者用例图
+
+skinparam backgroundColor #FAFAFA
+skinparam actor {
+    BackgroundColor #E3F2FD
+    BorderColor #1976D2
+    FontColor #333333
+}
+skinparam usecase {
+    BackgroundColor #FFFFFF
+    BorderColor #CCCCCC
+    FontColor #333333
+}
+skinparam rectangle {
+    BackgroundColor #E8F5E8
+    BorderColor #4CAF50
+    FontColor #333333
+}
+
+title 健康指导系统 - 患者用例图
+
+' 参与者
+actor "患者" as Patient
+
+' 系统边界
+rectangle "患者端健康指导功能" {
+    
+    ' 问卷相关用例
+    usecase "提交健康问卷" as UC1
+    usecase "上传体检报告" as UC2
+    
+    ' 指导接收相关用例
+    usecase "接收健康指导" as UC3
+    usecase "查看健康指导详情" as UC4
+    usecase "反馈指导效果" as UC5
+    
+    ' 问卷管理用例
+    usecase "查看历史问卷" as UC6
+    usecase "修改问卷信息" as UC7
+}
+
+' 参与者与用例的关联
+Patient --> UC1
+Patient --> UC2
+Patient --> UC3
+Patient --> UC4
+Patient --> UC5
+Patient --> UC6
+Patient --> UC7
+
+' 用例之间的关系
+UC1 ..> UC2 : <<extend>>
+UC3 ..> UC5 : <<extend>>
+UC1 ..> UC6 : <<extend>>
+UC4 ..> UC7 : <<extend>>
+
+' 添加详细注释
+note right of UC1 : 患者填写糖尿病、高血压、\n心脏病等各类健康问卷
+note right of UC2 : 可选择上传相关的\n体检报告图片
+note right of UC3 : 接收医生发送的\n个性化健康指导消息
+note right of UC4 : 查看指导详情，包括\n关联的问卷和建议内容
+note right of UC5 : 对收到的健康指导\n进行效果反馈
+
+@enduml

@@ -1,0 +1,71 @@
+@startuml 医生用例图
+
+skinparam backgroundColor #FAFAFA
+skinparam actor {
+    BackgroundColor #E3F2FD
+    BorderColor #1976D2
+    FontColor #333333
+}
+skinparam usecase {
+    BackgroundColor #FFFFFF
+    BorderColor #CCCCCC
+    FontColor #333333
+}
+skinparam rectangle {
+    BackgroundColor #FFF3E0
+    BorderColor #FF9800
+    FontColor #333333
+}
+
+title 健康指导系统 - 医生用例图
+
+' 参与者
+actor "医生" as Doctor
+
+' 系统边界
+rectangle "医生端健康指导功能" {
+    
+    ' 问卷处理相关用例
+    usecase "接收问卷通知" as UC1
+    usecase "查看患者问卷" as UC2
+    usecase "查看体检报告" as UC3
+    
+    ' 指导编辑相关用例
+    usecase "选择指导模板" as UC4
+    usecase "编辑健康指导" as UC5
+    usecase "发送健康指导" as UC6
+    
+    ' 患者管理用例
+    usecase "管理患者列表" as UC7
+    usecase "查看患者历史" as UC8
+    usecase "统计指导效果" as UC9
+}
+
+' 参与者与用例的关联
+Doctor --> UC1
+Doctor --> UC2
+Doctor --> UC3
+Doctor --> UC4
+Doctor --> UC5
+Doctor --> UC6
+Doctor --> UC7
+Doctor --> UC8
+Doctor --> UC9
+
+' 用例之间的关系
+UC6 ..> UC4 : <<include>>
+UC6 ..> UC5 : <<include>>
+UC2 ..> UC3 : <<include>>
+UC7 ..> UC8 : <<extend>>
+UC6 ..> UC9 : <<extend>>
+
+' 添加详细注释
+note right of UC1 : 实时接收患者提交的\n问卷通知消息
+note right of UC2 : 查看患者填写的问卷详情\n和基本信息
+note right of UC3 : 查看患者上传的\n体检报告图片
+note right of UC4 : 从模板库中选择适合的\n健康指导模板
+note right of UC5 : 基于模板个性化编辑\n健康指导内容
+note right of UC6 : 将编辑完成的健康指导\n发送给患者
+note right of UC7 : 管理需要指导的\n患者列表
+
+@enduml
