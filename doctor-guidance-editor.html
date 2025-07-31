@@ -946,7 +946,7 @@
                             name: '糖尿病运动指导',
                             suggestions: {
                                 text: [
-                                    { id: 'regular-exercise', content: '每天坚持30分钟中等强度运动' },
+                                    { id: 'regular-exercise', content: '每天坚持30分钟中等强度运动', defaultSelected: true },
                                     { id: 'monitor-glucose', content: '避免低血糖风险' }
                                 ],
                                 multiple: {
@@ -1161,8 +1161,62 @@
                         }
                     }
 
+                    // 初始化所有模板的默认选择状态
+                    function initializeAllTemplatesDefaults() {
+                        Object.keys(templates).forEach(templateId => {
+                            const template = templates[templateId];
+                            if (!template) return;
+
+                            // 应用文本建议的默认选中状态
+                            if (template.suggestions.text) {
+                                template.suggestions.text.forEach(suggestion => {
+                                    if (suggestion.defaultSelected) {
+                                        globalSelections[templateId].text[suggestion.id] = true;
+                                    }
+                                });
+                            }
+
+                            // 应用多选建议的默认选中状态
+                            Object.keys(template.suggestions.multiple || {}).forEach(groupKey => {
+                                const group = template.suggestions.multiple[groupKey];
+                                group.options.forEach(option => {
+                                    if (option.defaultSelected) {
+                                        if (!globalSelections[templateId].multiple[groupKey]) {
+                                            globalSelections[templateId].multiple[groupKey] = {};
+                                        }
+                                        globalSelections[templateId].multiple[groupKey][option.id] = true;
+                                    }
+                                });
+                            });
+
+                            // 应用单选建议的默认选中状态
+                            Object.keys(template.suggestions.single || {}).forEach(groupKey => {
+                                const group = template.suggestions.single[groupKey];
+                                if (group.defaultSelected) {
+                                    globalSelections[templateId].single[groupKey] = group.defaultSelected;
+                                }
+                            });
+
+                            // 应用数值建议的默认选中状态
+                            Object.keys(template.suggestions.numeric || {}).forEach(numericKey => {
+                                const numeric = template.suggestions.numeric[numericKey];
+                                if (numeric.defaultSelected) {
+                                    globalSelections[templateId].numeric[numericKey] = {
+                                        selected: true,
+                                        value: numeric.defaultValue
+                                    };
+                                }
+                            });
+                        });
+
+                        console.log('所有模板的默认选择状态已初始化:', globalSelections);
+                    }
+
                     // 页面加载时初始化
                     document.addEventListener('DOMContentLoaded', function () {
+                        // 首先为所有模板应用默认选择状态
+                        initializeAllTemplatesDefaults();
+                        // 然后选择默认模板
                         selectTemplate('diabetes-diet');
                     });
 
@@ -1195,11 +1249,14 @@
                         // 渲染建议选择区域
                         renderSuggestions(templateId);
 
-                        // 恢复目标模板的选择状态
-                        restoreTemplateSelections(templateId);
+                        // 延迟执行状态恢复
+                        setTimeout(() => {
+                            // 恢复模板的选择状态（包括默认状态和用户修改的状态）
+                            restoreTemplateSelections(templateId);
 
-                        // 更新编辑器内容（基于所有模板的选择）
-                        updateEditorWithAllSelections();
+                            // 更新编辑器内容（基于所有模板的选择）
+                            updateEditorWithAllSelections();
+                        }, 0);
                     }
 
                     // 渲染建议选择区域
@@ -1307,9 +1364,6 @@
                         }
 
                         container.innerHTML = html;
-
-                        // 应用默认选中状态
-                        applyDefaultSelections(templateId);
                     }
 
                     // 应用默认选中状态
@@ -1317,16 +1371,7 @@
                         const template = templates[templateId];
                         if (!template) return;
 
-                        // 检查是否已经有保存的选择状态，如果有则不应用默认状态
-                        const hasExistingSelections =
-                            Object.keys(globalSelections[templateId].text).length > 0 ||
-                            Object.keys(globalSelections[templateId].multiple).length > 0 ||
-                            Object.keys(globalSelections[templateId].single).length > 0 ||
-                            Object.keys(globalSelections[templateId].numeric).length > 0;
-
-                        if (hasExistingSelections) {
-                            return; // 已有选择状态，不应用默认值
-                        }
+                        console.log(`应用模板 ${templateId} 的默认选择状态`);
 
                         // 应用文本建议的默认选中状态
                         if (template.suggestions.text) {
