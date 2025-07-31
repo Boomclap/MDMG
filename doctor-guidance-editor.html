@@ -1092,7 +1092,35 @@
                     // 当前选择的模板
                     let currentTemplate = 'diabetes-diet';
 
-                    // 存储数值输入的值
+                    // 全局选择状态存储
+                    const globalSelections = {
+                        'diabetes-diet': {
+                            text: {},
+                            multiple: {},
+                            single: {},
+                            numeric: {}
+                        },
+                        'diabetes-exercise': {
+                            text: {},
+                            multiple: {},
+                            single: {},
+                            numeric: {}
+                        },
+                        'hypertension': {
+                            text: {},
+                            multiple: {},
+                            single: {},
+                            numeric: {}
+                        },
+                        'general-health': {
+                            text: {},
+                            multiple: {},
+                            single: {},
+                            numeric: {}
+                        }
+                    };
+
+                    // 存储数值输入的值（保持向后兼容）
                     let numericValues = {};
 
                     // 更新数值
@@ -1109,11 +1137,18 @@
                             input.value = value;
                         }
 
-                        // 存储数值
+                        // 存储数值到全局状态
+                        if (!globalSelections[currentTemplate].numeric[key]) {
+                            globalSelections[currentTemplate].numeric[key] = { selected: false, value: value };
+                        } else {
+                            globalSelections[currentTemplate].numeric[key].value = value;
+                        }
+
+                        // 保持向后兼容
                         numericValues[key] = value;
 
-                        // 更新编辑器内容
-                        updateEditorWithSuggestions();
+                        // 更新编辑器内容（基于所有模板的选择）
+                        updateEditorWithAllSelections();
                     }
 
                     // 调整数值（+/-按钮）
@@ -1138,6 +1173,9 @@
 
                     // 选择模板
                     function selectTemplate(templateId) {
+                        // 保存当前模板的选择状态
+                        saveCurrentTemplateSelections();
+
                         // 更新模板选择状态
                         document.querySelectorAll('.template-item').forEach(item => {
                             item.classList.remove('active');
@@ -1156,6 +1194,12 @@
 
                         // 渲染建议选择区域
                         renderSuggestions(templateId);
+
+                        // 恢复目标模板的选择状态
+                        restoreTemplateSelections(templateId);
+
+                        // 更新编辑器内容（基于所有模板的选择）
+                        updateEditorWithAllSelections();
                     }
 
                     // 渲染建议选择区域
@@ -1273,6 +1317,17 @@
                         const template = templates[templateId];
                         if (!template) return;
 
+                        // 检查是否已经有保存的选择状态，如果有则不应用默认状态
+                        const hasExistingSelections =
+                            Object.keys(globalSelections[templateId].text).length > 0 ||
+                            Object.keys(globalSelections[templateId].multiple).length > 0 ||
+                            Object.keys(globalSelections[templateId].single).length > 0 ||
+                            Object.keys(globalSelections[templateId].numeric).length > 0;
+
+                        if (hasExistingSelections) {
+                            return; // 已有选择状态，不应用默认值
+                        }
+
                         // 应用文本建议的默认选中状态
                         if (template.suggestions.text) {
                             template.suggestions.text.forEach(suggestion => {
@@ -1284,6 +1339,8 @@
                                             checkbox.classList.add('checked');
                                         }
                                     }
+                                    // 更新全局状态
+                                    globalSelections[templateId].text[suggestion.id] = true;
                                 }
                             });
                         }
@@ -1300,6 +1357,11 @@
                                             checkbox.classList.add('checked');
                                         }
                                     }
+                                    // 更新全局状态
+                                    if (!globalSelections[templateId].multiple[groupKey]) {
+                                        globalSelections[templateId].multiple[groupKey] = {};
+                                    }
+                                    globalSelections[templateId].multiple[groupKey][option.id] = true;
                                 }
                             });
                         });
@@ -1315,6 +1377,8 @@
                                         radio.classList.add('checked');
                                     }
                                 }
+                                // 更新全局状态
+                                globalSelections[templateId].single[groupKey] = group.defaultSelected;
                             }
                         });
 
@@ -1329,14 +1393,19 @@
                                         checkbox.classList.add('checked');
                                     }
                                 }
-                                // 初始化数值
+                                // 更新全局状态
+                                globalSelections[templateId].numeric[numericKey] = {
+                                    selected: true,
+                                    value: numeric.defaultValue
+                                };
+                                // 保持向后兼容
                                 numericValues[numericKey] = numeric.defaultValue;
                             }
                         });
 
                         // 应用默认选中状态后更新编辑器内容
                         setTimeout(() => {
-                            updateEditorWithSuggestions();
+                            updateEditorWithAllSelections();
                         }, 100);
                     }
 
@@ -1345,8 +1414,11 @@
                         const checkbox = element.querySelector('.suggestion-checkbox');
                         checkbox.classList.toggle('checked');
 
-                        // 更新编辑器内容
-                        updateEditorWithSuggestions();
+                        // 更新全局选择状态
+                        globalSelections[currentTemplate].text[suggestionId] = checkbox.classList.contains('checked');
+
+                        // 更新编辑器内容（基于所有模板的选择）
+                        updateEditorWithAllSelections();
                     }
 
                     // 多选模式：可选择多个
@@ -1354,8 +1426,16 @@
                         const checkbox = element.querySelector('.suggestion-checkbox');
                         checkbox.classList.toggle('checked');
 
-                        // 更新编辑器内容
-                        updateEditorWithSuggestions();
+                        // 初始化组选择状态
+                        if (!globalSelections[currentTemplate].multiple[groupKey]) {
+                            globalSelections[currentTemplate].multiple[groupKey] = {};
+                        }
+
+                        // 更新全局选择状态
+                        globalSelections[currentTemplate].multiple[groupKey][optionId] = checkbox.classList.contains('checked');
+
+                        // 更新编辑器内容（基于所有模板的选择）
+                        updateEditorWithAllSelections();
                     }
 
                     // 单选模式：只能选一个
@@ -1373,8 +1453,11 @@
                         const radio = element.querySelector('.suggestion-radio');
                         radio.classList.add('checked');
 
-                        // 更新编辑器内容
-                        updateEditorWithSuggestions();
+                        // 更新全局选择状态（单选组只保存选中的选项）
+                        globalSelections[currentTemplate].single[groupKey] = optionId;
+
+                        // 更新编辑器内容（基于所有模板的选择）
+                        updateEditorWithAllSelections();
                     }
 
                     // 数值模式：可选择或取消选择
@@ -1387,110 +1470,286 @@
                             const template = templates[currentTemplate];
                             const numeric = template.suggestions.numeric[numericKey];
                             const input = document.getElementById(`numeric-${numericKey}`);
-                            if (input && !numericValues[numericKey]) {
-                                numericValues[numericKey] = parseInt(input.value) || numeric.defaultValue;
-                            }
+                            const value = input ? parseInt(input.value) : numeric.defaultValue;
+
+                            globalSelections[currentTemplate].numeric[numericKey] = {
+                                selected: true,
+                                value: value
+                            };
+                        } else {
+                            globalSelections[currentTemplate].numeric[numericKey] = {
+                                selected: false,
+                                value: globalSelections[currentTemplate].numeric[numericKey]?.value || templates[currentTemplate].suggestions.numeric[numericKey].defaultValue
+                            };
                         }
 
-                        // 更新编辑器内容
-                        updateEditorWithSuggestions();
+                        // 更新编辑器内容（基于所有模板的选择）
+                        updateEditorWithAllSelections();
                     }
 
-                    // 根据选中的建议更新编辑器内容
-                    function updateEditorWithSuggestions() {
+                    // 保存当前模板的选择状态
+                    function saveCurrentTemplateSelections() {
+                        if (!currentTemplate) return;
+
                         const template = templates[currentTemplate];
                         if (!template) return;
 
-                        const selectedSuggestions = [];
-
-                        // 获取选中的文本建议
+                        // 保存文本建议选择状态
                         template.suggestions.text.forEach(suggestion => {
-                            const element = document.querySelector(`[onclick*="${suggestion.id}"]`);
+                            const element = document.querySelector(`[onclick*="toggleTextSuggestion(this, '${suggestion.id}')"]`);
                             if (element) {
                                 const checkbox = element.querySelector('.suggestion-checkbox');
-                                if (checkbox && checkbox.classList.contains('checked')) {
-                                    selectedSuggestions.push({
-                                        content: suggestion.content
-                                    });
+                                globalSelections[currentTemplate].text[suggestion.id] = checkbox && checkbox.classList.contains('checked');
+                            }
+                        });
+
+                        // 保存多选建议选择状态
+                        Object.keys(template.suggestions.multiple).forEach(groupKey => {
+                            const group = template.suggestions.multiple[groupKey];
+                            if (!globalSelections[currentTemplate].multiple[groupKey]) {
+                                globalSelections[currentTemplate].multiple[groupKey] = {};
+                            }
+
+                            group.options.forEach(option => {
+                                const element = document.querySelector(`[onclick*="toggleMultipleSuggestion(this, '${groupKey}', '${option.id}')"]`);
+                                if (element) {
+                                    const checkbox = element.querySelector('.suggestion-checkbox');
+                                    globalSelections[currentTemplate].multiple[groupKey][option.id] = checkbox && checkbox.classList.contains('checked');
+                                }
+                            });
+                        });
+
+                        // 保存单选建议选择状态
+                        Object.keys(template.suggestions.single).forEach(groupKey => {
+                            const group = template.suggestions.single[groupKey];
+                            let selectedOption = null;
+
+                            group.options.forEach(option => {
+                                const element = document.querySelector(`[onclick*="toggleSingleSuggestion(this, '${groupKey}', '${option.id}')"]`);
+                                if (element) {
+                                    const radio = element.querySelector('.suggestion-radio');
+                                    if (radio && radio.classList.contains('checked')) {
+                                        selectedOption = option.id;
+                                    }
+                                }
+                            });
+
+                            if (selectedOption) {
+                                globalSelections[currentTemplate].single[groupKey] = selectedOption;
+                            }
+                        });
+
+                        // 保存数值建议选择状态
+                        Object.keys(template.suggestions.numeric || {}).forEach(numericKey => {
+                            const element = document.querySelector(`[onclick*="toggleNumericSuggestion(this, '${numericKey}')"]`);
+                            if (element) {
+                                const checkbox = element.querySelector('.suggestion-checkbox');
+                                const input = document.getElementById(`numeric-${numericKey}`);
+                                const value = input ? parseInt(input.value) : template.suggestions.numeric[numericKey].defaultValue;
+
+                                globalSelections[currentTemplate].numeric[numericKey] = {
+                                    selected: checkbox && checkbox.classList.contains('checked'),
+                                    value: value
+                                };
+                            }
+                        });
+                    }
+
+                    // 恢复模板的选择状态
+                    function restoreTemplateSelections(templateId) {
+                        const template = templates[templateId];
+                        if (!template) return;
+
+                        const selections = globalSelections[templateId];
+                        if (!selections) return;
+
+                        // 恢复文本建议选择状态
+                        template.suggestions.text.forEach(suggestion => {
+                            const element = document.querySelector(`[onclick*="toggleTextSuggestion(this, '${suggestion.id}')"]`);
+                            if (element) {
+                                const checkbox = element.querySelector('.suggestion-checkbox');
+                                if (checkbox) {
+                                    if (selections.text[suggestion.id]) {
+                                        checkbox.classList.add('checked');
+                                    } else {
+                                        checkbox.classList.remove('checked');
+                                    }
                                 }
                             }
                         });
 
-                        // 获取选中的多选建议
+                        // 恢复多选建议选择状态
                         Object.keys(template.suggestions.multiple).forEach(groupKey => {
                             const group = template.suggestions.multiple[groupKey];
+                            const groupSelections = selections.multiple[groupKey] || {};
+
                             group.options.forEach(option => {
-                                const element = document.querySelector(`[onclick*="${option.id}"]`);
+                                const element = document.querySelector(`[onclick*="toggleMultipleSuggestion(this, '${groupKey}', '${option.id}')"]`);
                                 if (element) {
                                     const checkbox = element.querySelector('.suggestion-checkbox');
-                                    if (checkbox && checkbox.classList.contains('checked')) {
-                                        selectedSuggestions.push({
+                                    if (checkbox) {
+                                        if (groupSelections[option.id]) {
+                                            checkbox.classList.add('checked');
+                                        } else {
+                                            checkbox.classList.remove('checked');
+                                        }
+                                    }
+                                }
+                            });
+                        });
+
+                        // 恢复单选建议选择状态
+                        Object.keys(template.suggestions.single).forEach(groupKey => {
+                            const group = template.suggestions.single[groupKey];
+                            const selectedOption = selections.single[groupKey];
+
+                            group.options.forEach(option => {
+                                const element = document.querySelector(`[onclick*="toggleSingleSuggestion(this, '${groupKey}', '${option.id}')"]`);
+                                if (element) {
+                                    const radio = element.querySelector('.suggestion-radio');
+                                    if (radio) {
+                                        if (option.id === selectedOption) {
+                                            radio.classList.add('checked');
+                                        } else {
+                                            radio.classList.remove('checked');
+                                        }
+                                    }
+                                }
+                            });
+                        });
+
+                        // 恢复数值建议选择状态
+                        Object.keys(template.suggestions.numeric || {}).forEach(numericKey => {
+                            const numericSelection = selections.numeric[numericKey];
+                            if (numericSelection) {
+                                const element = document.querySelector(`[onclick*="toggleNumericSuggestion(this, '${numericKey}')"]`);
+                                if (element) {
+                                    const checkbox = element.querySelector('.suggestion-checkbox');
+                                    const input = document.getElementById(`numeric-${numericKey}`);
+
+                                    if (checkbox) {
+                                        if (numericSelection.selected) {
+                                            checkbox.classList.add('checked');
+                                        } else {
+                                            checkbox.classList.remove('checked');
+                                        }
+                                    }
+
+                                    if (input) {
+                                        input.value = numericSelection.value;
+                                    }
+                                }
+                            }
+                        });
+                    }
+
+                    // 基于所有模板的选择更新编辑器内容
+                    function updateEditorWithAllSelections() {
+                        const allSelectedSuggestions = [];
+
+                        // 遍历所有模板，收集选中的建议
+                        Object.keys(globalSelections).forEach(templateId => {
+                            const template = templates[templateId];
+                            const selections = globalSelections[templateId];
+
+                            if (!template || !selections) return;
+
+                            // 收集文本建议
+                            template.suggestions.text.forEach(suggestion => {
+                                if (selections.text[suggestion.id]) {
+                                    allSelectedSuggestions.push({
+                                        templateName: template.name,
+                                        content: suggestion.content
+                                    });
+                                }
+                            });
+
+                            // 收集多选建议
+                            Object.keys(template.suggestions.multiple).forEach(groupKey => {
+                                const group = template.suggestions.multiple[groupKey];
+                                const groupSelections = selections.multiple[groupKey] || {};
+
+                                group.options.forEach(option => {
+                                    if (groupSelections[option.id]) {
+                                        allSelectedSuggestions.push({
+                                            templateName: template.name,
                                             title: group.title.replace('（可多选）', ''),
                                             content: option.content
                                         });
                                     }
-                                }
+                                });
                             });
-                        });
 
-                        // 获取选中的单选建议
-                        Object.keys(template.suggestions.single).forEach(groupKey => {
-                            const group = template.suggestions.single[groupKey];
-                            group.options.forEach(option => {
-                                const element = document.querySelector(`[onclick*="${option.id}"]`);
-                                if (element) {
-                                    const radio = element.querySelector('.suggestion-radio');
-                                    if (radio && radio.classList.contains('checked')) {
-                                        selectedSuggestions.push({
+                            // 收集单选建议
+                            Object.keys(template.suggestions.single).forEach(groupKey => {
+                                const group = template.suggestions.single[groupKey];
+                                const selectedOptionId = selections.single[groupKey];
+
+                                if (selectedOptionId) {
+                                    const selectedOption = group.options.find(opt => opt.id === selectedOptionId);
+                                    if (selectedOption) {
+                                        allSelectedSuggestions.push({
+                                            templateName: template.name,
                                             title: group.title.replace('（单选）', ''),
-                                            content: option.content || ''
+                                            content: selectedOption.content || ''
                                         });
                                     }
                                 }
                             });
-                        });
 
-                        // 获取选中的数值输入建议
-                        Object.keys(template.suggestions.numeric || {}).forEach(numericKey => {
-                            const numeric = template.suggestions.numeric[numericKey];
-                            const element = document.querySelector(`[onclick*="toggleNumericSuggestion(this, '${numericKey}')"]`);
+                            // 收集数值建议
+                            Object.keys(template.suggestions.numeric || {}).forEach(numericKey => {
+                                const numeric = template.suggestions.numeric[numericKey];
+                                const numericSelection = selections.numeric[numericKey];
 
-                            if (element) {
-                                const checkbox = element.querySelector('.suggestion-checkbox');
-                                if (checkbox && checkbox.classList.contains('checked')) {
-                                    const input = document.getElementById(`numeric-${numericKey}`);
-                                    const value = input ? parseInt(input.value) : numeric.defaultValue;
-
-                                    selectedSuggestions.push({
+                                if (numericSelection && numericSelection.selected) {
+                                    allSelectedSuggestions.push({
+                                        templateName: template.name,
                                         title: numeric.title,
-                                        content: `${value}${numeric.unit}`
+                                        content: `${numericSelection.value}${numeric.unit}`
                                     });
                                 }
-                            }
+                            });
                         });
 
                         // 生成编辑器内容
                         let editorContent = '<p>尊敬的张先生：</p>\n\n';
                         editorContent += '<p>根据您的健康问卷，我为您提供以下健康建议：</p>\n\n';
 
-                        if (selectedSuggestions.length > 0) {
-                            editorContent += '<ul>\n';
-                            selectedSuggestions.forEach(suggestion => {
-                                // 文本模式：直接显示content
-                                // 多选、单选和数值模式：显示title + content
-                                if (suggestion.title && suggestion.content && suggestion.title !== suggestion.content) {
-                                    editorContent += `    <li><strong>${suggestion.title}：</strong>${suggestion.content}</li>\n`;
-                                } else {
-                                    editorContent += `    <li>${suggestion.content}</li>\n`;
+                        if (allSelectedSuggestions.length > 0) {
+                            // 按模板分组显示建议
+                            const groupedSuggestions = {};
+                            allSelectedSuggestions.forEach(suggestion => {
+                                if (!groupedSuggestions[suggestion.templateName]) {
+                                    groupedSuggestions[suggestion.templateName] = [];
                                 }
+                                groupedSuggestions[suggestion.templateName].push(suggestion);
                             });
-                            editorContent += '</ul>\n\n';
+
+                            Object.keys(groupedSuggestions).forEach(templateName => {
+                                editorContent += `<p><strong>${templateName}：</strong></p>\n<ul>\n`;
+
+                                groupedSuggestions[templateName].forEach(suggestion => {
+                                    if (suggestion.title && suggestion.content && suggestion.title !== suggestion.content) {
+                                        editorContent += `    <li><strong>${suggestion.title}：</strong>${suggestion.content}</li>\n`;
+                                    } else {
+                                        editorContent += `    <li>${suggestion.content}</li>\n`;
+                                    }
+                                });
+
+                                editorContent += '</ul>\n\n';
+                            });
                         }
 
                         editorContent += '<p>请继续保持良好的自我管理，如有任何不适，请及时联系我。</p>';
 
                         // 更新编辑器
                         document.getElementById('editor').innerHTML = editorContent;
+                    }
+
+                    // 根据选中的建议更新编辑器内容（保持向后兼容，现在调用新的函数）
+                    function updateEditorWithSuggestions() {
+                        updateEditorWithAllSelections();
                     }
 
                     // 文本格式化
