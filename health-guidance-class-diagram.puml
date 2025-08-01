@@ -1,0 +1,313 @@
+@startuml 健康指导系统业务模型类图
+
+skinparam backgroundColor #FAFAFA
+skinparam class {
+    BackgroundColor #FFFFFF
+    BorderColor #CCCCCC
+    FontColor #333333
+    ArrowColor #666666
+}
+skinparam note {
+    BackgroundColor #FFFACD
+    BorderColor #DDD
+}
+
+title 健康指导系统 - 业务模型类图
+
+' 健康指导模板类
+class 健康指导模板 {
+    - templateId: String
+    - templateName: String
+    - description: String
+    - category: String
+    - isActive: Boolean
+    - createdTime: DateTime
+    - updatedTime: DateTime
+    - usageCount: Integer
+    - createdBy: String
+    --
+    + createTemplate(): void
+    + updateTemplate(): void
+    + deleteTemplate(): void
+    + getTemplateById(id: String): 健康指导模板
+    + getTemplatesByCategory(category: String): List<健康指导模板>
+    + exportTemplate(): String
+    + importTemplate(data: String): void
+    + incrementUsageCount(): void
+}
+
+' 健康指导类
+class 健康指导 {
+    - guidanceId: String
+    - patientId: String
+    - doctorId: String
+    - questionnaireId: String
+    - templateId: String
+    - guidanceContent: String
+    - customContent: String
+    - finalContent: String
+    - sendTime: DateTime
+    - status: String
+    - isRead: Boolean
+    - isConfirmed: Boolean
+    --
+    + createGuidance(): void
+    + sendGuidance(): void
+    + updateStatus(status: String): void
+    + getGuidanceById(id: String): 健康指导
+    + getGuidancesByPatient(patientId: String): List<健康指导>
+    + generateContent(): String
+}
+
+' 健康指导消息通知类
+class 健康指导消息通知 {
+    - notificationId: String
+    - guidanceId: String
+    - patientId: String
+    - doctorId: String
+    - notificationType: String
+    - title: String
+    - content: String
+    - sendTime: DateTime
+    - readTime: DateTime
+    - isRead: Boolean
+    - priority: String
+    --
+    + sendNotification(): void
+    + markAsRead(): void
+    + getNotificationById(id: String): 健康指导消息通知
+    + getNotificationsByPatient(patientId: String): List<健康指导消息通知>
+    + updateReadStatus(): void
+}
+
+' 问卷提交消息通知类
+class 问卷提交消息通知 {
+    - messageId: String
+    - questionnaireId: String
+    - patientId: String
+    - doctorId: String
+    - messageType: String
+    - questionnaireType: String
+    - submitTime: DateTime
+    - processTime: DateTime
+    - status: String
+    - isProcessed: Boolean
+    - priority: String
+    --
+    + createMessage(): void
+    + updateStatus(status: String): void
+    + markAsProcessed(): void
+    + getMessageById(id: String): 问卷提交消息通知
+    + getMessagesByDoctor(doctorId: String): List<问卷提交消息通知>
+    + getPendingMessages(): List<问卷提交消息通知>
+}
+
+' 文本建议类
+class 文本建议 {
+    - suggestionId: String
+    - templateId: String
+    - content: String
+    - defaultSelected: Boolean
+    - sortOrder: Integer
+    --
+    + addTextSuggestion(): void
+    + updateTextSuggestion(): void
+    + deleteTextSuggestion(): void
+}
+
+' 多选建议组类
+class 多选建议组 {
+    - groupId: String
+    - templateId: String
+    - title: String
+    - minSelection: Integer
+    - maxSelection: Integer
+    - sortOrder: Integer
+    --
+    + addMultipleGroup(): void
+    + updateMultipleGroup(): void
+    + deleteMultipleGroup(): void
+}
+
+' 多选建议选项类
+class 多选建议选项 {
+    - optionId: String
+    - groupId: String
+    - content: String
+    - defaultSelected: Boolean
+    - sortOrder: Integer
+    --
+    + addOption(): void
+    + updateOption(): void
+    + deleteOption(): void
+}
+
+' 单选建议组类
+class 单选建议组 {
+    - groupId: String
+    - templateId: String
+    - title: String
+    - defaultSelected: String
+    - sortOrder: Integer
+    --
+    + addSingleGroup(): void
+    + updateSingleGroup(): void
+    + deleteSingleGroup(): void
+}
+
+' 单选建议选项类
+class 单选建议选项 {
+    - optionId: String
+    - groupId: String
+    - content: String
+    - sortOrder: Integer
+    --
+    + addOption(): void
+    + updateOption(): void
+    + deleteOption(): void
+}
+
+' 数值参数设置类
+class 数值参数设置 {
+    - parameterId: String
+    - templateId: String
+    - title: String
+    - unit: String
+    - defaultValue: Number
+    - defaultSelected: Boolean
+    - minValue: Number
+    - maxValue: Number
+    - step: Number
+    - sortOrder: Integer
+    --
+    + addNumericSetting(): void
+    + updateNumericSetting(): void
+    + deleteNumericSetting(): void
+    + validateValue(value: Number): Boolean
+}
+
+' 患者类
+class 患者 {
+    - patientId: String
+    - name: String
+    - gender: String
+    - age: Integer
+    - diseases: List<String>
+    - avatar: String
+    --
+    + getPatientInfo(): 患者
+    + updatePatientInfo(): void
+}
+
+' 医生类
+class 医生 {
+    - doctorId: String
+    - name: String
+    - title: String
+    - department: String
+    - avatar: String
+    --
+    + getDoctorInfo(): 医生
+    + updateDoctorInfo(): void
+}
+
+' 健康问卷类
+class 健康问卷 {
+    - questionnaireId: String
+    - patientId: String
+    - questionnaireType: String
+    - questions: List<问题答案>
+    - submitTime: DateTime
+    - status: String
+    --
+    + submitQuestionnaire(): void
+    + getQuestionnaireById(id: String): 健康问卷
+    + getQuestionnairesByPatient(patientId: String): List<健康问卷>
+}
+
+' 问题答案类
+class 问题答案 {
+    - questionId: String
+    - questionText: String
+    - answer: String
+    - answerType: String
+    --
+    + setAnswer(answer: String): void
+    + getAnswer(): String
+}
+
+' 体检报告类
+class 体检报告 {
+    - reportId: String
+    - patientId: String
+    - reportDate: Date
+    - hospital: String
+    - images: List<String>
+    --
+    + uploadReport(): void
+    + getReportsByPatient(patientId: String): List<体检报告>
+}
+
+' 类之间的关系
+
+' 健康指导模板与各种建议类型的组合关系
+健康指导模板 ||--o{ 文本建议 : 包含
+健康指导模板 ||--o{ 多选建议组 : 包含
+健康指导模板 ||--o{ 单选建议组 : 包含
+健康指导模板 ||--o{ 数值参数设置 : 包含
+
+' 多选建议组与选项的组合关系
+多选建议组 ||--o{ 多选建议选项 : 包含
+
+' 单选建议组与选项的组合关系
+单选建议组 ||--o{ 单选建议选项 : 包含
+
+' 健康指导与健康指导模板的关联关系
+健康指导 }o--|| 健康指导模板 : 基于
+
+' 健康指导与患者、医生、健康问卷的关联关系
+健康指导 }o--|| 患者 : 发送给
+健康指导 }o--|| 医生 : 创建者
+健康指导 }o--|| 健康问卷 : 基于
+
+' 健康指导消息通知与健康指导的关联关系
+健康指导消息通知 ||--|| 健康指导 : 通知
+
+' 问卷提交消息通知与健康问卷的关联关系
+问卷提交消息通知 ||--|| 健康问卷 : 通知
+
+' 健康问卷与患者的关联关系
+健康问卷 }o--|| 患者 : 提交者
+
+' 健康问卷与问题答案的组合关系
+健康问卷 ||--o{ 问题答案 : 包含
+
+' 体检报告与患者的关联关系
+体检报告 }o--|| 患者 : 属于
+
+' 问卷提交消息通知与医生、患者的关联关系
+问卷提交消息通知 }o--|| 医生 : 接收者
+问卷提交消息通知 }o--|| 患者 : 发送者
+
+' 健康指导消息通知与医生、患者的关联关系
+健康指导消息通知 }o--|| 医生 : 发送者
+健康指导消息通知 }o--|| 患者 : 接收者
+
+' 添加注释说明
+note top of 健康指导模板 : 系统管理员创建和维护的\n健康指导内容模板，支持\n四种类型的建议项目配置
+
+note top of 健康指导 : 医生基于模板和患者问卷\n创建的个性化健康指导内容
+
+note top of 健康指导消息通知 : 当医生发送健康指导时\n系统自动生成的通知消息\n发送给患者
+
+note top of 问卷提交消息通知 : 当患者提交健康问卷时\n系统自动生成的通知消息\n发送给医生
+
+note right of 文本建议 : 简单的文本类型建议\n可设置默认选中状态
+
+note right of 多选建议组 : 可多选的建议选项组\n支持设置最小和最大选择数量
+
+note right of 单选建议组 : 互斥选择的建议选项组\n必须设置默认选中选项
+
+note right of 数值参数设置 : 可配置数值的参数设置\n包含单位、范围和步长控制
+
+@enduml

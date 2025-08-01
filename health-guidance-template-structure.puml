@@ -1,0 +1,230 @@
+@startuml 健康指导模板详细结构图
+
+skinparam backgroundColor #FAFAFA
+skinparam class {
+    BackgroundColor #FFFFFF
+    BorderColor #CCCCCC
+    FontColor #333333
+    ArrowColor #666666
+}
+skinparam note {
+    BackgroundColor #FFFACD
+    BorderColor #DDD
+}
+
+title 健康指导模板 - 详细结构图
+
+' 健康指导模板主类
+class 健康指导模板 {
+    - templateId: String
+    - templateName: String
+    - description: String
+    - category: String
+    - isActive: Boolean
+    - createdTime: DateTime
+    - updatedTime: DateTime
+    - usageCount: Integer
+    - createdBy: String
+    --
+    + createTemplate(): void
+    + updateTemplate(): void
+    + deleteTemplate(): void
+    + exportToExcel(): void
+    + importFromExcel(): void
+    + incrementUsageCount(): void
+}
+
+' 建议配置容器类
+class 建议配置容器 {
+    - templateId: String
+    - textSuggestions: List<文本建议>
+    - multipleGroups: Map<String, 多选建议组>
+    - singleGroups: Map<String, 单选建议组>
+    - numericSettings: Map<String, 数值参数设置>
+    --
+    + getAllSuggestions(): Map<String, Object>
+    + validateConfiguration(): Boolean
+    + generatePreview(): String
+}
+
+' 文本建议类
+class 文本建议 {
+    - suggestionId: String
+    - content: String
+    - defaultSelected: Boolean
+    - sortOrder: Integer
+    --
+    + getText(): String
+    + isDefaultSelected(): Boolean
+    + setSortOrder(order: Integer): void
+}
+
+' 多选建议组类
+class 多选建议组 {
+    - groupId: String
+    - title: String
+    - options: List<多选建议选项>
+    - minSelection: Integer
+    - maxSelection: Integer
+    - sortOrder: Integer
+    --
+    + addOption(option: 多选建议选项): void
+    + removeOption(optionId: String): void
+    + validateSelection(selectedIds: List<String>): Boolean
+    + getDefaultSelections(): List<String>
+}
+
+' 多选建议选项类
+class 多选建议选项 {
+    - optionId: String
+    - content: String
+    - defaultSelected: Boolean
+    - sortOrder: Integer
+    --
+    + getContent(): String
+    + isDefaultSelected(): Boolean
+}
+
+' 单选建议组类
+class 单选建议组 {
+    - groupId: String
+    - title: String
+    - options: List<单选建议选项>
+    - defaultSelected: String
+    - sortOrder: Integer
+    --
+    + addOption(option: 单选建议选项): void
+    + removeOption(optionId: String): void
+    + setDefaultSelection(optionId: String): void
+    + getDefaultSelection(): String
+}
+
+' 单选建议选项类
+class 单选建议选项 {
+    - optionId: String
+    - content: String
+    - sortOrder: Integer
+    --
+    + getContent(): String
+}
+
+' 数值参数设置类
+class 数值参数设置 {
+    - parameterId: String
+    - title: String
+    - unit: String
+    - defaultValue: Number
+    - defaultSelected: Boolean
+    - minValue: Number
+    - maxValue: Number
+    - step: Number
+    - sortOrder: Integer
+    --
+    + validateValue(value: Number): Boolean
+    + getFormattedValue(value: Number): String
+    + adjustValue(value: Number, direction: String): Number
+}
+
+' 模板使用记录类
+class 模板使用记录 {
+    - recordId: String
+    - templateId: String
+    - doctorId: String
+    - patientId: String
+    - usageTime: DateTime
+    - selectedSuggestions: Map<String, Object>
+    - customContent: String
+    --
+    + recordUsage(): void
+    + getUsageStatistics(): Map<String, Integer>
+}
+
+' 模板分类枚举
+enum 模板分类 {
+    CORONARY_HEART_DISEASE("冠心病")
+    HYPERTENSION("高血压")
+    HEART_FAILURE("心脏病")
+    DIABETES("糖尿病")
+    HYPERURICEMIA("高尿酸血症")
+    HYPERGLYCEMIA("高血糖")
+    HYPERLIPIDEMIA("高血脂")
+    MYOCARDITIS("心肌炎")
+    GENERAL("通用")
+}
+
+' 建议类型枚举
+enum 建议类型 {
+    TEXT("文本建议")
+    MULTIPLE("多选建议")
+    SINGLE("单选建议")
+    NUMERIC("数值参数")
+}
+
+' 类之间的关系
+
+' 健康指导模板与建议配置容器的组合关系
+健康指导模板 ||--|| 建议配置容器 : 包含
+
+' 建议配置容器与各种建议类型的组合关系
+建议配置容器 ||--o{ 文本建议 : 包含
+建议配置容器 ||--o{ 多选建议组 : 包含
+建议配置容器 ||--o{ 单选建议组 : 包含
+建议配置容器 ||--o{ 数值参数设置 : 包含
+
+' 多选建议组与选项的组合关系
+多选建议组 ||--o{ 多选建议选项 : 包含
+
+' 单选建议组与选项的组合关系
+单选建议组 ||--o{ 单选建议选项 : 包含
+
+' 健康指导模板与使用记录的关联关系
+健康指导模板 ||--o{ 模板使用记录 : 记录使用
+
+' 枚举关系
+健康指导模板 }o--|| 模板分类 : 属于
+建议配置容器 }o--|| 建议类型 : 包含
+
+' 添加详细注释
+note top of 健康指导模板 : 模板主体，包含基本信息\n和使用统计，支持导入导出功能
+
+note top of 建议配置容器 : 模板的核心配置部分\n管理四种类型的建议项目
+
+note right of 文本建议 : 最简单的建议类型\n直接显示文本内容\n例如："减少碳水化合物摄入"
+
+note right of 多选建议组 : 分组的多选建议\n例如："饮食控制方式（可多选）"\n包含多个可选择的选项
+
+note right of 单选建议组 : 分组的单选建议\n例如："复诊频率（单选）"\n只能选择一个选项
+
+note right of 数值参数设置 : 可配置数值的参数\n例如："每日热量摄入：1800kcal"\n支持范围限制和步长调整
+
+note bottom of 模板使用记录 : 记录模板的使用情况\n用于统计分析和优化
+
+note bottom of 模板分类 : 支持的疾病分类\n用于模板的分类管理
+
+' 示例数据结构
+note as ExampleData
+<b>示例：糖尿病饮食指导模板</b>
+--
+<b>文本建议：</b>
+• 减少碳水化合物摄入，控制每餐主食量
+• 避免吸烟和饮酒，保持健康生活方式
+
+<b>多选建议组：饮食控制方式</b>
+• 每日盐摄入量控制在5g以下
+• 避免精制糖和高糖水果
+• 增加蔬菜和优质蛋白质比例
+
+<b>单选建议组：复诊频率</b>
+• 1个月后复诊（默认）
+• 3个月后复诊
+• 6个月后复诊
+
+<b>数值参数：每日热量摄入</b>
+• 默认值：1800kcal
+• 范围：1200-2500kcal
+• 步长：50kcal
+end note
+
+ExampleData .. 健康指导模板
+
+@enduml
