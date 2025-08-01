@@ -79,13 +79,20 @@ UC4 ..> UC14 : <<extend>>
 UC7 ..> UC8 : <<extend>>
 
 ' 添加详细注释
-note right of UC1 : 创建新的健康指导模板\n支持多种疾病分类
-note right of UC5 : 管理模板分类，包括\n糖尿病、高血压、心脏病等
-note right of UC7 : 从Excel文件批量导入\n健康指导模板
-note right of UC9 : 配置模板中的建议项目\n包括文本、选择、数值等类型
-note right of UC10 : 设置文本类型的\n健康建议内容
-note right of UC11 : 设置多选类型的\n建议选项组
-note right of UC12 : 设置单选类型的\n建议选项组
-note right of UC13 : 设置数值类型的\n参数和范围
+note right of UC1 : 创建新的健康指导模板\n支持糖尿病、高血压、心脏病等\n多种疾病分类，设置模板基本信息
+note right of UC2 : 编辑现有模板的基本信息\n和建议项目配置，支持版本管理
+note right of UC3 : 删除不再使用的模板\n需要确认操作，防止误删
+note right of UC4 : 查看所有模板列表\n支持搜索、筛选和分页显示
+note right of UC5 : 管理模板分类体系\n包括糖尿病、高血压、心脏病等\n支持新增和修改分类
+note right of UC6 : 设置模板的访问权限\n控制哪些医生可以使用特定模板
+note right of UC7 : 从Excel文件批量导入\n健康指导模板，支持格式验证\n和冲突处理
+note right of UC8 : 将模板导出为Excel文件\n便于备份和跨系统迁移
+note right of UC9 : 配置模板中的建议项目\n包括文本、多选、单选、数值\n四种类型的建议配置
+note right of UC10 : 设置文本类型的健康建议\n如"减少碳水化合物摄入"\n可设置默认选中状态
+note right of UC11 : 设置多选类型的建议选项组\n如"饮食控制方式（可多选）"\n支持设置选择数量限制
+note right of UC12 : 设置单选类型的建议选项组\n如"复诊频率（单选）"\n必须设置默认选中选项
+note right of UC13 : 设置数值类型的参数配置\n如"每日热量摄入：1800kcal"\n包含单位、范围和步长设置
+note right of UC14 : 查看模板使用统计数据\n分析模板使用频率和效果\n为优化提供数据支持
+note right of UC15 : 查看系统操作日志\n监控模板管理操作记录\n便于问题排查和审计
 
 @enduml

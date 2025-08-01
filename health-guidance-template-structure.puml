@@ -16,127 +16,127 @@ title 健康指导模板 - 详细结构图
 
 ' 健康指导模板主类
 class 健康指导模板 {
-    - templateId: String
-    - templateName: String
-    - description: String
-    - category: String
-    - isActive: Boolean
-    - createdTime: DateTime
-    - updatedTime: DateTime
-    - usageCount: Integer
-    - createdBy: String
+    - templateId: String // 模板唯一标识
+    - templateName: String // 模板名称
+    - description: String // 模板描述
+    - category: String // 适用分类(糖尿病、高血压等)
+    - isActive: Boolean // 是否启用
+    - createdTime: DateTime // 创建时间
+    - updatedTime: DateTime // 更新时间
+    - usageCount: Integer // 使用次数统计
+    - createdBy: String // 创建者ID
     --
-    + createTemplate(): void
-    + updateTemplate(): void
-    + deleteTemplate(): void
-    + exportToExcel(): void
-    + importFromExcel(): void
-    + incrementUsageCount(): void
+    + createTemplate(): void // 创建新模板
+    + updateTemplate(): void // 更新模板信息
+    + deleteTemplate(): void // 删除模板
+    + exportToExcel(): void // 导出为Excel文件
+    + importFromExcel(): void // 从Excel导入
+    + incrementUsageCount(): void // 增加使用次数
 }
 
 ' 建议配置容器类
 class 建议配置容器 {
-    - templateId: String
-    - textSuggestions: List<文本建议>
-    - multipleGroups: Map<String, 多选建议组>
-    - singleGroups: Map<String, 单选建议组>
-    - numericSettings: Map<String, 数值参数设置>
+    - templateId: String // 所属模板ID
+    - textSuggestions: List<文本建议> // 文本建议列表
+    - multipleGroups: Map<String, 多选建议组> // 多选建议组映射
+    - singleGroups: Map<String, 单选建议组> // 单选建议组映射
+    - numericSettings: Map<String, 数值参数设置> // 数值参数映射
     --
-    + getAllSuggestions(): Map<String, Object>
-    + validateConfiguration(): Boolean
-    + generatePreview(): String
+    + getAllSuggestions(): Map<String, Object> // 获取所有建议配置
+    + validateConfiguration(): Boolean // 验证配置有效性
+    + generatePreview(): String // 生成预览内容
 }
 
 ' 文本建议类
 class 文本建议 {
-    - suggestionId: String
-    - content: String
-    - defaultSelected: Boolean
-    - sortOrder: Integer
+    - suggestionId: String // 建议唯一标识
+    - content: String // 建议文本内容
+    - defaultSelected: Boolean // 是否默认选中
+    - sortOrder: Integer // 显示排序
     --
-    + getText(): String
-    + isDefaultSelected(): Boolean
-    + setSortOrder(order: Integer): void
+    + getText(): String // 获取建议文本
+    + isDefaultSelected(): Boolean // 检查是否默认选中
+    + setSortOrder(order: Integer): void // 设置排序顺序
 }
 
 ' 多选建议组类
 class 多选建议组 {
-    - groupId: String
-    - title: String
-    - options: List<多选建议选项>
-    - minSelection: Integer
-    - maxSelection: Integer
-    - sortOrder: Integer
+    - groupId: String // 建议组唯一标识
+    - title: String // 建议组标题
+    - options: List<多选建议选项> // 选项列表
+    - minSelection: Integer // 最少选择数量
+    - maxSelection: Integer // 最多选择数量
+    - sortOrder: Integer // 显示排序
     --
-    + addOption(option: 多选建议选项): void
-    + removeOption(optionId: String): void
-    + validateSelection(selectedIds: List<String>): Boolean
-    + getDefaultSelections(): List<String>
+    + addOption(option: 多选建议选项): void // 添加选项
+    + removeOption(optionId: String): void // 删除选项
+    + validateSelection(selectedIds: List<String>): Boolean // 验证选择有效性
+    + getDefaultSelections(): List<String> // 获取默认选中项
 }
 
 ' 多选建议选项类
 class 多选建议选项 {
-    - optionId: String
-    - content: String
-    - defaultSelected: Boolean
-    - sortOrder: Integer
+    - optionId: String // 选项唯一标识
+    - content: String // 选项内容
+    - defaultSelected: Boolean // 是否默认选中
+    - sortOrder: Integer // 显示排序
     --
-    + getContent(): String
-    + isDefaultSelected(): Boolean
+    + getContent(): String // 获取选项内容
+    + isDefaultSelected(): Boolean // 检查是否默认选中
 }
 
 ' 单选建议组类
 class 单选建议组 {
-    - groupId: String
-    - title: String
-    - options: List<单选建议选项>
-    - defaultSelected: String
-    - sortOrder: Integer
+    - groupId: String // 建议组唯一标识
+    - title: String // 建议组标题
+    - options: List<单选建议选项> // 选项列表
+    - defaultSelected: String // 默认选中的选项ID
+    - sortOrder: Integer // 显示排序
     --
-    + addOption(option: 单选建议选项): void
-    + removeOption(optionId: String): void
-    + setDefaultSelection(optionId: String): void
-    + getDefaultSelection(): String
+    + addOption(option: 单选建议选项): void // 添加选项
+    + removeOption(optionId: String): void // 删除选项
+    + setDefaultSelection(optionId: String): void // 设置默认选中项
+    + getDefaultSelection(): String // 获取默认选中项
 }
 
 ' 单选建议选项类
 class 单选建议选项 {
-    - optionId: String
-    - content: String
-    - sortOrder: Integer
+    - optionId: String // 选项唯一标识
+    - content: String // 选项内容
+    - sortOrder: Integer // 显示排序
     --
-    + getContent(): String
+    + getContent(): String // 获取选项内容
 }
 
 ' 数值参数设置类
 class 数值参数设置 {
-    - parameterId: String
-    - title: String
-    - unit: String
-    - defaultValue: Number
-    - defaultSelected: Boolean
-    - minValue: Number
-    - maxValue: Number
-    - step: Number
-    - sortOrder: Integer
+    - parameterId: String // 参数唯一标识
+    - title: String // 参数标题
+    - unit: String // 数值单位(如kcal、%、次等)
+    - defaultValue: Number // 默认数值
+    - defaultSelected: Boolean // 是否默认选中
+    - minValue: Number // 最小值限制
+    - maxValue: Number // 最大值限制
+    - step: Number // 调整步长
+    - sortOrder: Integer // 显示排序
     --
-    + validateValue(value: Number): Boolean
-    + getFormattedValue(value: Number): String
-    + adjustValue(value: Number, direction: String): Number
+    + validateValue(value: Number): Boolean // 验证数值有效性
+    + getFormattedValue(value: Number): String // 格式化显示数值
+    + adjustValue(value: Number, direction: String): Number // 按步长调整数值
 }
 
 ' 模板使用记录类
 class 模板使用记录 {
-    - recordId: String
-    - templateId: String
-    - doctorId: String
-    - patientId: String
-    - usageTime: DateTime
-    - selectedSuggestions: Map<String, Object>
-    - customContent: String
+    - recordId: String // 使用记录唯一标识
+    - templateId: String // 使用的模板ID
+    - doctorId: String // 使用的医生ID
+    - patientId: String // 目标患者ID
+    - usageTime: DateTime // 使用时间
+    - selectedSuggestions: Map<String, Object> // 选中的建议项目
+    - customContent: String // 医生自定义内容
     --
-    + recordUsage(): void
-    + getUsageStatistics(): Map<String, Integer>
+    + recordUsage(): void // 记录使用情况
+    + getUsageStatistics(): Map<String, Integer> // 获取使用统计
 }
 
 ' 模板分类枚举
